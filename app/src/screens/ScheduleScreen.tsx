@@ -1,13 +1,18 @@
 import React from "react";
-import { View, Text, Button } from "react-native";
-import { Routes } from "../navigation/routes";
+import { Button, Text, View } from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ScheduleStackParamList } from "../navigation/RootNavigator";
 
-export default function ScheduleScreen({ navigation }: any) {
+type Props = NativeStackScreenProps<ScheduleStackParamList, "Schedule">;
+
+export default function ScheduleScreen({ navigation }: Props) {
   return (
-    <View style={{ flex: 1, padding: 16, gap: 12 }}>
-      <Text style={{ fontSize: 22, fontWeight: "600" }}>Schedule</Text>
-      <Text>Placeholder schedule list</Text>
-      <Button title="Open Event Details" onPress={() => navigation.navigate(Routes.EventDetails)} />
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: 12 }}>
+      <Text>Schedule</Text>
+      <Button
+        title="Go to Event Details (test)"
+        onPress={() => navigation.navigate("EventDetails")}
+      />
     </View>
   );
 }
