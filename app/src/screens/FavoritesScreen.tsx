@@ -1,15 +1,18 @@
 /**
  * FavoritesScreen.tsx
  * -------------------
- * Displays the list of items the user has favorited.
- * Favorites are stored locally on the device so they work offline.
+ * Responsibility:
+ *   Display the user's saved items and keep the list synchronized with local storage.
+ * 
+ * Development utilities:
+ *   Temporary buttons exist to simulate user actions until event-level favorite interactions are implemented elsewhere in the app.
  */
 
 import React, { useCallback, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, Text, View, Button } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
-import { FavoriteRecord, getFavorites } from "../storage/favoritesStore";
+import { FavoriteRecord, getFavorites, addFavorite, clearFavorites } from "../storage/favoritesStore";
 import LoadingState from "../components/LoadingState";
 import OfflineBanner from "../components/OfflineBanner";
 import { useOfflineStatus } from "../hooks/useOfflineStatus";
@@ -17,9 +20,16 @@ import { useOfflineStatus } from "../hooks/useOfflineStatus";
 export default function FavoritesScreen() {
   const isOffline = useOfflineStatus();
 
+  // Tracks storage read state
   const [loading, setLoading] = useState(true);
+
+  // Current list of saved favorites
   const [favorites, setFavorites] = useState<FavoriteRecord[]>([]);
 
+  /**
+   * Reads favorites from local storage and updates screen state.
+   * Errors are swallowed intentionally to prevent UI failure due to storage issues.
+   */
   const loadFavorites = useCallback(async () => {
     setLoading(true);
     try {
@@ -32,28 +42,54 @@ export default function FavoritesScreen() {
     }
   }, []);
 
+  /**
+   * Reload favorites whenever the screen becomes active.
+   * Ensures the list reflects changes made elsewhere in the app.
+   */
   useFocusEffect(
     useCallback(() => {
       void loadFavorites();
     }, [loadFavorites])
   );
 
+  // Loading UI while reading storage
   if (loading) {
     return (
       <View style={{ flex: 1 }}>
-        <OfflineBanner visible={isOffline} />
-        <LoadingState />
+        <OfflineBanner isOffline={isOffline} />
+        <LoadingState visible={true} />
       </View>
     );
   }
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
-      <OfflineBanner visible={isOffline} />
+      <OfflineBanner isOffline={isOffline} />
 
       <Text style={{ fontSize: 24, fontWeight: "600", marginBottom: 12 }}>
         Favorites
       </Text>
+
+      {/* Development utilities: simulate favoriting before event UI exists */}
+      <Button
+        title="Add Sample Favorite"
+        onPress={async () => {
+          await addFavorite({
+            id: "demo-event-1",
+            title: "The Headliner Band",
+            start: "2026-09-02T20:00:00Z",
+          });
+          await loadFavorites();
+        }}
+      />
+
+      <Button
+        title="Clear Favorites"
+        onPress={async () => {
+          await clearFavorites();
+          await loadFavorites();
+        }}
+      />
 
       {favorites.length === 0 ? (
         <Text style={{ opacity: 0.7 }}>

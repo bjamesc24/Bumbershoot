@@ -1,3 +1,14 @@
+/**
+ * OfflineBanner.tsx
+ * -----------------
+ * Responsibility:
+ *   Display a non-blocking notification when the device is offline.
+ *
+ * Notes:
+ *   This component does NOT detect connectivity itself.
+ *   Network state is provided by the useOfflineStatus hook.
+ */
+
 import React from "react";
 import { Text, View } from "react-native";
 
@@ -6,6 +17,7 @@ type Props = {
 };
 
 export default function OfflineBanner({ isOffline }: Props) {
+  // Do not render the banner if connectivity is available.
   if (!isOffline) return null;
 
   return (

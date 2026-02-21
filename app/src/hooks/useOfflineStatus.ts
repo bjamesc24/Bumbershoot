@@ -1,36 +1,30 @@
 /**
  * useOfflineStatus.ts
  * -------------------
- * Purpose:
- *  - Provide a simple boolean that tells the UI whether the device currently
- *    appears to be offline.
- *
- * Why we need this:
- *  - This capstone is "stability-first" and must behave predictably when
- *    connectivity is poor (common at festivals).
- *  - Screens use this hook to show an OfflineBanner, but they should still
- *    render cached/local data whenever possible.
- *
- * Implementation:
- *  - Uses @react-native-community/netinfo, which is the standard approach
- *    in React Native/Expo for network status.
+ * Responsibility:
+ *   Detect whether the device currently has network connectivity.
+ * 
+ * Implementation notes:
+ *   Uses @react-native-community/netinfo, the standard React Native API for
+ *   monitoring connectivity changes.
  */
 
 import { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
 
 export function useOfflineStatus(): boolean {
-  // Default to "online" until we know otherwise.
+  // Assume online until a network state is reported.
   const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
-    // Subscribe to connectivity changes.
+    // Listen for connectivity updates from the OS.
     const unsubscribe = NetInfo.addEventListener((state) => {
-      // state.isConnected can be null on first load; treat null as "unknown/online"
+      // Some platforms may report null initially; treat as connected.
       const connected = state.isConnected ?? true;
       setIsOffline(!connected);
     });
 
+    // Clean up the listener when the component unmounts.
     return () => unsubscribe();
   }, []);
 

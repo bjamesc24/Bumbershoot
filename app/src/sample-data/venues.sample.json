@@ -1,0 +1,6 @@
+[
+  { "id": "sc-1", "name": "Climate Pledge Arena", "lat": 47.6221, "lng": -122.3540 },
+  { "id": "sc-2", "name": "Space Needle", "lat": 47.6205, "lng": -122.3493 },
+  { "id": "sc-3", "name": "MoPOP", "lat": 47.6215, "lng": -122.3482 },
+  { "id": "sc-4", "name": "Fisher Pavilion", "lat": 47.6233, "lng": -122.3522 }
+]

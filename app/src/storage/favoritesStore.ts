@@ -1,47 +1,35 @@
 /**
  * favoritesStore.ts
- * ------------------
- * Purpose:
- *  - Provide a small, reliable API for saving and loading user favorites locally.
- *  - Favorites must work with NO user accounts and must remain available offline.
+ * -----------------
+ * Responsibility:
+ *   Persist and retrieve the user's favorites on-device.
  *
- * Why this exists:
- *  - The app is "stability-first" and "offline-first".
- *  - We store favorites on-device (AsyncStorage) so the user’s plan survives:
- *      - poor connectivity
- *      - app restarts
- *      - festival day usage
- *
- * What we store:
- *  - We store only IDs + minimal metadata (title/start time) to keep storage small.
- *  - The full event details always come from the schedule dataset.
- *
- * Storage key is versioned ("v1") so we can evolve the schema later without breaking users.
+ * Design considerations:
+ *   - Storage key is versioned ("v1") to allow schema evolution later.
+ *   - Parsing is defensive: corrupted storage should never crash the UI.
  */
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+/** Versioned storage key for favorites (supports future schema changes). */
 export const FAVORITES_STORAGE_KEY = "favorites:v1";
 
 /**
- * Minimal favorite record stored on-device.
- * (We purposely do NOT store the full event object.)
+ * Minimal record persisted for a favorited entity.
+ * (Full entity details are retrieved from the main dataset, not duplicated here.)
  */
 export type FavoriteRecord = {
-  /** Stable canonical ID for the favorited item (event ID for Week 1). */
+  /** Canonical, stable identifier (e.g., eventId). */
   id: string;
 
-  /** Optional minimal metadata for display, so Favorites can render quickly. */
+  /** Display fields for quick list rendering. */
   title?: string;
-  start?: string; // ISO timestamp string recommended (e.g., "2026-09-02T19:30:00Z")
-
-  /** When the user favorited it (useful later for debugging and ordering). */
-  savedAt: string; // ISO timestamp
+  start?: string; // ISO 8601 timestamp string
 };
 
 /**
- * Safely parse JSON into FavoriteRecord[].
- * If something goes wrong (corrupted storage), we fall back to an empty list.
+ * Parses persisted favorites JSON into a safe, validated array.
+ * If storage is missing or malformed, an empty list is returned.
  */
 function safeParseFavorites(json: string | null): FavoriteRecord[] {
   if (!json) return [];
@@ -49,14 +37,13 @@ function safeParseFavorites(json: string | null): FavoriteRecord[] {
     const parsed = JSON.parse(json);
     if (!Array.isArray(parsed)) return [];
 
-    // Basic shape validation
+    // Minimal shape validation: id must exist and be a string.
     return parsed
       .filter((x) => x && typeof x.id === "string")
       .map((x) => ({
         id: x.id,
         title: typeof x.title === "string" ? x.title : undefined,
         start: typeof x.start === "string" ? x.start : undefined,
-        savedAt: typeof x.savedAt === "string" ? x.savedAt : new Date().toISOString(),
       }));
   } catch {
     return [];
@@ -64,8 +51,8 @@ function safeParseFavorites(json: string | null): FavoriteRecord[] {
 }
 
 /**
- * Load favorites from AsyncStorage.
- * Always returns an array (never throws).
+ * Reads all favorites from local storage.
+ * Returns an array in all cases; never throws to the UI layer.
  */
 export async function getFavorites(): Promise<FavoriteRecord[]> {
   const raw = await AsyncStorage.getItem(FAVORITES_STORAGE_KEY);
@@ -73,7 +60,7 @@ export async function getFavorites(): Promise<FavoriteRecord[]> {
 }
 
 /**
- * Returns true if an ID is currently favorited.
+ * Checks whether a specific id is currently favorited.
  */
 export async function isFavorited(id: string): Promise<boolean> {
   const favorites = await getFavorites();
@@ -81,8 +68,8 @@ export async function isFavorited(id: string): Promise<boolean> {
 }
 
 /**
- * Add a favorite (id + optional metadata).
- * If it already exists, this is a no-op.
+ * Adds a favorite by id (and optional display metadata).
+ * If the favorite already exists, the operation is a no-op.
  */
 export async function addFavorite(input: {
   id: string;
@@ -91,7 +78,7 @@ export async function addFavorite(input: {
 }): Promise<FavoriteRecord[]> {
   const favorites = await getFavorites();
 
-  // No duplicates
+  // Prevent duplicates
   if (favorites.some((f) => f.id === input.id)) {
     return favorites;
   }
@@ -100,7 +87,6 @@ export async function addFavorite(input: {
     id: input.id,
     title: input.title,
     start: input.start,
-    savedAt: new Date().toISOString(),
   };
 
   const updated = [newRecord, ...favorites];
@@ -109,7 +95,7 @@ export async function addFavorite(input: {
 }
 
 /**
- * Remove a favorite by ID.
+ * Removes a favorite by id.
  */
 export async function removeFavorite(id: string): Promise<FavoriteRecord[]> {
   const favorites = await getFavorites();
@@ -119,8 +105,8 @@ export async function removeFavorite(id: string): Promise<FavoriteRecord[]> {
 }
 
 /**
- * Toggle favorite status.
- * Returns the updated list and the new boolean state.
+ * Toggles favorite state for an id.
+ * Returns both the updated collection and the resulting boolean state.
  */
 export async function toggleFavorite(input: {
   id: string;
@@ -140,8 +126,8 @@ export async function toggleFavorite(input: {
 }
 
 /**
- * Utility: clear favorites (useful for testing/demo).
- * Do NOT expose this in production UI, but it’s helpful for development.
+ * Removes all favorites from local storage.
+ * Useful for development/testing and for resetting state.
  */
 export async function clearFavorites(): Promise<void> {
   await AsyncStorage.removeItem(FAVORITES_STORAGE_KEY);
