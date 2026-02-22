@@ -1,0 +1,39 @@
+# release.yml
+# -----------
+# Release workflow for Project Bumbershoot.
+#
+# CURRENT STATUS: Placeholder — not yet active.
+#
+# What this will eventually do:
+#   - Trigger on a version tag (e.g., v1.0.0) pushed to main
+#   - Use Expo Application Services (EAS) to build the app
+#   - Produce APK (Android) and IPA (iOS) build artifacts
+#   - Optionally submit to app stores
+#
+# Prerequisites before activating:
+#   - EAS account and project configured (eas.json)
+#   - EXPO_TOKEN secret added to GitHub repository settings
+#   - App signing credentials configured in EAS
+#
+# To enable this workflow, replace the placeholder job below
+# with actual EAS build steps once the above is in place.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # Triggers on version tags like v1.0.0
+
+jobs:
+  placeholder:
+    name: Release pipeline (not yet configured)
+    runs-on: ubuntu-latest
+
+    steps:
+      # Acknowledge the tag was pushed — intentional no-op until EAS is set up
+      - name: Release pipeline placeholder
+        run: |
+          echo "Release workflow triggered for tag: ${{ github.ref_name }}"
+          echo "EAS build steps will be added here once Expo credentials are configured."
+          echo "See comments in release.yml for prerequisites."

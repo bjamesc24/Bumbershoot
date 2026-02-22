@@ -1,0 +1,54 @@
+# ci.yml
+# ------
+# Continuous Integration workflow for Project Bumbershoot.
+#
+# Runs on every push and pull request to catch broken code early.
+# Checks: dependency installation, TypeScript type checking, and linting.
+
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - "kelley"
+      - "sasha"
+      - "brian"
+      - "spencer"
+      - "marie"
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check:
+    name: Type Check & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out the code from the branch that triggered this workflow
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+
+      # Install all project dependencies from package-lock.json
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+        working-directory: ./app
+
+      # Run TypeScript compiler in check-only mode
+      - name: TypeScript type check
+        run: npx tsc --noEmit
+        working-directory: ./app
+
+      # Run ESLint to catch code style and potential logic issues
+      - name: Lint
+        run: npx eslint . --ext .ts,.tsx
+        working-directory: ./app

@@ -1,0 +1,38 @@
+[
+  {
+    "id": "ann-1",
+    "title": "Stage 3 Delayed — 30 Minutes",
+    "message": "Due to a sound equipment issue, all Stage 3 performances will begin 30 minutes behind schedule. We apologize for the inconvenience.",
+    "priority": "urgent",
+    "publishedAt": "2026-09-02T14:00:00Z"
+  },
+  {
+    "id": "ann-4",
+    "title": "Welcome to Bumbershoot 2026!",
+    "message": "We are so excited to have you here. Check the schedule tab for today's full lineup and don't miss a thing.",
+    "priority": "general",
+    "publishedAt": "2026-09-02T08:00:00Z"
+  },
+  {
+    "id": "ann-2",
+    "title": "Weather Advisory",
+    "message": "Light rain is expected this evening. We recommend bringing a rain jacket or poncho. The festival will continue as scheduled.",
+    "priority": "urgent",
+    "publishedAt": "2026-09-02T12:00:00Z"
+  },
+  {
+    "id": "ann-3",
+    "title": "The Headliner Band — Gate Opens Early",
+    "message": "Gates for Climate Pledge Arena will open 45 minutes early tonight for The Headliner Band. Doors at 6:15pm.",
+    "priority": "personal",
+    "publishedAt": "2026-09-02T10:00:00Z",
+    "eventId": "demo-event-1"
+  },
+  {
+    "id": "ann-5",
+    "title": "New Food Vendors on the South Lawn",
+    "message": "Four new food vendors have set up on the South Lawn near Fisher Pavilion. Come check out locally sourced options from 11am onwards.",
+    "priority": "general",
+    "publishedAt": "2026-09-02T09:00:00Z"
+  }
+]
