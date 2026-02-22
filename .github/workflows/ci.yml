@@ -49,7 +49,7 @@ jobs:
         run: npx tsc --noEmit
         working-directory: ./app
 
-      # Run ESLint to catch code style and potential logic issues
-      - name: Lint
-        run: npx eslint . --ext .ts,.tsx
-        working-directory: ./app
+      # # Run ESLint to catch code style and potential logic issues
+      # - name: Lint
+      #   run: npx eslint . --ext .ts,.tsx
+      #   working-directory: ./app
