@@ -1,0 +1,1133 @@
+openapi: 3.0.3
+
+info:
+  title: Bumbershoot Festival Companion API
+  version: 1.0.0
+  description: |
+    Public read-only REST API powering the Bumbershoot Festival Companion mobile app.
+    All endpoints are unauthenticated and return JSON. No user data is collected or stored.
+
+    **Base URL:** `https://cms.bumbershoot.com/wp-json/bumbershoot/v1`
+
+    **Caching:** All responses include `Cache-Control`, `ETag`, and `Last-Modified` headers.
+    Clients should use `If-None-Match` / `If-Modified-Since` on repeat requests.
+
+    **Stability contract:** Endpoints never return 404 for empty datasets — they return an
+    empty array. Clients must gracefully handle 5xx responses by falling back to cached data.
+
+  contact:
+    name: Bumbershoot Backend Team
+  license:
+    name: MIT
+
+servers:
+  - url: https://cms.bumbershoot.com/wp-json/bumbershoot/v1
+    description: Production
+  - url: https://staging.bumbershoot.com/wp-json/bumbershoot/v1
+    description: Staging
+  - url: http://localhost:10003/wp-json/bumbershoot/v1
+    description: Local development (Local by Flywheel)
+
+tags:
+  - name: Schedule
+    description: Festival event schedule
+  - name: Venues
+    description: Stages, POIs, and map locations
+  - name: Artists
+    description: Performer profiles
+  - name: Vendors
+    description: Food, merchandise, and booth information
+  - name: Announcements
+    description: Festival operations communications
+  - name: Changes
+    description: Change-detection feed for efficient polling
+
+paths:
+
+  # ─────────────────────────────────────────────
+  # SCHEDULE
+  # ─────────────────────────────────────────────
+  /schedule:
+    get:
+      tags: [Schedule]
+      operationId: getSchedule
+      summary: Get all festival events
+      description: |
+        Returns the full list of published events in a minimal, app-optimized shape.
+        The mobile app polls this endpoint every 30 minutes and caches the full response locally.
+        Supports filtering by day, stage, category, and keyword search.
+      parameters:
+        - name: day
+          in: query
+          description: Filter by festival day
+          schema:
+            type: string
+            enum: [day-1, day-2, day-3]
+        - name: stage
+          in: query
+          description: Filter by venue slug (e.g. `fisher-green-stage`)
+          schema:
+            type: string
+        - name: category
+          in: query
+          description: Filter by event category
+          schema:
+            $ref: '#/components/schemas/EventCategory'
+        - name: q
+          in: query
+          description: Keyword search across event title and short description
+          schema:
+            type: string
+        - name: since
+          in: query
+          description: Return only events whose `last_changed` is after this timestamp
+          schema:
+            type: string
+            format: date-time
+            example: "2025-08-30T14:00:00-07:00"
+      responses:
+        '200':
+          description: Success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=1800, stale-while-revalidate=60
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─────────────────────────────────────────────
+  # EVENT DETAIL
+  # ─────────────────────────────────────────────
+  /events/{id}:
+    get:
+      tags: [Schedule]
+      operationId: getEventById
+      summary: Get full detail for a single event
+      description: |
+        Returns the complete event record including full description, embedded venue object,
+        and embedded artist objects. Called on-demand when a user taps an event — not part
+        of the background refresh cycle.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: WordPress post ID of the event
+          schema:
+            type: integer
+            example: 101
+      responses:
+        '200':
+          description: Success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=3600, stale-while-revalidate=60
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─────────────────────────────────────────────
+  # VENUES
+  # ─────────────────────────────────────────────
+  /venues:
+    get:
+      tags: [Venues]
+      operationId: getVenues
+      summary: Get all active venues and points of interest
+      description: |
+        Returns all active venues and POIs. Used to render map pins, labels, and
+        accessibility info. Venue data is mostly static — refresh daily or on app open,
+        not on the 30-minute schedule cadence.
+      parameters:
+        - name: type
+          in: query
+          description: Filter by venue type
+          schema:
+            $ref: '#/components/schemas/VenueType'
+        - name: accessible_only
+          in: query
+          description: If true, return only wheelchair-accessible venues
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=86400, stale-while-revalidate=3600
+            ETag:
+              schema:
+                type: string
+            Last-Modified:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VenuesResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─────────────────────────────────────────────
+  # ARTISTS
+  # ─────────────────────────────────────────────
+  /artists:
+    get:
+      tags: [Artists]
+      operationId: getArtists
+      summary: Get all artist profiles
+      description: |
+        Returns all artist profiles. Refresh daily or on app open. Supports filtering
+        by type, genre, headliner status, and local artist flag.
+      parameters:
+        - name: type
+          in: query
+          description: Filter by artist type
+          schema:
+            $ref: '#/components/schemas/ArtistType'
+        - name: genre
+          in: query
+          description: Filter by genre
+          schema:
+            $ref: '#/components/schemas/ArtistGenre'
+        - name: headliners_only
+          in: query
+          description: If true, return only headliner artists
+          schema:
+            type: boolean
+        - name: local_only
+          in: query
+          description: If true, return only Washington State / Pacific NW artists
+          schema:
+            type: boolean
+        - name: q
+          in: query
+          description: Keyword search across artist title and short bio
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=86400, stale-while-revalidate=3600
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArtistsResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─────────────────────────────────────────────
+  # VENDORS
+  # ─────────────────────────────────────────────
+  /vendors:
+    get:
+      tags: [Vendors]
+      operationId: getVendors
+      summary: Get all active vendors and booths
+      description: |
+        Returns all active vendors including food, beverages, merchandise, sponsor
+        activations, and nonprofits. Refresh daily or on app open.
+      parameters:
+        - name: type
+          in: query
+          description: Filter by vendor type
+          schema:
+            $ref: '#/components/schemas/VendorType'
+        - name: day
+          in: query
+          description: Filter by active festival day
+          schema:
+            type: string
+            enum: [day-1, day-2, day-3]
+        - name: dietary
+          in: query
+          description: Filter food vendors by dietary option
+          schema:
+            type: string
+            enum: [vegan, vegetarian, gluten-free, halal, kosher]
+        - name: accessible_only
+          in: query
+          description: If true, return only accessible vendors
+          schema:
+            type: boolean
+        - name: q
+          in: query
+          description: Keyword search across vendor title and description
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=86400, stale-while-revalidate=3600
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorsResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─────────────────────────────────────────────
+  # ANNOUNCEMENTS
+  # ─────────────────────────────────────────────
+  /announcements:
+    get:
+      tags: [Announcements]
+      operationId: getAnnouncements
+      summary: Get active festival announcements
+      description: |
+        Returns all non-expired announcements from festival operations. Shares the
+        30-minute refresh cadence with the schedule endpoint. Expired announcements
+        (where `expires_at` is in the past) are filtered server-side.
+      parameters:
+        - name: day
+          in: query
+          description: Filter by festival day
+          schema:
+            type: string
+            enum: [day-1, day-2, day-3, all-days, pre-festival]
+        - name: type
+          in: query
+          description: Filter by announcement type
+          schema:
+            $ref: '#/components/schemas/AnnouncementType'
+        - name: priority
+          in: query
+          description: Filter by priority level
+          schema:
+            type: string
+            enum: [normal, important, urgent]
+        - name: since
+          in: query
+          description: Return only announcements published after this timestamp
+          schema:
+            type: string
+            format: date-time
+        - name: limit
+          in: query
+          description: Maximum number of results. Default 50, max 100.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 50
+      responses:
+        '200':
+          description: Success
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=1800, stale-while-revalidate=60
+            ETag:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnnouncementsResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  # ─────────────────────────────────────────────
+  # CHANGES
+  # ─────────────────────────────────────────────
+  /changes:
+    get:
+      tags: [Changes]
+      operationId: getChanges
+      summary: Get a change-detection summary since a given timestamp
+      description: |
+        Returns a lightweight summary of what content has changed since the provided
+        timestamp. The app reads `has_changes` first — if false, no further fetching
+        is needed. If true, the app re-fetches the affected full endpoints.
+
+        This endpoint allows the app to avoid downloading the full schedule payload
+        when nothing has changed, reducing data usage and server load during festival day.
+      parameters:
+        - name: since
+          in: query
+          required: true
+          description: Return changes after this timestamp (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+            example: "2025-08-30T14:00:00-07:00"
+        - name: types
+          in: query
+          description: Comma-separated list of content types to check. Defaults to all.
+          schema:
+            type: string
+            example: "events,announcements"
+      responses:
+        '200':
+          description: Success — may be empty if nothing changed
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: public, max-age=60
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangesResponse'
+        '400':
+          description: Missing or invalid `since` parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+# ─────────────────────────────────────────────────────────
+# COMPONENTS
+# ─────────────────────────────────────────────────────────
+components:
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: Server error — client should fall back to cached data
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+  schemas:
+
+    # ── ENUMS ──────────────────────────────────
+    EventCategory:
+      type: string
+      enum:
+        - music
+        - comedy
+        - visual-art
+        - performance-art
+        - panel
+        - workshop
+        - family
+        - other
+
+    EventStatus:
+      type: string
+      enum:
+        - scheduled
+        - cancelled
+        - moved
+        - time-changed
+
+    EventTag:
+      type: string
+      enum:
+        - family-friendly
+        - 18-plus
+        - all-ages
+        - accessible
+        - free-with-entry
+        - limited-capacity
+        - headliner
+
+    FestivalDay:
+      type: string
+      enum: [day-1, day-2, day-3]
+
+    VenueType:
+      type: string
+      enum:
+        - main-stage
+        - secondary-stage
+        - gallery
+        - food-area
+        - info-booth
+        - first-aid
+        - restrooms
+        - entry-point
+        - water-station
+        - merch
+        - parking
+        - other
+
+    ArtistType:
+      type: string
+      enum:
+        - musician
+        - dj
+        - comedian
+        - visual-artist
+        - speaker
+        - performer
+
+    ArtistGenre:
+      type: string
+      enum:
+        - indie-rock
+        - hip-hop
+        - electronic
+        - r-and-b
+        - pop
+        - folk
+        - jazz
+        - classical
+        - world
+        - comedy
+        - visual-art
+        - mixed-media
+        - other
+
+    VendorType:
+      type: string
+      enum:
+        - food
+        - beverage
+        - merchandise
+        - artist-merch
+        - art-vendor
+        - sponsor-activation
+        - nonprofit
+        - info
+        - other
+
+    AnnouncementType:
+      type: string
+      enum:
+        - schedule-change
+        - cancellation
+        - weather
+        - entry
+        - transport
+        - service
+        - general
+        - emergency
+
+    AnnouncementPriority:
+      type: string
+      enum: [normal, important, urgent]
+
+    # ── SHARED OBJECTS ─────────────────────────
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: server_error
+        message:
+          type: string
+          example: An unexpected error occurred.
+
+    ArtistLinks:
+      type: object
+      description: All keys are always present. Null if the link is not set.
+      properties:
+        spotify:
+          type: string
+          format: uri
+          nullable: true
+        apple_music:
+          type: string
+          format: uri
+          nullable: true
+        bandcamp:
+          type: string
+          format: uri
+          nullable: true
+        soundcloud:
+          type: string
+          format: uri
+          nullable: true
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+        website:
+          type: string
+          format: uri
+          nullable: true
+        instagram:
+          type: string
+          format: uri
+          nullable: true
+
+    VenueEmbed:
+      type: object
+      description: Minimal venue object embedded inside an event detail response
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        short_name:
+          type: string
+        slug:
+          type: string
+        type:
+          $ref: '#/components/schemas/VenueType'
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        area_note:
+          type: string
+          nullable: true
+        is_accessible:
+          type: boolean
+        accessibility_notes:
+          type: string
+          nullable: true
+        amenities:
+          type: array
+          items:
+            type: string
+
+    ArtistEmbed:
+      type: object
+      description: Artist object embedded inside an event detail response
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        type:
+          $ref: '#/components/schemas/ArtistType'
+        genre:
+          $ref: '#/components/schemas/ArtistGenre'
+        origin:
+          type: string
+          nullable: true
+        bio_short:
+          type: string
+        is_headliner:
+          type: boolean
+        is_local:
+          type: boolean
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        links:
+          $ref: '#/components/schemas/ArtistLinks'
+
+    RelatedEventRef:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+
+    RelatedVenueRef:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        short_name:
+          type: string
+
+    # ── SCHEDULE ───────────────────────────────
+    EventSummary:
+      type: object
+      description: Minimal event shape used in the schedule list
+      required:
+        - id
+        - title
+        - slug
+        - category
+        - tags
+        - start_time
+        - end_time
+        - day
+        - venue_id
+        - venue_name
+        - venue_short_name
+        - status
+        - is_highlighted
+        - artist_ids
+        - last_changed
+      properties:
+        id:
+          type: integer
+          example: 101
+        title:
+          type: string
+          example: Mt. Joy
+        slug:
+          type: string
+          example: mt-joy
+        category:
+          $ref: '#/components/schemas/EventCategory'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventTag'
+        start_time:
+          type: string
+          format: date-time
+          example: "2025-08-30T19:00:00-07:00"
+        end_time:
+          type: string
+          format: date-time
+          example: "2025-08-30T20:30:00-07:00"
+        day:
+          $ref: '#/components/schemas/FestivalDay'
+        venue_id:
+          type: integer
+          example: 3
+        venue_name:
+          type: string
+          example: Fisher Green Stage
+        venue_short_name:
+          type: string
+          example: Fisher Green
+        status:
+          $ref: '#/components/schemas/EventStatus'
+        status_note:
+          type: string
+          nullable: true
+        is_highlighted:
+          type: boolean
+        artist_ids:
+          type: array
+          items:
+            type: integer
+        last_changed:
+          type: string
+          format: date-time
+
+    ScheduleResponse:
+      type: object
+      required: [generated_at, event_count, events]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        event_count:
+          type: integer
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventSummary'
+
+    EventDetail:
+      allOf:
+        - $ref: '#/components/schemas/EventSummary'
+        - type: object
+          properties:
+            description_short:
+              type: string
+              nullable: true
+            description_full:
+              type: string
+              description: HTML string from WordPress editor
+              nullable: true
+            venue:
+              $ref: '#/components/schemas/VenueEmbed'
+            artists:
+              type: array
+              items:
+                $ref: '#/components/schemas/ArtistEmbed'
+            featured_image_url:
+              type: string
+              format: uri
+              nullable: true
+            thumbnail_url:
+              type: string
+              format: uri
+              nullable: true
+
+    # ── VENUES ─────────────────────────────────
+    Venue:
+      type: object
+      required:
+        - id
+        - title
+        - slug
+        - short_name
+        - type
+        - lat
+        - lng
+        - is_accessible
+        - amenities
+        - is_active
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        short_name:
+          type: string
+        type:
+          $ref: '#/components/schemas/VenueType'
+        lat:
+          type: number
+          format: double
+        lng:
+          type: number
+          format: double
+        map_zoom:
+          type: integer
+          nullable: true
+        area_note:
+          type: string
+          nullable: true
+        capacity:
+          type: integer
+          nullable: true
+        is_accessible:
+          type: boolean
+        accessibility_notes:
+          type: string
+          nullable: true
+        amenities:
+          type: array
+          items:
+            type: string
+        is_active:
+          type: boolean
+
+    VenuesResponse:
+      type: object
+      required: [generated_at, venue_count, venues]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        venue_count:
+          type: integer
+        venues:
+          type: array
+          items:
+            $ref: '#/components/schemas/Venue'
+
+    # ── ARTISTS ────────────────────────────────
+    Artist:
+      type: object
+      required:
+        - id
+        - title
+        - slug
+        - type
+        - bio_short
+        - is_headliner
+        - is_local
+        - links
+        - event_ids
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        type:
+          $ref: '#/components/schemas/ArtistType'
+        genre:
+          $ref: '#/components/schemas/ArtistGenre'
+        origin:
+          type: string
+          nullable: true
+        pronouns:
+          type: string
+          nullable: true
+        bio_short:
+          type: string
+        bio_full:
+          type: string
+          description: HTML string from WordPress editor
+          nullable: true
+        is_headliner:
+          type: boolean
+        is_local:
+          type: boolean
+        content_advisory:
+          type: string
+          nullable: true
+        photo_url:
+          type: string
+          format: uri
+          nullable: true
+        links:
+          $ref: '#/components/schemas/ArtistLinks'
+        event_ids:
+          type: array
+          items:
+            type: integer
+
+    ArtistsResponse:
+      type: object
+      required: [generated_at, artist_count, artists]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        artist_count:
+          type: integer
+        artists:
+          type: array
+          items:
+            $ref: '#/components/schemas/Artist'
+
+    # ── VENDORS ────────────────────────────────
+    Vendor:
+      type: object
+      required:
+        - id
+        - title
+        - slug
+        - type
+        - description_short
+        - is_accessible
+        - days_active
+        - is_active
+        - is_sponsor
+        - payment_methods
+        - dietary_options
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        slug:
+          type: string
+        type:
+          $ref: '#/components/schemas/VendorType'
+        booth_name:
+          type: string
+          nullable: true
+        description_short:
+          type: string
+        description_full:
+          type: string
+          nullable: true
+        cuisine:
+          type: string
+          nullable: true
+        dietary_options:
+          type: array
+          items:
+            type: string
+        price_range:
+          type: string
+          enum: [$, $$, $$$]
+          nullable: true
+        operating_hours:
+          type: string
+          nullable: true
+        payment_methods:
+          type: array
+          items:
+            type: string
+            enum: [cash, card, mobile-pay]
+        is_accessible:
+          type: boolean
+        days_active:
+          type: array
+          items:
+            $ref: '#/components/schemas/FestivalDay'
+        is_active:
+          type: boolean
+        is_sponsor:
+          type: boolean
+        sponsor_tier:
+          type: string
+          enum: [presenting, gold, silver, community]
+          nullable: true
+        venue_id:
+          type: integer
+          nullable: true
+        lat:
+          type: number
+          format: double
+          nullable: true
+        lng:
+          type: number
+          format: double
+          nullable: true
+        thumbnail_url:
+          type: string
+          format: uri
+          nullable: true
+        website_url:
+          type: string
+          format: uri
+          nullable: true
+        instagram_url:
+          type: string
+          format: uri
+          nullable: true
+
+    VendorsResponse:
+      type: object
+      required: [generated_at, vendor_count, vendors]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        vendor_count:
+          type: integer
+        vendors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Vendor'
+
+    # ── ANNOUNCEMENTS ──────────────────────────
+    Announcement:
+      type: object
+      required:
+        - id
+        - title
+        - body
+        - type
+        - priority
+        - is_pinned
+        - published_at
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        body:
+          type: string
+          description: Plain text, max 3 sentences
+        type:
+          $ref: '#/components/schemas/AnnouncementType'
+        priority:
+          $ref: '#/components/schemas/AnnouncementPriority'
+        is_pinned:
+          type: boolean
+        published_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        day:
+          type: string
+          nullable: true
+        related_event:
+          $ref: '#/components/schemas/RelatedEventRef'
+        related_venue:
+          $ref: '#/components/schemas/RelatedVenueRef'
+        external_url:
+          type: string
+          format: uri
+          nullable: true
+        external_url_label:
+          type: string
+          nullable: true
+
+    AnnouncementsResponse:
+      type: object
+      required: [generated_at, announcement_count, announcements]
+      properties:
+        generated_at:
+          type: string
+          format: date-time
+        announcement_count:
+          type: integer
+        announcements:
+          type: array
+          items:
+            $ref: '#/components/schemas/Announcement'
+
+    # ── CHANGES ────────────────────────────────
+    ChangeSet:
+      type: object
+      properties:
+        updated:
+          type: array
+          items:
+            type: integer
+        cancelled:
+          type: array
+          items:
+            type: integer
+          description: Only present on the events change set
+        new:
+          type: array
+          items:
+            type: integer
+          description: Only present on the announcements change set
+        count:
+          type: integer
+
+    ChangesResponse:
+      type: object
+      required: [checked_at, since, has_changes, changes]
+      properties:
+        checked_at:
+          type: string
+          format: date-time
+        since:
+          type: string
+          format: date-time
+        has_changes:
+          type: boolean
+        changes:
+          type: object
+          properties:
+            events:
+              $ref: '#/components/schemas/ChangeSet'
+            announcements:
+              $ref: '#/components/schemas/ChangeSet'
+            venues:
+              $ref: '#/components/schemas/ChangeSet'
+            artists:
+              $ref: '#/components/schemas/ChangeSet'
+            vendors:
+              $ref: '#/components/schemas/ChangeSet'
