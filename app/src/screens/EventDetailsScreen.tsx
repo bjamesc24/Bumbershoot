@@ -1,9 +1,20 @@
+/**
+ * EventDetailsScreen.tsx
+ * ----------------------
+ * Responsibility:
+ *   Display full details for a single schedule event.
+ *
+ * Design considerations:
+ *   - Receives eventId via route params and looks it up from the cached schedule.
+ *   - If the event is not found (not yet cached), shows an empty state rather than crashing.
+ *   - Schedule status banner is shown so users know if data may be stale.
+ */
+
 import React, { useMemo } from "react";
 import { View } from "react-native";
 
 import { useConnectivity } from "../hooks/useConnectivity";
 import useScheduleData from "../hooks/useScheduleData";
-
 import ScheduleStatusBanner from "../components/ScheduleStatusBanner";
 import EmptyState from "../components/EmptyState";
 import EventInfo from "../components/EventInfo";
@@ -14,6 +25,7 @@ export default function EventDetailsScreen({ route }: any) {
   const { isOnline } = useConnectivity();
   const schedule = useScheduleData(isOnline);
 
+  // Find the matching event from the cached schedule by id
   const event = useMemo(() => {
     return schedule.events.find((e) => e.id === eventId) ?? null;
   }, [schedule.events, eventId]);
@@ -31,7 +43,6 @@ export default function EventDetailsScreen({ route }: any) {
         refreshError={schedule.refreshError}
         onRefresh={schedule.refresh}
       />
-
       <EventInfo event={event} />
     </View>
   );

@@ -1,9 +1,17 @@
+/**
+ * EventCard.tsx
+ * -------------
+ * Responsibility:
+ *   Render a compact summary row for a single schedule event.
+ *   Used inside ScheduleList as the tappable item for each event.
+ */
+
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import type { ScheduleViewMode, ScheduleEvent } from "../storage/scheduleTypes";
-
+import { ScheduleEvent } from "../models/schedule/scheduleTypes";
 
 export function EventCard({ event }: { event: ScheduleEvent }) {
+  // Format start and end times for display
   const start = new Date(event.startTime).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
   const end = new Date(event.endTime).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
 

@@ -1,4 +1,16 @@
-import * as React from "react";
+/**
+ * ScheduleStatusBanner.tsx
+ * ------------------------
+ * Responsibility:
+ *   Display a non-blocking status bar when the schedule data is offline,
+ *   stale, or failed to refresh. Provides a manual refresh button.
+ *
+ * Design considerations:
+ *   - Only renders when there is something worth showing — hidden when data is fresh and online.
+ *   - Refresh button is disabled when offline to prevent unnecessary attempts.
+ */
+
+import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 
 type Props = {
@@ -10,15 +22,22 @@ type Props = {
 };
 
 export default function ScheduleStatusBanner({ isOnline, isStale, lastUpdatedText, refreshError, onRefresh }: Props) {
+  // Only show the banner when there is something to communicate
   const show = !isOnline || isStale || !!refreshError;
   if (!show) return null;
 
   return (
     <View style={s.wrap}>
+      {/* Offline indicator */}
       {!isOnline && <Text style={s.line}>Offline — showing saved schedule.</Text>}
+
+      {/* Stale data warning with last updated timestamp */}
       {isStale && <Text style={s.line}>Schedule may be out of date. Last updated: {lastUpdatedText}</Text>}
+
+      {/* Refresh error message */}
       {!!refreshError && <Text style={s.err}>{refreshError}</Text>}
 
+      {/* Manual refresh button — disabled when offline */}
       <Pressable onPress={onRefresh} disabled={!isOnline} style={s.btn}>
         <Text style={s.btnText}>{isOnline ? "Refresh" : "Refresh (offline)"}</Text>
       </Pressable>

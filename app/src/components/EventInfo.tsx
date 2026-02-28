@@ -1,6 +1,14 @@
+/**
+ * EventInfo.tsx
+ * -------------
+ * Responsibility:
+ *   Display full details for a single schedule event.
+ *   Used by EventDetailsScreen.
+ */
+
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import type { ScheduleViewMode, ScheduleEvent } from "../storage/scheduleTypes";
+import { ScheduleEvent } from "../models/schedule/scheduleTypes";
 
 export default function EventInfo({ event }: { event: ScheduleEvent }) {
   const start = new Date(event.startTime).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
@@ -13,8 +21,12 @@ export default function EventInfo({ event }: { event: ScheduleEvent }) {
       <Text style={s.line}>Stage: {event.stage}</Text>
       <Text style={s.line}>Category: {event.category}</Text>
 
-      {!!event.tags?.length && <Text style={s.line}>Tags: {event.tags.join(", ")}</Text>}
+      {/* Tags are optional — only render if present */}
+      {!!event.tags?.length && (
+        <Text style={s.line}>Tags: {event.tags.join(", ")}</Text>
+      )}
 
+      {/* Description is optional — only render if present */}
       {!!event.description && (
         <>
           <Text style={s.section}>About</Text>
