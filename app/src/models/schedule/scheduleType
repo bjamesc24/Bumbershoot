@@ -1,0 +1,26 @@
+// src/models/schedule/scheduleTypes.ts
+
+// Controls which grouping mode the schedule is in
+export type ScheduleViewMode = "time" | "stage" | "category";
+
+// This is the shape of ONE schedule event
+export interface ScheduleEvent {
+  id: string;
+
+  title: string;
+
+  startTime: string; // ISO date string (e.g., "2026-09-05T14:00:00")
+  endTime: string;   // ISO date string
+
+  stage: string;     // e.g. "Main Stage"
+  category: string;  // e.g. "Rock"
+
+  tags?: string[];   // Optional
+  description?: string; // Optional
+}
+
+// Used when grouping events for SectionList
+export interface ScheduleSection {
+  title: string; // Section header label (e.g. "Main Stage" or "Sat 2:00 PM")
+  data: ScheduleEvent[];
+}

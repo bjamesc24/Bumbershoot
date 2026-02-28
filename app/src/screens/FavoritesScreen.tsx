@@ -1,12 +1,4 @@
-/**
- * FavoritesScreen.tsx
- * -------------------
- * Responsibility:
- *   Display the user's saved items and keep the list synchronized with local storage.
- * 
- * Development utilities:
- *   Temporary buttons exist to simulate user actions until event-level favorite interactions are implemented elsewhere in the app.
- */
+
 
 import React, { useCallback, useState } from "react";
 import { FlatList, Text, View, Button } from "react-native";
@@ -20,16 +12,13 @@ import { useOfflineStatus } from "../hooks/useOfflineStatus";
 export default function FavoritesScreen() {
   const isOffline = useOfflineStatus();
 
-  // Tracks storage read state
+ 
   const [loading, setLoading] = useState(true);
 
-  // Current list of saved favorites
+  
   const [favorites, setFavorites] = useState<FavoriteRecord[]>([]);
 
-  /**
-   * Reads favorites from local storage and updates screen state.
-   * Errors are swallowed intentionally to prevent UI failure due to storage issues.
-   */
+
   const loadFavorites = useCallback(async () => {
     setLoading(true);
     try {
@@ -42,17 +31,14 @@ export default function FavoritesScreen() {
     }
   }, []);
 
-  /**
-   * Reload favorites whenever the screen becomes active.
-   * Ensures the list reflects changes made elsewhere in the app.
-   */
+
   useFocusEffect(
     useCallback(() => {
       void loadFavorites();
     }, [loadFavorites])
   );
 
-  // Loading UI while reading storage
+  
   if (loading) {
     return (
       <View style={{ flex: 1 }}>
@@ -70,7 +56,7 @@ export default function FavoritesScreen() {
         Favorites
       </Text>
 
-      {/* Development utilities: simulate favoriting before event UI exists */}
+      {}
       <Button
         title="Add Sample Favorite"
         onPress={async () => {

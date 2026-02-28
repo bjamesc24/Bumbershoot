@@ -1,6 +1,14 @@
 {
   "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true
+  "include": ["**/*"],
+ "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "target": "ESNext",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    
   }
 }
