@@ -1,4 +1,4 @@
-import { ScheduleEvent } from "../../types/schedule/scheduleTypes";
+import { ScheduleEvent } from "../storage/scheduleTypes";
 
 export const fakeSchedule: ScheduleEvent[] = [
   {

@@ -16,7 +16,7 @@ type Props = {
   isOffline: boolean;
 };
 
-export default function OfflineBanner({ isOffline }: Props) {
+export function OfflineBanner({ isOffline }: Props) {
   // Do not render the banner if connectivity is available.
   if (!isOffline) return null;
 

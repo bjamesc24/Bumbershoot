@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
 import { View } from "react-native";
 
-import { useConnectivity } from "../hooks/useConnectivity/useConnectivity";
-import useScheduleData from "../hooks/useScheduleData/useScheduleData";
+import { useConnectivity } from "../hooks/useConnectivity";
+import useScheduleData from "../hooks/useScheduleData";
 
-import ScheduleStatusBanner from "../components/ScheduleStatusBanner/ScheduleStatusBanner";
-import EmptyState from "../components/EmptyState/EmptyState";
-import EventInfo from "../components/EventInfo/EventInfo";
+import ScheduleStatusBanner from "../components/ScheduleStatusBanner";
+import EmptyState from "../components/EmptyState";
+import EventInfo from "../components/EventInfo";
 
 export default function EventDetailsScreen({ route }: any) {
   const { eventId } = route.params as { eventId: string };

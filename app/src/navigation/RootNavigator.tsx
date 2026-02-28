@@ -5,13 +5,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import ScheduleScreen  from "../screens/ScheduleScreen/ScheduleScreen";
+import ScheduleScreen from "../screens/ScheduleScreen";
 import EventDetailsScreen  from "../screens/EventDetailsScreen";
 import FavoritesScreen  from "../screens/FavoritesScreen";
 import MapScreen from "../screens/MapScreen";
 import AnnouncementsScreen from "../screens/AnnouncementsScreen";
 
-import OfflineBanner from "../components/OfflineBanner";
+import {OfflineBanner} from "../components/OfflineBanner";
 import LoadingState from "../components/LoadingState";
 import { apiClient } from "../services/apiClient";
 
@@ -103,7 +103,7 @@ export default function RootNavigator() {
         </Tab.Navigator>
       </NavigationContainer>
 
-      <LoadingState visible={isStarting} message="Starting app..." />
+      {isStarting && <LoadingState />}
     </SafeAreaView>
   );
 }

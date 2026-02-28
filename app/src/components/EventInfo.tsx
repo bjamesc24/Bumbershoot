@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { ScheduleEvent } from "../../types/schedule/scheduleTypes";
+import type { ScheduleViewMode, ScheduleEvent } from "../storage/scheduleTypes";
 
 export default function EventInfo({ event }: { event: ScheduleEvent }) {
   const start = new Date(event.startTime).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });

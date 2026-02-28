@@ -1,4 +1,4 @@
-import { ScheduleEvent, ScheduleSection, ScheduleViewMode } from "../../models/schedule/scheduleTypes";
+import { ScheduleEvent, ScheduleSection, ScheduleViewMode } from "../models/scheduleType";
 
 function byStartTimeThenTitle(a: ScheduleEvent, b: ScheduleEvent) {
   const tA = new Date(a.startTime).getTime();

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { loadScheduleCache, saveScheduleCache } from "../../storage/scheduleStorage/scheduleStorage";
-import { isStale as isStaleFn } from "../../utils/stalePolicy/stalePolicy";
-import { ScheduleEvent } from "../../types/schedule/scheduleTypes";
+import { loadScheduleCache, saveScheduleCache } from "../storage/scheduleStorage";;
+import { isStale as isStaleFn } from "../utils/stalePolicy";
+import { ScheduleEvent } from "../storage/scheduleTypes";
 
 type State = {
   events: ScheduleEvent[];

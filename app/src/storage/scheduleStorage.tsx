@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ScheduleEvent } from "../../types/schedule/scheduleTypes";
+import type { ScheduleEvent } from "../storage/scheduleTypes";
 
 const KEY_EVENTS = "schedule.events";
 const KEY_LAST_UPDATED = "schedule.lastUpdatedMs";

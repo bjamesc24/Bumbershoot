@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
-import { ScheduleViewMode } from "../../types/schedule/scheduleTypes";
+import type { ScheduleViewMode, ScheduleEvent } from "../storage/scheduleTypes";
 
 export function ScheduleHeader({
   mode,

@@ -1,9 +1,8 @@
 import React from "react";
 import { SectionList, View, Text, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
-import { ScheduleSection } from "../../models/schedule/scheduleTypes"; // adjust path if yours is different
-import { EventCard } from "../EventCard/EventCard";
+import type { ScheduleSection } from "../storage/scheduleTypes";
+import EventCard from "./EventCard";
 
 type Props = {
   sections: ScheduleSection[];
