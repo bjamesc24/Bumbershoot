@@ -41,7 +41,7 @@ function ScheduleStackNavigator() {
 }
 
 export type TabParamList = {
-  Schedule: undefined;
+  ScheduleTab: undefined; 
   Favorites: undefined;
   Map: undefined;
   Announcements: undefined;
@@ -85,7 +85,7 @@ export default function RootNavigator() {
         >
           
           <Tab.Screen
-            name="Schedule"
+            name="ScheduleTab"
             component={ScheduleStackNavigator}
             options={{ title: "Schedule" }}
           />

@@ -1,13 +1,11 @@
 import * as React from "react";
 import { ActivityIndicator, View, Text, StyleSheet } from "react-native";
 
-export default function LoadingState() {
-  return (
-    <View style={s.wrap}>
-      <ActivityIndicator size="large" />
-      <Text style={s.text}>Loading schedule…</Text>
-    </View>
-  );
+type LoadingStateProps = { visible?: boolean };
+
+export default function LoadingState({ visible = true }: LoadingStateProps) {
+  if (!visible) return null;
+  // ...existing loading UI
 }
 
 const s = StyleSheet.create({
