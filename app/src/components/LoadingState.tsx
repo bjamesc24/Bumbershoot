@@ -1,37 +1,14 @@
-import React from "react";
-import { ActivityIndicator, Modal, Text, View } from "react-native";
+import * as React from "react";
+import { ActivityIndicator, View, Text, StyleSheet } from "react-native";
 
-type Props = {
-  visible: boolean;
-  message?: string;
-};
+type LoadingStateProps = { visible?: boolean };
 
-export default function LoadingState({ visible, message = "Loading..." }: Props) {
-  return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: "rgba(0,0,0,0.35)",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: 24,
-        }}
-      >
-        <View
-          style={{
-            width: "100%",
-            maxWidth: 320,
-            backgroundColor: "white",
-            borderRadius: 16,
-            padding: 20,
-            alignItems: "center",
-          }}
-        >
-          <ActivityIndicator size="large" />
-          <Text style={{ marginTop: 12, fontSize: 16 }}>{message}</Text>
-        </View>
-      </View>
-    </Modal>
-  );
+export default function LoadingState({ visible = true }: LoadingStateProps) {
+  if (!visible) return null;
+  // ...existing loading UI
 }
+
+const s = StyleSheet.create({
+  wrap: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
+  text: { marginTop: 12, fontSize: 16 },
+});

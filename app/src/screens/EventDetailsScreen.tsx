@@ -1,10 +1,49 @@
-import React from "react";
-import { Text, View } from "react-native";
+/**
+ * EventDetailsScreen.tsx
+ * ----------------------
+ * Responsibility:
+ *   Display full details for a single schedule event.
+ *
+ * Design considerations:
+ *   - Receives eventId via route params and looks it up from the cached schedule.
+ *   - If the event is not found (not yet cached), shows an empty state rather than crashing.
+ *   - Schedule status banner is shown so users know if data may be stale.
+ */
 
-export default function EventDetailsScreen() {
+import React, { useMemo } from "react";
+import { View } from "react-native";
+
+import { useConnectivity } from "../hooks/useConnectivity";
+import useScheduleData from "../hooks/useScheduleData";
+import ScheduleStatusBanner from "../components/ScheduleStatusBanner";
+import EmptyState from "../components/EmptyState";
+import EventInfo from "../components/EventInfo";
+
+export default function EventDetailsScreen({ route }: any) {
+  const { eventId } = route.params as { eventId: string };
+
+  const { isOnline } = useConnectivity();
+  const schedule = useScheduleData(isOnline);
+
+  // Find the matching event from the cached schedule by id
+  const event = useMemo(() => {
+    return schedule.events.find((e) => e.id === eventId) ?? null;
+  }, [schedule.events, eventId]);
+
+  if (!event) {
+    return <EmptyState message="Event not found (it may not be cached yet)." />;
+  }
+
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Event Details</Text>
+    <View style={{ flex: 1 }}>
+      <ScheduleStatusBanner
+        isOnline={isOnline}
+        isStale={schedule.isStale}
+        lastUpdatedText={schedule.lastUpdatedText}
+        refreshError={schedule.refreshError}
+        onRefresh={schedule.refresh}
+      />
+      <EventInfo event={event} />
     </View>
   );
 }

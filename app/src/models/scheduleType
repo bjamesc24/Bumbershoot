@@ -1,0 +1,26 @@
+
+
+
+export type ScheduleViewMode = "time" | "stage" | "category";
+
+
+export interface ScheduleEvent {
+  id: string;
+
+  title: string;
+
+  startTime: string; 
+  endTime: string;   
+
+  stage: string;    
+  category: string;  
+
+  tags?: string[];   
+  description?: string; 
+}
+
+
+export interface ScheduleSection {
+  title: string; 
+  data: ScheduleEvent[];
+}
