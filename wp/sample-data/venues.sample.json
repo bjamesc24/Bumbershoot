@@ -1,0 +1,131 @@
+[
+  {
+    "id": 401,
+    "date": "2025-01-10T08:00:00",
+    "date_gmt": "2025-01-10T16:00:00",
+    "modified": "2025-01-10T08:00:00",
+    "modified_gmt": "2025-01-10T16:00:00",
+    "slug": "vera-stage",
+    "status": "publish",
+    "type": "venue",
+    "link": "https://example.com/venues/vera-stage/",
+    "title": {
+      "rendered": "Vera Stage"
+    },
+    "content": {
+      "rendered": "<p>The Vera Stage is the festival's primary performance space, offering a large covered stage with professional sound and lighting systems. Located at the north end of Seattle Center, it serves as the anchor for headline acts and high-energy performances throughout the event.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>The festival's primary covered stage, home to headline acts at the north end of Seattle Center.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 501,
+    "meta": {
+      "venue_slug": "vera",
+      "capacity": 2500,
+      "stage_type": "covered",
+      "address": "Seattle Center, 305 Harrison St, Seattle, WA 98109",
+      "coordinates": {
+        "lat": 47.62184,
+        "lng": -122.35341
+      },
+      "amenities": ["sound system", "lighting rig", "backstage area", "accessibility ramp"],
+      "endpoint": "https://example.com/wp-json/wp/v2/venues/401"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/venues/401" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/venues" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/501" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=401" }]
+    }
+  },
+  {
+    "id": 402,
+    "date": "2025-01-10T08:00:00",
+    "date_gmt": "2025-01-10T16:00:00",
+    "modified": "2025-01-10T08:00:00",
+    "modified_gmt": "2025-01-10T16:00:00",
+    "slug": "fountain-stage",
+    "status": "publish",
+    "type": "venue",
+    "link": "https://example.com/venues/fountain-stage/",
+    "title": {
+      "rendered": "Fountain Stage"
+    },
+    "content": {
+      "rendered": "<p>The Fountain Stage is an open-air performance area situated near the iconic International Fountain at the heart of Seattle Center. Its relaxed, park-like atmosphere makes it ideal for acoustic sets, intimate performances, and daytime programming where audiences can spread out on the lawn.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>An open-air stage near the International Fountain, perfect for acoustic and intimate daytime performances.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 502,
+    "meta": {
+      "venue_slug": "fountain",
+      "capacity": 1200,
+      "stage_type": "open-air",
+      "address": "Seattle Center, International Fountain, Seattle, WA 98109",
+      "coordinates": {
+        "lat": 47.61965,
+        "lng": -122.35082
+      },
+      "amenities": ["sound system", "lawn seating", "accessibility path", "nearby restrooms"],
+      "endpoint": "https://example.com/wp-json/wp/v2/venues/402"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/venues/402" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/venues" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/502" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=402" }]
+    }
+  },
+  {
+    "id": 403,
+    "date": "2025-01-10T08:00:00",
+    "date_gmt": "2025-01-10T16:00:00",
+    "modified": "2025-01-10T08:00:00",
+    "modified_gmt": "2025-01-10T16:00:00",
+    "slug": "mural-stage",
+    "status": "publish",
+    "type": "venue",
+    "link": "https://example.com/venues/mural-stage/",
+    "title": {
+      "rendered": "Mural Stage"
+    },
+    "content": {
+      "rendered": "<p>The Mural Stage is set against the backdrop of the Seattle Center Mural Amphitheatre, one of the city's most recognizable outdoor performance spaces. With tiered seating and strong acoustics, it provides an iconic setting for diverse performances ranging from hip-hop to closing headline sets.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>An iconic outdoor amphitheatre with tiered seating and strong acoustics for diverse headline performances.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 503,
+    "meta": {
+      "venue_slug": "mural",
+      "capacity": 1800,
+      "stage_type": "amphitheatre",
+      "address": "Seattle Center, Mural Amphitheatre, Seattle, WA 98109",
+      "coordinates": {
+        "lat": 47.61882,
+        "lng": -122.35174
+      },
+      "amenities": ["tiered seating", "sound system", "lighting rig", "accessibility seating", "backstage area"],
+      "endpoint": "https://example.com/wp-json/wp/v2/venues/403"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/venues/403" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/venues" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/503" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=403" }]
+    }
+  }
+]

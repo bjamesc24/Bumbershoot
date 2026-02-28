@@ -1,0 +1,344 @@
+[
+  {
+    "id": 101,
+    "date": "2025-01-05T09:00:00",
+    "date_gmt": "2025-01-05T14:00:00",
+    "modified": "2025-01-05T09:00:00",
+    "modified_gmt": "2025-01-05T14:00:00",
+    "slug": "new-year-office-hours",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/new-year-office-hours/",
+    "title": {
+      "rendered": "Updated Office Hours for the New Year"
+    },
+    "content": {
+      "rendered": "<p>Please note that our office hours will be changing effective January 13th. We will now be open Monday through Friday, 8am to 5pm. We appreciate your patience during the transition.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Office hours are changing effective January 13th. New hours are Monday–Friday, 8am–5pm.</p>",
+      "protected": false
+    },
+    "author": 3,
+    "featured_media": 0,
+    "categories": [12],
+    "tags": [44, 45],
+    "meta": {
+      "announcement_expiry": "2025-02-01",
+      "is_pinned": true,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/101" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/3" }],
+      "wp:featuredmedia": [],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=101" }]
+    }
+  },
+  {
+    "id": 102,
+    "date": "2025-01-18T11:30:00",
+    "date_gmt": "2025-01-18T16:30:00",
+    "modified": "2025-01-19T08:00:00",
+    "modified_gmt": "2025-01-19T13:00:00",
+    "slug": "system-maintenance-january",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/system-maintenance-january/",
+    "title": {
+      "rendered": "Scheduled System Maintenance – January 25th"
+    },
+    "content": {
+      "rendered": "<p>Our systems will be undergoing scheduled maintenance on January 25th from 12:00am to 4:00am EST. During this time the website and member portal will be unavailable. We apologize for any inconvenience.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Scheduled maintenance on January 25th, 12am–4am EST. Website and portal will be unavailable.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 210,
+    "categories": [13],
+    "tags": [46],
+    "meta": {
+      "announcement_expiry": "2025-01-26",
+      "is_pinned": true,
+      "priority": "high"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/102" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/210" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=102" }]
+    }
+  },
+  {
+    "id": 103,
+    "date": "2025-02-01T08:00:00",
+    "date_gmt": "2025-02-01T13:00:00",
+    "modified": "2025-02-01T08:00:00",
+    "modified_gmt": "2025-02-01T13:00:00",
+    "slug": "new-staff-member-announcement",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/new-staff-member-announcement/",
+    "title": {
+      "rendered": "Welcome Our New Community Manager, Sarah Linden"
+    },
+    "content": {
+      "rendered": "<p>We are thrilled to welcome Sarah Linden as our new Community Manager. Sarah brings over 8 years of experience in community engagement and event coordination. She will be the primary point of contact for member inquiries starting February 10th. Please join us in welcoming her!</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Sarah Linden joins us as Community Manager starting February 10th. Welcome Sarah!</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 215,
+    "categories": [12, 14],
+    "tags": [47],
+    "meta": {
+      "announcement_expiry": "2025-03-01",
+      "is_pinned": false,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/103" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/215" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=103" }]
+    }
+  },
+  {
+    "id": 104,
+    "date": "2025-02-10T10:00:00",
+    "date_gmt": "2025-02-10T15:00:00",
+    "modified": "2025-02-10T10:00:00",
+    "modified_gmt": "2025-02-10T15:00:00",
+    "slug": "parking-lot-closure-notice",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/parking-lot-closure-notice/",
+    "title": {
+      "rendered": "Parking Lot Closure – February 14th &amp; 15th"
+    },
+    "content": {
+      "rendered": "<p>The main parking lot will be closed on February 14th and 15th due to resurfacing work. Overflow parking will be available at the north garage located on 5th Avenue. We appreciate your understanding.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Main parking lot closed Feb 14–15 for resurfacing. Use the north garage on 5th Avenue.</p>",
+      "protected": false
+    },
+    "author": 4,
+    "featured_media": 0,
+    "categories": [15],
+    "tags": [48, 49],
+    "meta": {
+      "announcement_expiry": "2025-02-16",
+      "is_pinned": false,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/104" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/4" }],
+      "wp:featuredmedia": [],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=104" }]
+    }
+  },
+  {
+    "id": 105,
+    "date": "2025-02-20T09:00:00",
+    "date_gmt": "2025-02-20T14:00:00",
+    "modified": "2025-02-20T09:00:00",
+    "modified_gmt": "2025-02-20T14:00:00",
+    "slug": "membership-renewal-reminder",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/membership-renewal-reminder/",
+    "title": {
+      "rendered": "Annual Membership Renewal Now Open"
+    },
+    "content": {
+      "rendered": "<p>Annual membership renewal is now open for the 2025–2026 period. Please log in to your member portal to review your current plan and renew before March 31st to avoid any lapse in access. Early renewal discounts are available through February 28th.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Membership renewal is open. Renew by March 31st, and save with early renewal discounts available through February 28th.</p>",
+      "protected": false
+    },
+    "author": 3,
+    "featured_media": 220,
+    "categories": [12, 16],
+    "tags": [50, 51],
+    "meta": {
+      "announcement_expiry": "2025-03-31",
+      "is_pinned": true,
+      "priority": "high"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/105" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/3" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/220" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=105" }]
+    }
+  },
+  {
+    "id": 106,
+    "date": "2025-03-03T13:00:00",
+    "date_gmt": "2025-03-03T18:00:00",
+    "modified": "2025-03-03T13:00:00",
+    "modified_gmt": "2025-03-03T18:00:00",
+    "slug": "policy-update-code-of-conduct",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/policy-update-code-of-conduct/",
+    "title": {
+      "rendered": "Updated Code of Conduct – Effective April 1st"
+    },
+    "content": {
+      "rendered": "<p>We have updated our Code of Conduct to better reflect our community values. Key changes include revised guidelines around online interactions, event participation, and conflict resolution procedures. All members are encouraged to review the updated document in full before April 1st.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Our Code of Conduct has been updated, effective April 1st. Please review the key changes before then.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 0,
+    "categories": [13, 16],
+    "tags": [52],
+    "meta": {
+      "announcement_expiry": "2025-04-15",
+      "is_pinned": false,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/106" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=106" }]
+    }
+  },
+  {
+    "id": 107,
+    "date": "2025-03-15T08:30:00",
+    "date_gmt": "2025-03-15T13:30:00",
+    "modified": "2025-03-15T08:30:00",
+    "modified_gmt": "2025-03-15T13:30:00",
+    "slug": "volunteer-opportunities-spring",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/volunteer-opportunities-spring/",
+    "title": {
+      "rendered": "Spring Volunteer Opportunities Now Available"
+    },
+    "content": {
+      "rendered": "<p>We are looking for volunteers to help with our upcoming spring events and community programs. Roles include event setup, guest services, and social media coverage. If you are interested, please fill out the volunteer interest form on our website by March 22nd.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Volunteer opportunities are open for spring events. Submit your interest form by March 22nd.</p>",
+      "protected": false
+    },
+    "author": 4,
+    "featured_media": 225,
+    "categories": [14, 17],
+    "tags": [53, 54],
+    "meta": {
+      "announcement_expiry": "2025-03-22",
+      "is_pinned": false,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/107" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/4" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/225" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=107" }]
+    }
+  },
+  {
+    "id": 108,
+    "date": "2025-04-01T07:00:00",
+    "date_gmt": "2025-04-01T12:00:00",
+    "modified": "2025-04-01T07:00:00",
+    "modified_gmt": "2025-04-01T12:00:00",
+    "slug": "newsletter-launch",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/newsletter-launch/",
+    "title": {
+      "rendered": "Introducing Our Monthly Member Newsletter"
+    },
+    "content": {
+      "rendered": "<p>We are excited to announce the launch of our monthly member newsletter! Starting this month, all registered members will receive a curated digest of upcoming events, community highlights, and important updates. Make sure your email preferences are up to date in your profile settings.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Our monthly member newsletter launches this month. Update your email preferences to ensure you receive it.</p>",
+      "protected": false
+    },
+    "author": 3,
+    "featured_media": 230,
+    "categories": [12, 17],
+    "tags": [55],
+    "meta": {
+      "announcement_expiry": "2025-05-01",
+      "is_pinned": false,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/108" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/3" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/230" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=108" }]
+    }
+  },
+  {
+    "id": 109,
+    "date": "2025-04-10T10:00:00",
+    "date_gmt": "2025-04-10T15:00:00",
+    "modified": "2025-04-10T10:00:00",
+    "modified_gmt": "2025-04-10T15:00:00",
+    "slug": "facility-upgrade-notice",
+    "status": "publish",
+    "type": "announcement",
+    "link": "https://example.com/announcements/facility-upgrade-notice/",
+    "title": {
+      "rendered": "Facility Upgrades Coming This Summer"
+    },
+    "content": {
+      "rendered": "<p>We are pleased to announce that our main facility will be undergoing a series of upgrades this summer, including a renovated lobby, upgraded AV systems in all meeting rooms, and improved accessibility features throughout the building. Work is scheduled to begin June 2nd. Some areas may have limited access during this period.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Facility upgrades begin June 2nd. Expect lobby renovations, improved AV, and enhanced accessibility features.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 235,
+    "categories": [15],
+    "tags": [56, 57],
+    "meta": {
+      "announcement_expiry": "2025-07-01",
+      "is_pinned": false,
+      "priority": "normal"
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/announcements/109" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/announcements" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/235" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=109" }]
+    }
+  }
+]
