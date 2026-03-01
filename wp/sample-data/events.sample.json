@@ -1,0 +1,389 @@
+[
+  {
+    "id": 201,
+    "date": "2025-06-14T10:00:00",
+    "date_gmt": "2025-06-14T17:00:00",
+    "modified": "2025-05-20T09:00:00",
+    "modified_gmt": "2025-05-20T16:00:00",
+    "slug": "opening-ceremony-live-performance",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/opening-ceremony-live-performance/",
+    "title": {
+      "rendered": "Opening Ceremony – Live Performance"
+    },
+    "content": {
+      "rendered": "<p>Kick off the festival with a spectacular live performance featuring local and regional artists. The opening ceremony will set the tone for a weekend of music, culture, and community at Seattle Center.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>The festival begins with a live performance featuring local and regional artists at the Vera stage.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 301,
+    "categories": [20],
+    "tags": [60, 61],
+    "meta": {
+      "event_start_time": "2025-06-14T10:00:00",
+      "event_end_time": "2025-06-14T11:30:00",
+      "stage": "Vera",
+      "event_category": "Live Performance",
+      "coordinates": {
+        "lat": 47.62184,
+        "lng": -122.35341
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/201" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/301" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=201" }]
+    }
+  },
+  {
+    "id": 202,
+    "date": "2025-06-14T12:00:00",
+    "date_gmt": "2025-06-14T19:00:00",
+    "modified": "2025-05-20T09:00:00",
+    "modified_gmt": "2025-05-20T16:00:00",
+    "slug": "acoustic-sessions-fountain-stage",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/acoustic-sessions-fountain-stage/",
+    "title": {
+      "rendered": "Acoustic Sessions at the Fountain"
+    },
+    "content": {
+      "rendered": "<p>An intimate acoustic showcase featuring emerging singer-songwriters from the Pacific Northwest. Grab a spot near the fountain and enjoy heartfelt performances in a relaxed outdoor setting.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Emerging Pacific Northwest singer-songwriters perform in an intimate acoustic set at the Fountain stage.</p>",
+      "protected": false
+    },
+    "author": 3,
+    "featured_media": 302,
+    "categories": [20, 21],
+    "tags": [60, 62],
+    "meta": {
+      "event_start_time": "2025-06-14T12:00:00",
+      "event_end_time": "2025-06-14T13:30:00",
+      "stage": "Fountain",
+      "event_category": "Acoustic",
+      "coordinates": {
+        "lat": 47.61965,
+        "lng": -122.35082
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/202" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/3" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/302" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=202" }]
+    }
+  },
+  {
+    "id": 203,
+    "date": "2025-06-14T14:00:00",
+    "date_gmt": "2025-06-14T21:00:00",
+    "modified": "2025-05-21T10:00:00",
+    "modified_gmt": "2025-05-21T17:00:00",
+    "slug": "hip-hop-showcase-mural-stage",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/hip-hop-showcase-mural-stage/",
+    "title": {
+      "rendered": "Hip-Hop Showcase"
+    },
+    "content": {
+      "rendered": "<p>Seattle's vibrant hip-hop scene takes center stage with a curated showcase of MCs, DJs, and beatmakers. Featuring both established names and rising talent from across the city.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>A curated hip-hop showcase featuring Seattle MCs, DJs, and beatmakers at the Mural stage.</p>",
+      "protected": false
+    },
+    "author": 4,
+    "featured_media": 303,
+    "categories": [22],
+    "tags": [63, 64],
+    "meta": {
+      "event_start_time": "2025-06-14T14:00:00",
+      "event_end_time": "2025-06-14T15:45:00",
+      "stage": "Mural",
+      "event_category": "Hip-Hop",
+      "coordinates": {
+        "lat": 47.61882,
+        "lng": -122.35174
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/203" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/4" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/303" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=203" }]
+    }
+  },
+  {
+    "id": 204,
+    "date": "2025-06-14T16:00:00",
+    "date_gmt": "2025-06-14T23:00:00",
+    "modified": "2025-05-21T10:00:00",
+    "modified_gmt": "2025-05-21T17:00:00",
+    "slug": "indie-rock-afternoon-vera",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/indie-rock-afternoon-vera/",
+    "title": {
+      "rendered": "Indie Rock Afternoon"
+    },
+    "content": {
+      "rendered": "<p>Three indie rock bands take the Vera stage back-to-back in an energetic afternoon set. Expect guitar-driven sounds, anthemic choruses, and a crowd ready to move.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Three indie rock bands perform back-to-back on the Vera stage for an energetic afternoon set.</p>",
+      "protected": false
+    },
+    "author": 3,
+    "featured_media": 304,
+    "categories": [23],
+    "tags": [60, 65],
+    "meta": {
+      "event_start_time": "2025-06-14T16:00:00",
+      "event_end_time": "2025-06-14T18:00:00",
+      "stage": "Vera",
+      "event_category": "Indie Rock",
+      "coordinates": {
+        "lat": 47.62201,
+        "lng": -122.35362
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/204" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/3" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/304" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=204" }]
+    }
+  },
+  {
+    "id": 205,
+    "date": "2025-06-14T18:30:00",
+    "date_gmt": "2025-06-15T01:30:00",
+    "modified": "2025-05-22T08:00:00",
+    "modified_gmt": "2025-05-22T15:00:00",
+    "slug": "jazz-and-blues-at-the-fountain",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/jazz-and-blues-at-the-fountain/",
+    "title": {
+      "rendered": "Jazz &amp; Blues at the Fountain"
+    },
+    "content": {
+      "rendered": "<p>As the sun sets over Seattle Center, settle in for a soulful evening of jazz and blues. Featuring a rotating lineup of seasoned local musicians performing classic and original compositions.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>A soulful evening of jazz and blues from local musicians as the sun sets at the Fountain stage.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 305,
+    "categories": [24],
+    "tags": [66, 67],
+    "meta": {
+      "event_start_time": "2025-06-14T18:30:00",
+      "event_end_time": "2025-06-14T20:00:00",
+      "stage": "Fountain",
+      "event_category": "Jazz & Blues",
+      "coordinates": {
+        "lat": 47.61958,
+        "lng": -122.35096
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/205" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/305" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=205" }]
+    }
+  },
+  {
+    "id": 206,
+    "date": "2025-06-15T11:00:00",
+    "date_gmt": "2025-06-15T18:00:00",
+    "modified": "2025-05-22T08:00:00",
+    "modified_gmt": "2025-05-22T15:00:00",
+    "slug": "r-and-b-brunch-vibes-mural",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/r-and-b-brunch-vibes-mural/",
+    "title": {
+      "rendered": "R&amp;B Brunch Vibes"
+    },
+    "content": {
+      "rendered": "<p>Start your Sunday with smooth R&B sounds at the Mural stage. Local vocalists and live backing bands bring warmth and groove to a late-morning set perfect for easing into the day.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Smooth R&B sounds from local vocalists and live bands to start your Sunday at the Mural stage.</p>",
+      "protected": false
+    },
+    "author": 4,
+    "featured_media": 306,
+    "categories": [25],
+    "tags": [68, 61],
+    "meta": {
+      "event_start_time": "2025-06-15T11:00:00",
+      "event_end_time": "2025-06-15T12:30:00",
+      "stage": "Mural",
+      "event_category": "R&B",
+      "coordinates": {
+        "lat": 47.61874,
+        "lng": -122.35188
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/206" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/4" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/306" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=206" }]
+    }
+  },
+  {
+    "id": 207,
+    "date": "2025-06-15T13:00:00",
+    "date_gmt": "2025-06-15T20:00:00",
+    "modified": "2025-05-23T09:00:00",
+    "modified_gmt": "2025-05-23T16:00:00",
+    "slug": "electronic-beats-vera-stage",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/electronic-beats-vera-stage/",
+    "title": {
+      "rendered": "Electronic Beats"
+    },
+    "content": {
+      "rendered": "<p>A high-energy electronic music set featuring local DJs and producers spinning everything from ambient electronica to driving dance floor rhythms. This one's for the headphone heads and the dancers alike.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Local DJs and producers bring electronic sounds from ambient to dance floor at the Vera stage.</p>",
+      "protected": false
+    },
+    "author": 3,
+    "featured_media": 307,
+    "categories": [26],
+    "tags": [69, 70],
+    "meta": {
+      "event_start_time": "2025-06-15T13:00:00",
+      "event_end_time": "2025-06-15T14:30:00",
+      "stage": "Vera",
+      "event_category": "Electronic",
+      "coordinates": {
+        "lat": 47.62193,
+        "lng": -122.35348
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/207" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/3" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/307" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=207" }]
+    }
+  },
+  {
+    "id": 208,
+    "date": "2025-06-15T15:00:00",
+    "date_gmt": "2025-06-15T22:00:00",
+    "modified": "2025-05-23T09:00:00",
+    "modified_gmt": "2025-05-23T16:00:00",
+    "slug": "folk-roots-fountain-stage",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/folk-roots-fountain-stage/",
+    "title": {
+      "rendered": "Folk &amp; Roots Showcase"
+    },
+    "content": {
+      "rendered": "<p>Celebrating the rich tradition of folk and roots music with performers who blend storytelling, acoustic instruments, and regional influences into something entirely their own. A must-see afternoon set.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>Storytelling-driven folk and roots performances blend acoustic instruments and regional influences at the Fountain stage.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 308,
+    "categories": [21],
+    "tags": [62, 71],
+    "meta": {
+      "event_start_time": "2025-06-15T15:00:00",
+      "event_end_time": "2025-06-15T16:30:00",
+      "stage": "Fountain",
+      "event_category": "Folk & Roots",
+      "coordinates": {
+        "lat": 47.61971,
+        "lng": -122.35073
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/208" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/308" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=208" }]
+    }
+  },
+  {
+    "id": 209,
+    "date": "2025-06-15T17:00:00",
+    "date_gmt": "2025-06-16T00:00:00",
+    "modified": "2025-05-24T08:00:00",
+    "modified_gmt": "2025-05-24T15:00:00",
+    "slug": "closing-headliner-mural-stage",
+    "status": "publish",
+    "type": "event",
+    "link": "https://example.com/events/closing-headliner-mural-stage/",
+    "title": {
+      "rendered": "Closing Headliner Set"
+    },
+    "content": {
+      "rendered": "<p>Close out the festival weekend with a headlining performance at the iconic Mural stage. This full-band headline set is the culmination of two days of incredible music and is not to be missed.</p>",
+      "protected": false
+    },
+    "excerpt": {
+      "rendered": "<p>The festival closes with a headline full-band performance at the Mural stage. Don't miss it.</p>",
+      "protected": false
+    },
+    "author": 1,
+    "featured_media": 309,
+    "categories": [20, 23],
+    "tags": [60, 65, 72],
+    "meta": {
+      "event_start_time": "2025-06-15T17:00:00",
+      "event_end_time": "2025-06-15T19:00:00",
+      "stage": "Mural",
+      "event_category": "Live Performance",
+      "coordinates": {
+        "lat": 47.61866,
+        "lng": -122.35161
+      }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/events/209" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/events" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/309" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=209" }]
+    }
+  }
+]
