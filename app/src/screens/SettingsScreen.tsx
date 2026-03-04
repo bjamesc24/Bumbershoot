@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-import { OfflineBanner } from "../components/OfflineBanner";
+import OfflineBanner from "../components/OfflineBanner";
 import { useOfflineStatus } from "../hooks/useOfflineStatus";
 import { ThemePalette, ThemeColor, useAppSettings } from "../context/AppSettingsContext";
 
