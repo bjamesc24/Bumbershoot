@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import NetInfo from "@react-native-community/netinfo";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import ExploreScreen from "../screens/ExploreScreen";
 import ScheduleScreen from "../screens/ScheduleScreen";
-import EventDetailsScreen  from "../screens/EventDetailsScreen";
-import FavoritesScreen  from "../screens/FavoritesScreen";
+import EventDetailsScreen from "../screens/EventDetailsScreen";
 import MapScreen from "../screens/MapScreen";
 import AnnouncementsScreen from "../screens/AnnouncementsScreen";
+import MoreScreen from "../screens/MoreScreen";
+import FavoritesScreen from "../screens/FavoritesScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 
-import {OfflineBanner} from "../components/OfflineBanner";
+import OfflineBanner from "../components/OfflineBanner";
 import LoadingState from "../components/LoadingState";
 import { apiClient } from "../services/apiClient";
-
+import { useAppSettings } from "../context/AppSettingsContext";
 
 export type ScheduleStackParamList = {
-  Schedule: undefined;
+  ScheduleList: undefined;
   EventDetails: { eventId: string };
 };
 
@@ -25,36 +27,67 @@ const ScheduleStack = createNativeStackNavigator<ScheduleStackParamList>();
 
 function ScheduleStackNavigator() {
   return (
-    <ScheduleStack.Navigator id="ScheduleStackNavigator">
-      <ScheduleStack.Screen
-        name="Schedule"
-        component={ScheduleScreen}
-        options={{ title: "Schedule" }}
-      />
-      <ScheduleStack.Screen
-        name="EventDetails"
-        component={EventDetailsScreen}
-        options={{ title: "Event Details" }}
-      />
+    <ScheduleStack.Navigator
+      id="ScheduleStackNavigator"
+      screenOptions={{ headerShown: false }}
+    >
+      <ScheduleStack.Screen name="ScheduleList" component={ScheduleScreen} />
+      <ScheduleStack.Screen name="EventDetails" component={EventDetailsScreen} />
     </ScheduleStack.Navigator>
   );
 }
 
 export type TabParamList = {
-  ScheduleTab: undefined; 
-  Favorites: undefined;
+  Explore: undefined;
+  Schedule: undefined;
   Map: undefined;
-  Announcements: undefined;
+  More: undefined;
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
+
+function Tabs() {
+  const { themeColorHex, tabTextSize } = useAppSettings();
+
+  return (
+    <Tab.Navigator
+      id="RootTabNavigator"
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: themeColorHex,
+        tabBarLabelStyle: { fontSize: tabTextSize, fontWeight: "600" },
+      }}
+    >
+      <Tab.Screen
+        name="Explore"
+        component={ExploreScreen}
+        options={{ title: "Explore" }}
+      />
+      <Tab.Screen
+        name="Schedule"
+        component={ScheduleStackNavigator}
+        options={{ title: "Schedule" }}
+      />
+      <Tab.Screen name="Map" component={MapScreen} options={{ title: "Map" }} />
+      <Tab.Screen name="More" component={MoreScreen} options={{ title: "More" }} />
+    </Tab.Navigator>
+  );
+}
+
+export type RootStackParamList = {
+  Tabs: undefined;
+  Favorites: undefined;
+  Announcements: undefined;
+  Settings: undefined;
+};
+
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   const [isOffline, setIsOffline] = useState(false);
   const [isStarting, setIsStarting] = useState(true);
 
   useEffect(() => {
-    // Proves env/config is wired and won't crash
     console.log("API base URL:", apiClient.baseUrl);
 
     const unsub = NetInfo.addEventListener((state) => {
@@ -62,7 +95,6 @@ export default function RootNavigator() {
       setIsOffline(offline);
     });
 
-    // Small startup delay so LoadingState is demonstrably working
     const t = setTimeout(() => setIsStarting(false), 500);
 
     return () => {
@@ -72,38 +104,19 @@ export default function RootNavigator() {
   }, []);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <>
       <OfflineBanner isOffline={isOffline} />
 
       <NavigationContainer>
-        <Tab.Navigator
-          id="RootTabNavigator"
-          screenOptions={{
-            headerTitleAlign: "center",
-            headerShown: false, 
-          }}
-        >
-          
-          <Tab.Screen
-            name="ScheduleTab"
-            component={ScheduleStackNavigator}
-            options={{ title: "Schedule" }}
-          />
-          <Tab.Screen
-            name="Favorites"
-            component={FavoritesScreen}
-            options={{ title: "Favorites" }}
-          />
-          <Tab.Screen name="Map" component={MapScreen} options={{ title: "Map" }} />
-          <Tab.Screen
-            name="Announcements"
-            component={AnnouncementsScreen}
-            options={{ title: "Announcements" }}
-          />
-        </Tab.Navigator>
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          <RootStack.Screen name="Tabs" component={Tabs} />
+          <RootStack.Screen name="Favorites" component={FavoritesScreen} />
+          <RootStack.Screen name="Announcements" component={AnnouncementsScreen} />
+          <RootStack.Screen name="Settings" component={SettingsScreen} />
+        </RootStack.Navigator>
       </NavigationContainer>
 
-      {isStarting && <LoadingState />}
-    </SafeAreaView>
+      {isStarting && <LoadingState visible={true} message="Starting app..." />}
+    </>
   );
 }

@@ -22,6 +22,7 @@ import LoadingState from "../components/LoadingState";
 import { useOfflineStatus } from "../hooks/useOfflineStatus";
 import { getVenues } from "../services/venuesService";
 import type { Venue } from "../models/Venue";
+import ScreenTitle from "../components/ScreenTitle";
 
 /** Geographic bounds centered on Seattle Center. */
 const SEATTLE_CENTER_REGION: Region = {
@@ -34,23 +35,15 @@ const SEATTLE_CENTER_REGION: Region = {
 export default function MapScreen() {
   const isOffline = useOfflineStatus();
 
-  // Tracks whether venue data is still being loaded
   const [loading, setLoading] = useState(true);
-
-  // Venue locations to render as map markers
   const [venues, setVenues] = useState<Venue[]>([]);
 
-  /**
-   * Load venue data when the screen mounts.
-   * Errors are caught to prevent a crash — the map renders without markers as a fallback.
-   */
   useEffect(() => {
     async function loadVenues() {
       try {
         const data = await getVenues();
         setVenues(data);
       } catch {
-        // Map still renders without markers if data fails to load
         setVenues([]);
       } finally {
         setLoading(false);
@@ -60,7 +53,6 @@ export default function MapScreen() {
     void loadVenues();
   }, []);
 
-  // Loading UI while venue data is being read
   if (loading) {
     return (
       <View style={{ flex: 1 }}>
@@ -71,20 +63,38 @@ export default function MapScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Informational connectivity indicator */}
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <OfflineBanner isOffline={isOffline} />
+      <ScreenTitle title="Map" />
 
-      <MapView style={{ flex: 1 }} initialRegion={SEATTLE_CENTER_REGION}>
-        {/* Render a marker for each venue loaded from venuesService */}
-        {venues.map((venue) => (
-          <Marker
-            key={venue.id}
-            coordinate={{ latitude: venue.lat, longitude: venue.lng }}
-            title={venue.name}
-          />
-        ))}
-      </MapView>
+      <View style={{ height: 44 }} />
+
+      <View
+        style={{
+          marginHorizontal: 16,
+          borderRadius: 22,
+          overflow: "hidden", 
+          backgroundColor: "#fff",
+          shadowColor: "#000",
+          shadowOpacity: 0.12,
+          shadowRadius: 12,
+          shadowOffset: { width: 0, height: 6 },
+          elevation: 6,
+          height: 520, 
+        }}
+      >
+        <MapView style={{ flex: 1 }} initialRegion={SEATTLE_CENTER_REGION}>
+          {venues.map((venue) => (
+            <Marker
+              key={venue.id}
+              coordinate={{ latitude: venue.lat, longitude: venue.lng }}
+              title={venue.name}
+            />
+          ))}
+        </MapView>
+      </View>
+
+      <View style={{ flex: 1 }} />
     </View>
   );
 }

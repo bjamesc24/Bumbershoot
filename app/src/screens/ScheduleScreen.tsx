@@ -26,23 +26,19 @@ import ScheduleStatusBanner from "../components/ScheduleStatusBanner";
 import ScheduleList from "../components/ScheduleList";
 import EmptyState from "../components/EmptyState";
 import LoadingState from "../components/LoadingState";
-
+import ScreenTitle from "../components/ScreenTitle";
 export default function ScheduleScreen() {
   const { isOnline } = useConnectivity();
   const schedule = useScheduleData(isOnline);
 
-  // Controls how events are grouped — by time, stage, or category
   const [mode, setMode] = useState<ScheduleViewMode>("time");
 
-  // Keyword filter applied across title, stage, category, tags, and description
   const [searchText, setSearchText] = useState("");
 
-  // Build grouped sections from the event list based on current mode and search
   const sections = useMemo(() => {
     return buildScheduleSections(schedule.events, mode, searchText);
   }, [schedule.events, mode, searchText]);
 
-  // Show full-screen loader only on first load when there is no cached data
   if (schedule.isInitialLoading && !schedule.hasCache) {
     return <LoadingState visible={true} message="Loading schedule..." />;
   }
@@ -50,7 +46,11 @@ export default function ScheduleScreen() {
   const isEmpty = sections.length === 0 || sections.every((s) => s.data.length === 0);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    
+      <ScreenTitle title="Explore" />
+
+      {/* Filters + search UI */}
       <ScheduleHeader
         mode={mode}
         onModeChange={setMode}
@@ -58,6 +58,7 @@ export default function ScheduleScreen() {
         onSearchTextChange={setSearchText}
       />
 
+      {/* Online/offline + refresh status */}
       <ScheduleStatusBanner
         isOnline={isOnline}
         isStale={schedule.isStale}
@@ -66,9 +67,14 @@ export default function ScheduleScreen() {
         onRefresh={schedule.refresh}
       />
 
+      {/* Main list / empty state */}
       {isEmpty ? (
         <EmptyState
-          message={searchText.trim() ? "No events match your search." : "No schedule available yet."}
+          message={
+            searchText.trim()
+              ? "No events match your search."
+              : "No schedule available yet."
+          }
           onClear={searchText.trim() ? () => setSearchText("") : undefined}
         />
       ) : (
