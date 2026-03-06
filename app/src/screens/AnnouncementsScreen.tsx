@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { FlatList, Text, View, Pressable, StyleSheet } from "react-native";
+import { FlatList, View, Pressable, StyleSheet } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { getAnnouncements } from "../services/announcementsService";
@@ -7,12 +7,10 @@ import type { Announcement, AnnouncementPriority } from "../models/Announcement"
 import LoadingState from "../components/LoadingState";
 import OfflineBanner from "../components/OfflineBanner";
 import { useOfflineStatus } from "../hooks/useOfflineStatus";
+import { useAppSettings } from "../context/AppSettingsContext";
 
-const PRIORITY_COLORS: Record<AnnouncementPriority, string> = {
-  urgent: "#c0392b",
-  personal: "#2471a3",
-  general: "#717d7e",
-};
+import Screen from "../components/Screen";
+import ThemedText from "../components/ThemedText";
 
 const PRIORITY_LABELS: Record<AnnouncementPriority, string> = {
   urgent: "URGENT",
@@ -20,7 +18,15 @@ const PRIORITY_LABELS: Record<AnnouncementPriority, string> = {
   general: "INFO",
 };
 
+const PRIORITY_COLORS: Record<AnnouncementPriority, string> = {
+  urgent: "#c0392b",
+  personal: "#2471a3",
+  general: "#717d7e",
+};
+
 function AnnouncementCard({ item }: { item: Announcement }) {
+  const { theme } = useAppSettings();
+
   const badgeColor = PRIORITY_COLORS[item.priority];
   const badgeLabel = PRIORITY_LABELS[item.priority];
 
@@ -33,42 +39,32 @@ function AnnouncementCard({ item }: { item: Announcement }) {
 
   return (
     <View
-      style={{
-        backgroundColor: "#fff",
-        borderRadius: 8,
-        padding: 14,
-        marginBottom: 12,
-        shadowColor: "#000",
-        shadowOpacity: 0.06,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 2,
-      }}
+      style={[
+        styles.card,
+        {
+          backgroundColor: theme.colors.surface2,
+          borderColor: theme.colors.border,
+          shadowColor: "#000",
+        },
+      ]}
     >
-      <View
-        style={{
-          alignSelf: "flex-start",
-          backgroundColor: badgeColor,
-          borderRadius: 4,
-          paddingHorizontal: 8,
-          paddingVertical: 3,
-          marginBottom: 8,
-        }}
-      >
-        <Text style={{ color: "#fff", fontSize: 11, fontWeight: "700" }}>
+      <View style={[styles.badge, { backgroundColor: badgeColor }]}>
+        <ThemedText variant="caption" weight="800" style={{ color: "#fff" }}>
           {badgeLabel}
-        </Text>
+        </ThemedText>
       </View>
 
-      <Text style={{ fontSize: 16, fontWeight: "600", marginBottom: 6 }}>
+      <ThemedText variant="h3" weight="800" style={{ marginBottom: 6 }}>
         {item.title}
-      </Text>
+      </ThemedText>
 
-      <Text style={{ fontSize: 14, opacity: 0.8, lineHeight: 20, marginBottom: 8 }}>
+      <ThemedText muted style={{ lineHeight: Math.round(theme.typography.body * 1.35), marginBottom: 8 }}>
         {item.message}
-      </Text>
+      </ThemedText>
 
-      <Text style={{ fontSize: 12, opacity: 0.5 }}>{formattedDate}</Text>
+      <ThemedText variant="caption" muted>
+        {formattedDate}
+      </ThemedText>
     </View>
   );
 }
@@ -76,6 +72,8 @@ function AnnouncementCard({ item }: { item: Announcement }) {
 export default function AnnouncementsScreen() {
   const navigation = useNavigation<any>();
   const isOffline = useOfflineStatus();
+  const { theme } = useAppSettings();
+
   const [loading, setLoading] = useState(true);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
@@ -99,31 +97,36 @@ export default function AnnouncementsScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <Screen>
         <OfflineBanner isOffline={isOffline} />
         <LoadingState visible />
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#f4f4f4" }}>
+    <Screen>
       <OfflineBanner isOffline={isOffline} />
 
       <View style={styles.safeHeader}>
         <Pressable
           onPress={() => navigation.navigate("Tabs", { screen: "Explore" })}
-          style={styles.closeButton}
+          style={[styles.closeButton, { backgroundColor: theme.colors.primary }]}
         >
-          <Text style={styles.closeText}>×</Text>
+          <ThemedText weight="800" style={{ color: theme.colors.primaryText, fontSize: 22 }}>
+            ×
+          </ThemedText>
         </Pressable>
-        <Text style={styles.headerTitle}>Announcements</Text>
+
+        <ThemedText variant="h1" weight="800" style={{ marginTop: 18 }}>
+          Announcements
+        </ThemedText>
       </View>
 
       {announcements.length === 0 ? (
-        <Text style={{ opacity: 0.7, paddingHorizontal: 16 }}>
+        <ThemedText muted style={{ paddingHorizontal: 16 }}>
           No announcements at this time.
-        </Text>
+        </ThemedText>
       ) : (
         <FlatList
           contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16 }}
@@ -133,7 +136,7 @@ export default function AnnouncementsScreen() {
           showsVerticalScrollIndicator={false}
         />
       )}
-    </View>
+    </Screen>
   );
 }
 
@@ -146,18 +149,24 @@ const styles = StyleSheet.create({
     width: 42,
     height: 42,
     borderRadius: 21,
-    backgroundColor: "#111",
     justifyContent: "center",
     alignItems: "center",
   },
-  closeText: {
-    color: "#fff",
-    fontSize: 22,
-    fontWeight: "600",
+  card: {
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
   },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: "800",
-    marginTop: 18,
+  badge: {
+    alignSelf: "flex-start",
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginBottom: 8,
   },
 });
