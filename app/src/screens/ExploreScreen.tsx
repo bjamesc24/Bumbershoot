@@ -1,24 +1,42 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+
+import Screen from "../components/Screen";
 import ScreenTitle from "../components/ScreenTitle";
+import ThemedText from "../components/ThemedText";
+import { useAppSettings } from "../context/AppSettingsContext";
 
 export default function ExploreScreen() {
+  const { theme } = useAppSettings();
+
   return (
-    <View style={styles.wrap}>
+    <Screen>
       <ScreenTitle title="Explore" />
+
       <View style={styles.body}>
-        <Text style={styles.heading}>Coming Soon</Text>
-        <Text style={styles.sub}>
+        <ThemedText variant="h3" weight="800" style={{ marginBottom: 8 }}>
+          Coming Soon
+        </ThemedText>
+
+        <ThemedText
+          muted
+          style={{
+            textAlign: "center",
+            lineHeight: Math.round(theme.typography.body * 1.4),
+          }}
+        >
           Artists, vendors, and festival highlights will appear here.
-        </Text>
+        </ThemedText>
       </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, backgroundColor: "#fff" },
-  body: { flex: 1, alignItems: "center", justifyContent: "center", padding: 32 },
-  heading: { fontSize: 22, fontWeight: "800", marginBottom: 8 },
-  sub: { fontSize: 15, opacity: 0.6, textAlign: "center", lineHeight: 22 },
+  body: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
+  },
 });

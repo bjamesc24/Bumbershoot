@@ -1,24 +1,60 @@
 import * as React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Pressable, StyleSheet } from "react-native";
+import ThemedText from "./ThemedText";
+import { useAppSettings } from "../context/AppSettingsContext";
 
-export default function EmptyState({ message, onClear }: { message: string; onClear?: () => void }) {
+export default function EmptyState({
+  message,
+  onClear,
+}: {
+  message: string;
+  onClear?: () => void;
+}) {
+  const { theme } = useAppSettings();
+
   return (
     <View style={s.wrap}>
-      <Text style={s.title}>No results</Text>
-      <Text style={s.msg}>{message}</Text>
-      {onClear && (
-        <Pressable style={s.btn} onPress={onClear}>
-          <Text style={s.btnText}>Clear search</Text>
+      <ThemedText variant="h3" weight="800" style={{ textAlign: "center", marginBottom: 6 }}>
+        No results
+      </ThemedText>
+
+      <ThemedText
+        muted
+        style={{
+          textAlign: "center",
+          marginBottom: onClear ? 12 : 0,
+          lineHeight: Math.round(theme.typography.body * 1.4),
+        }}
+      >
+        {message}
+      </ThemedText>
+
+      {onClear ? (
+        <Pressable
+          style={[
+            s.btn,
+            {
+              borderColor: theme.colors.primary,
+              backgroundColor: `${theme.colors.primary}15`,
+            },
+          ]}
+          onPress={onClear}
+        >
+          <ThemedText variant="caption" weight="800" style={{ textAlign: "center" }}>
+            Clear search
+          </ThemedText>
         </Pressable>
-      )}
+      ) : null}
     </View>
   );
 }
 
 const s = StyleSheet.create({
   wrap: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
-  title: { fontSize: 18, fontWeight: "700", marginBottom: 6 },
-  msg: { fontSize: 14, textAlign: "center", marginBottom: 12 },
-  btn: { borderWidth: 1, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10 },
-  btnText: { fontWeight: "700" },
+  btn: {
+    borderWidth: 2,
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+  },
 });

@@ -1,12 +1,5 @@
 import React, { useCallback, useState } from "react";
-import {
-  FlatList,
-  Text,
-  View,
-  Button,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { FlatList, View, Button, Pressable, StyleSheet } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import {
@@ -19,11 +12,15 @@ import {
 import LoadingState from "../components/LoadingState";
 import OfflineBanner from "../components/OfflineBanner";
 import { useOfflineStatus } from "../hooks/useOfflineStatus";
-import ScreenTitle from "../components/ScreenTitle";
+import { useAppSettings } from "../context/AppSettingsContext";
+
+import Screen from "../components/Screen";
+import ThemedText from "../components/ThemedText";
 
 export default function FavoritesScreen() {
   const navigation = useNavigation<any>();
   const isOffline = useOfflineStatus();
+  const { theme } = useAppSettings();
 
   const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<FavoriteRecord[]>([]);
@@ -48,32 +45,34 @@ export default function FavoritesScreen() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <Screen>
         <OfflineBanner isOffline={isOffline} />
         <LoadingState visible />
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <Screen>
       <OfflineBanner isOffline={isOffline} />
 
-<View style={styles.safeHeader}>
-  
-  <Pressable
-    onPress={() =>
-      navigation.navigate("Tabs", { screen: "ScheduleTab" })
-    }
-    style={styles.closeButton}
-  >
-    <Text style={styles.closeText}>×</Text>
-  </Pressable>
+      <View style={styles.safeHeader}>
+        <Pressable
+          onPress={() => navigation.navigate("Tabs", { screen: "Schedule" })}
+          style={[styles.closeButton, { backgroundColor: theme.colors.primary }]}
+        >
+          <ThemedText weight="800" style={{ color: theme.colors.primaryText, fontSize: 22 }}>
+            ×
+          </ThemedText>
+        </Pressable>
 
+        <ThemedText variant="h1" weight="800" style={{ marginTop: 18 }}>
+          Favorites
+        </ThemedText>
+      </View>
 
-  <Text style={styles.headerTitle}>Favorites</Text>
-</View>
       <View style={{ paddingHorizontal: 16 }}>
+      
         <Button
           title="Add Sample Favorite"
           onPress={async () => {
@@ -97,78 +96,53 @@ export default function FavoritesScreen() {
         />
 
         {favorites.length === 0 ? (
-          <Text style={{ opacity: 0.7, marginTop: 16 }}>
+          <ThemedText muted style={{ marginTop: 16 }}>
             No favorites yet. Tap the favorite button on an event to save it.
-          </Text>
+          </ThemedText>
         ) : (
           <FlatList
             contentContainerStyle={{ paddingBottom: 16, paddingTop: 12 }}
             data={favorites}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
-              <View style={styles.itemRow}>
-                <Text style={styles.itemTitle}>
+              <View
+                style={[
+                  styles.itemRow,
+                  { borderBottomColor: theme.colors.border },
+                ]}
+              >
+                <ThemedText variant="body" weight="700">
                   {item.title ?? item.id}
-                </Text>
+                </ThemedText>
+
                 {item.start ? (
-                  <Text style={styles.itemSubtitle}>{item.start}</Text>
+                  <ThemedText variant="caption" muted style={{ marginTop: 4 }}>
+                    {item.start}
+                  </ThemedText>
                 ) : null}
               </View>
             )}
           />
         )}
       </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  headerRow: {
-    position: "relative",
+  safeHeader: {
+    paddingTop: 50,
+    paddingHorizontal: 16,
   },
-
- 
-
+  closeButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   itemRow: {
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
-
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: "500",
-  },
-
-  itemSubtitle: {
-    opacity: 0.7,
-    marginTop: 4,
-  },
-  
-
-safeHeader: {
-  paddingTop: 50,        
-  paddingHorizontal: 16,
-},
-
-closeButton: {
-  width: 42,
-  height: 42,
-  borderRadius: 21,
-  backgroundColor: "#111",
-  justifyContent: "center",
-  alignItems: "center",
-},
-
-closeText: {
-  color: "#fff",
-  fontSize: 22,
-  fontWeight: "600",
-},
-
-headerTitle: {
-  fontSize: 28,
-  fontWeight: "800",
-  marginTop: 18,        
-},
 });
