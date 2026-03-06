@@ -1,25 +1,10 @@
-/**
- * ExploreScreen.tsx
- * -----------------
- * Discovery feed: Artists, Events, Workshops, Vendors, Venues.
- * Events and Venues pull from Spencer's sample data.
- * Artists, Workshops, Vendors are stubbed.
- * All cards navigate to DetailScreen with full item data.
- */
+import React from "react";
+import { View, StyleSheet } from "react-native";
 
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  FlatList,
-  TouchableOpacity,
-  StyleSheet,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { isFavorited, toggleFavorite } from "../storage/favoritesStore";
-import { isAttending, toggleAttending } from "../storage/attendingStore";
+import Screen from "../components/Screen";
 import ScreenTitle from "../components/ScreenTitle";
+import ThemedText from "../components/ThemedText";
+import { useAppSettings } from "../context/AppSettingsContext";
 
 import eventsData from "../sample-data/events.sample.json";
 import venuesData from "../sample-data/venues.sample.json";
@@ -156,169 +141,36 @@ function HorizontalSection({
 // ---------------------------------------------------------------------------
 
 export default function ExploreScreen() {
-  const navigation = useNavigation<any>();
-
-  const goToDetail = (item: any, type: string) => {
-    navigation.navigate("Detail", { item, type });
-  };
+  const { theme } = useAppSettings();
 
   return (
-    <View style={{ flex: 1 }}>
+    <Screen>
       <ScreenTitle title="Explore" />
-      <ScrollView contentContainerStyle={s.scroll}>
 
-        <SectionHeader title="Artists" />
-        <HorizontalSection
-          data={PLACEHOLDER_ARTISTS}
-          renderItem={(item) => (
-            <ExploreCard
-              title={item.name}
-              subtitle={item.genre}
-              onPress={() => goToDetail(item, "artist")}
-            />
-          )}
-        />
+      <View style={styles.body}>
+        <ThemedText variant="h3" weight="800" style={{ marginBottom: 8 }}>
+          Coming Soon
+        </ThemedText>
 
-        <View style={s.divider} />
-
-        <SectionHeader title="Events" />
-        <HorizontalSection
-          data={eventsData as any[]}
-          renderItem={(item) => {
-            const start = item.meta?.event_start_time
-              ? new Date(item.meta.event_start_time).toLocaleTimeString(undefined, {
-                  hour: "numeric",
-                  minute: "2-digit",
-                })
-              : null;
-            return (
-              <ExploreCard
-                title={item.title?.rendered}
-                subtitle={start ? `${start} · ${item.meta?.stage}` : item.meta?.stage}
-                meta={item.meta?.event_category}
-                onPress={() => goToDetail(item, "event")}
-                showAttend
-                item={item}
-              />
-            );
+        <ThemedText
+          muted
+          style={{
+            textAlign: "center",
+            lineHeight: Math.round(theme.typography.body * 1.4),
           }}
-        />
-
-        <View style={s.divider} />
-
-        <SectionHeader title="Workshops" />
-        <HorizontalSection
-          data={PLACEHOLDER_WORKSHOPS}
-          renderItem={(item) => (
-            <ExploreCard
-              title={item.name}
-              subtitle={item.description}
-              onPress={() => goToDetail(item, "workshop")}
-            />
-          )}
-        />
-
-        <View style={s.divider} />
-
-        <SectionHeader title="Vendors" />
-        <HorizontalSection
-          data={PLACEHOLDER_VENDORS}
-          renderItem={(item) => (
-            <ExploreCard
-              title={item.name}
-              subtitle={item.type}
-              onPress={() => goToDetail(item, "vendor")}
-            />
-          )}
-        />
-
-        <View style={s.divider} />
-
-        <SectionHeader title="Venues" />
-        <HorizontalSection
-          data={venuesData as any[]}
-          renderItem={(item) => (
-            <ExploreCard
-              title={item.title?.rendered}
-              subtitle={item.meta?.stage_type}
-              meta={item.meta?.address}
-              onPress={() => goToDetail(item, "venue")}
-            />
-          )}
-        />
-
-      </ScrollView>
-    </View>
+        >
+          Artists, vendors, and festival highlights will appear here.
+        </ThemedText>
+      </View>
+    </Screen>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
-
-const CARD_WIDTH = 220;
-const IMAGE_HEIGHT = 140;
-
-const s = StyleSheet.create({
-  scroll: {
-    paddingBottom: 32,
-  },
-  sectionHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#E5E5E5",
-    marginHorizontal: 16,
-    marginTop: 16,
-  },
-  horizontalList: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  card: {
-    width: CARD_WIDTH,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-    padding: 12,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: IMAGE_HEIGHT,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  cardTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    marginBottom: 4,
-  },
-  cardMeta: {
-    fontSize: 12,
-    color: "#777",
-    marginBottom: 2,
-  },
-  cardActions: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 8,
-  },
-  actionButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
-  },
-  actionText: {
-    fontSize: 12,
+const styles = StyleSheet.create({
+  body: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 32,
   },
 });

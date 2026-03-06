@@ -1,20 +1,4 @@
-/**
- * ScheduleScreen.tsx
- * ------------------
- * Responsibility:
- *   Display the full festival schedule with filtering by time, stage, or category,
- *   and keyword search. Handles loading, empty, and error states.
- *
- * Design considerations:
- *   - Schedule data is managed by useScheduleData which handles caching,
- *     staleness detection, and refresh logic.
- *   - Sections are built in-memory from the event list via buildScheduleSections.
- *   - This screen does not manage connectivity directly — it receives isOnline
- *     from useConnectivity and passes it down.
- */
-
 import React, { useMemo, useState } from "react";
-import { View } from "react-native";
 
 import { useConnectivity } from "../hooks/useConnectivity";
 import useScheduleData from "../hooks/useScheduleData";
@@ -27,12 +11,14 @@ import ScheduleList from "../components/ScheduleList";
 import EmptyState from "../components/EmptyState";
 import LoadingState from "../components/LoadingState";
 import ScreenTitle from "../components/ScreenTitle";
+
+import Screen from "../components/Screen";
+
 export default function ScheduleScreen() {
   const { isOnline } = useConnectivity();
   const schedule = useScheduleData(isOnline);
 
   const [mode, setMode] = useState<ScheduleViewMode>("time");
-
   const [searchText, setSearchText] = useState("");
 
   const sections = useMemo(() => {
@@ -40,17 +26,19 @@ export default function ScheduleScreen() {
   }, [schedule.events, mode, searchText]);
 
   if (schedule.isInitialLoading && !schedule.hasCache) {
-    return <LoadingState visible={true} message="Loading schedule..." />;
+    return (
+      <Screen>
+        <LoadingState visible={true} message="Loading schedule..." />
+      </Screen>
+    );
   }
 
   const isEmpty = sections.length === 0 || sections.every((s) => s.data.length === 0);
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-    
-      <ScreenTitle title="Explore" />
+    <Screen>
+      <ScreenTitle title="Schedule" />
 
-      {/* Filters + search UI */}
       <ScheduleHeader
         mode={mode}
         onModeChange={setMode}
@@ -58,7 +46,6 @@ export default function ScheduleScreen() {
         onSearchTextChange={setSearchText}
       />
 
-      {/* Online/offline + refresh status */}
       <ScheduleStatusBanner
         isOnline={isOnline}
         isStale={schedule.isStale}
@@ -67,7 +54,6 @@ export default function ScheduleScreen() {
         onRefresh={schedule.refresh}
       />
 
-      {/* Main list / empty state */}
       {isEmpty ? (
         <EmptyState
           message={
@@ -84,6 +70,6 @@ export default function ScheduleScreen() {
           onRefresh={schedule.refresh}
         />
       )}
-    </View>
+    </Screen>
   );
 }
