@@ -3,12 +3,12 @@
  * ----------------
  * Responsibility:
  *   Render the grouped schedule as a scrollable section list.
- *   Each event row is tappable and navigates to EventDetailsScreen.
+ *   Each event row is tappable and navigates to DetailScreen with the full item.
  *
  * Design considerations:
  *   - Sections are pre-built by buildScheduleSections — this component only renders them.
  *   - Pull-to-refresh is wired to the schedule refresh function from useScheduleData.
- *   - Navigation uses "EventDetails" to match the name defined in RootNavigator.
+ *   - Navigation passes the full ScheduleEvent as item so DetailScreen can render all fields.
  */
 
 import React from "react";
@@ -20,7 +20,7 @@ import { ScheduleSection } from "../models/schedule/scheduleTypes";
 import { ScheduleStackParamList } from "../navigation/RootNavigator";
 import { EventCard } from "./EventCard";
 
-type ScheduleNav = NativeStackNavigationProp<ScheduleStackParamList, "Schedule">;
+type ScheduleNav = NativeStackNavigationProp<ScheduleStackParamList, "ScheduleList">;
 
 type Props = {
   sections: ScheduleSection[];
@@ -43,9 +43,8 @@ export default function ScheduleList({ sections, refreshing, onRefresh }: Props)
         </View>
       )}
       renderItem={({ item }) => (
-        // Navigate to EventDetailsScreen passing the event id as a param
         <Pressable
-          onPress={() => navigation.navigate("EventDetails", { eventId: item.id })}
+          onPress={() => navigation.navigate("EventDetails", { item, type: "event" })}
         >
           <EventCard event={item} />
         </Pressable>

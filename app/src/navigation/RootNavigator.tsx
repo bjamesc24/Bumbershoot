@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import NetInfo from "@react-native-community/netinfo";
-
+import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import ExploreScreen from "../screens/ExploreScreen";
 import DetailScreen from "../screens/DetailScreen";
 import ScheduleScreen from "../screens/ScheduleScreen";
-import EventDetailsScreen from "../screens/EventDetailsScreen";
 import MapScreen from "../screens/MapScreen";
 import AnnouncementsScreen from "../screens/AnnouncementsScreen";
 import MoreScreen from "../screens/MoreScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
+
 import OfflineBanner from "../components/OfflineBanner";
 import LoadingState from "../components/LoadingState";
 import { apiClient } from "../services/apiClient";
@@ -56,7 +55,7 @@ function ExploreStackNavigator() {
 
 export type ScheduleStackParamList = {
   ScheduleList: undefined;
-  EventDetails: { eventId: string };
+  EventDetails: { item: any; type: string };
 };
 
 const ScheduleStack = createNativeStackNavigator<ScheduleStackParamList>();
@@ -68,7 +67,11 @@ function ScheduleStackNavigator() {
       screenOptions={{ headerShown: false }}
     >
       <ScheduleStack.Screen name="ScheduleList" component={ScheduleScreen} />
-      <ScheduleStack.Screen name="EventDetails" component={EventDetailsScreen} />
+      <ScheduleStack.Screen
+        name="EventDetails"
+        component={DetailScreen}
+        options={{ headerShown: true, title: "" }}
+      />
     </ScheduleStack.Navigator>
   );
 }
@@ -87,21 +90,16 @@ export type TabParamList = {
 const Tab = createBottomTabNavigator<TabParamList>();
 
 function Tabs() {
-  const { themeColorHex, tabTextSize, theme } = useAppSettings();
+  const { themeColorHex, tabTextSize } = useAppSettings();
 
   return (
     <Tab.Navigator
       id="RootTabNavigator"
       screenOptions={{
-  headerShown: false,
-  tabBarActiveTintColor: themeColorHex,
-  tabBarInactiveTintColor: theme.colors.textMuted,
-  tabBarStyle: {
-    backgroundColor: theme.colors.surface2,
-    borderTopColor: theme.colors.border,
-  },
-  tabBarLabelStyle: { fontSize: tabTextSize, fontWeight: "600" },
-}}
+        headerShown: false,
+        tabBarActiveTintColor: themeColorHex,
+        tabBarLabelStyle: { fontSize: tabTextSize, fontWeight: "600" },
+      }}
     >
       <Tab.Screen
         name="Explore"
@@ -133,8 +131,6 @@ export type RootStackParamList = {
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
-  const { theme } = useAppSettings(); // ✅ add this
-
   const [isOffline, setIsOffline] = useState(false);
   const [isStarting, setIsStarting] = useState(true);
 
@@ -154,26 +150,11 @@ export default function RootNavigator() {
     };
   }, []);
 
-  // ✅ add this: navigation theme derived from your app theme
-  const base = theme.colors.background === "#0B0B0F" ? DarkTheme : DefaultTheme;
-
-  const navTheme = {
-    ...base,
-    colors: {
-      ...base.colors,
-      background: theme.colors.background,
-      card: theme.colors.surface2,
-      text: theme.colors.text,
-      border: theme.colors.border,
-      primary: theme.colors.primary,
-    },
-  };
-
   return (
     <>
       <OfflineBanner isOffline={isOffline} />
 
-      <NavigationContainer theme={navTheme}>
+      <NavigationContainer>
         <RootStack.Navigator screenOptions={{ headerShown: false }}>
           <RootStack.Screen name="Tabs" component={Tabs} />
           <RootStack.Screen name="Favorites" component={FavoritesScreen} />

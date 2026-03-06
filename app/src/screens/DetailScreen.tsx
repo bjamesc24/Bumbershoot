@@ -44,16 +44,14 @@ export default function DetailScreen({ route }: any) {
     isAttending(id).then(setAttending);
   }, [id]);
 
-  // ---------------------------------------------------------------------------
-  // Normalize fields across WP shape and stub shape
-  // ---------------------------------------------------------------------------
-
+  // Normalize title — WP shape uses title.rendered, ScheduleEvent uses title directly
   const title =
-    item?.title?.rendered ?? item?.name ?? "Untitled";
+    item?.title?.rendered ?? (typeof item?.title === "string" ? item.title : null) ?? item?.name ?? "Untitled";
 
+  // Normalize description — WP shape uses content.rendered, ScheduleEvent uses description
   const description =
     item?.content?.rendered
-      ? item.content.rendered.replace(/<[^>]+>/g, "") // strip HTML tags
+      ? item.content.rendered.replace(/<[^>]+>/g, "")
       : item?.description ?? null;
 
   const excerpt =
@@ -61,11 +59,11 @@ export default function DetailScreen({ route }: any) {
       ? item.excerpt.rendered.replace(/<[^>]+>/g, "")
       : null;
 
-  // Event-specific fields
-  const startTime = item?.meta?.event_start_time ?? null;
-  const endTime = item?.meta?.event_end_time ?? null;
-  const stage = item?.meta?.stage ?? null;
-  const category = item?.meta?.event_category ?? item?.genre ?? item?.type ?? null;
+  // Event fields — handle both WP meta shape and ScheduleEvent shape
+  const startTime = item?.meta?.event_start_time ?? item?.startTime ?? null;
+  const endTime = item?.meta?.event_end_time ?? item?.endTime ?? null;
+  const stage = item?.meta?.stage ?? item?.stage ?? null;
+  const category = item?.meta?.event_category ?? item?.category ?? item?.genre ?? item?.type ?? null;
 
   // Venue-specific fields
   const address = item?.meta?.address ?? null;
