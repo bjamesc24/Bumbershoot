@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import ExploreScreen from "../screens/ExploreScreen";
+import DetailScreen from "../screens/DetailScreen";
 import ScheduleScreen from "../screens/ScheduleScreen";
 import EventDetailsScreen from "../screens/EventDetailsScreen";
 import MapScreen from "../screens/MapScreen";
@@ -17,6 +18,41 @@ import OfflineBanner from "../components/OfflineBanner";
 import LoadingState from "../components/LoadingState";
 import { apiClient } from "../services/apiClient";
 import { useAppSettings } from "../context/AppSettingsContext";
+
+// ---------------------------------------------------------------------------
+// Explore stack — ExploreScreen + DetailScreen
+// ---------------------------------------------------------------------------
+
+export type ExploreStackParamList = {
+  ExploreMain: undefined;
+  Detail: { item: any; type: string };
+};
+
+const ExploreStack = createNativeStackNavigator<ExploreStackParamList>();
+
+function ExploreStackNavigator() {
+  return (
+    <ExploreStack.Navigator
+      id="ExploreStackNavigator"
+      screenOptions={{ headerShown: false }}
+    >
+      <ExploreStack.Screen
+        name="ExploreMain"
+        component={ExploreScreen}
+        options={{ title: "Explore" }}
+      />
+      <ExploreStack.Screen
+        name="Detail"
+        component={DetailScreen}
+        options={{ headerShown: true, title: "" }}
+      />
+    </ExploreStack.Navigator>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Schedule stack — ScheduleScreen + EventDetailsScreen
+// ---------------------------------------------------------------------------
 
 export type ScheduleStackParamList = {
   ScheduleList: undefined;
@@ -36,6 +72,10 @@ function ScheduleStackNavigator() {
     </ScheduleStack.Navigator>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Bottom tabs
+// ---------------------------------------------------------------------------
 
 export type TabParamList = {
   Explore: undefined;
@@ -65,7 +105,7 @@ function Tabs() {
     >
       <Tab.Screen
         name="Explore"
-        component={ExploreScreen}
+        component={ExploreStackNavigator}
         options={{ title: "Explore" }}
       />
       <Tab.Screen
@@ -78,6 +118,10 @@ function Tabs() {
     </Tab.Navigator>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Root stack — Tabs + modal screens from More panel
+// ---------------------------------------------------------------------------
 
 export type RootStackParamList = {
   Tabs: undefined;
