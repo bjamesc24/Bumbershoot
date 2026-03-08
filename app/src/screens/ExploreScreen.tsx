@@ -37,8 +37,8 @@ const PLACEHOLDER_ARTISTS = [
 ];
 
 const PLACEHOLDER_WORKSHOPS = [
-  { id: "workshop-1", name: "TBA Workshop 1", description: "Workshop details coming soon." },
-  { id: "workshop-2", name: "TBA Workshop 2", description: "Workshop details coming soon." },
+  { id: "workshop-1", name: "TBA Workshop 1", description: "Workshop details coming soon.", start: "2026-06-07T20:40:00", end: "2026-06-07T21:40:00", lat: 47.6205, lng: -122.3493, location: "TBA Location" },
+  { id: "workshop-2", name: "TBA Workshop 2", description: "Workshop details coming soon.", start: "2026-06-15T13:00:00", end: "2026-06-15T14:00:00", lat: 47.6205, lng: -122.3493, location: "TBA Location" },
 ];
 
 const PLACEHOLDER_VENDORS = [
@@ -205,17 +205,28 @@ export default function ExploreScreen() {
         />
 
         <View style={s.divider} />
-
+        
         <SectionHeader title="Workshops" />
         <HorizontalSection
           data={PLACEHOLDER_WORKSHOPS}
-          renderItem={(item) => (
-            <ExploreCard
-              title={item.name}
-              subtitle={item.description}
-              onPress={() => goToDetail(item, "workshop")}
-            />
-          )}
+          renderItem={(item) => {
+            const start = item.start
+              ? new Date(item.start).toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })
+              : null;
+            return (
+              <ExploreCard
+                title={item.name}
+                subtitle={start ? `${start} · ${item.location}` : item.location}
+                meta={item.description}
+                onPress={() => goToDetail(item, "workshop")}
+                showAttend
+                item={item}
+              />
+            );
+          }}
         />
 
         <View style={s.divider} />
