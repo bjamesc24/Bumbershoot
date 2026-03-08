@@ -60,9 +60,9 @@ export default function DetailScreen({ route }: any) {
       : null;
 
   // Event fields — handle both WP meta shape and ScheduleEvent shape
-  const startTime = item?.meta?.event_start_time ?? item?.startTime ?? null;
-  const endTime = item?.meta?.event_end_time ?? item?.endTime ?? null;
-  const stage = item?.meta?.stage ?? item?.stage ?? null;
+  const startTime = item?.meta?.event_start_time ?? item?.startTime ?? item?.start ?? null;
+  const endTime = item?.meta?.event_end_time ?? item?.endTime ?? item?.end ?? null;
+  const stage = item?.meta?.stage ?? item?.stage ?? item?.location ?? null;
   const category = item?.meta?.event_category ?? item?.category ?? item?.genre ?? item?.type ?? null;
 
   // Venue-specific fields
