@@ -1,31 +1,45 @@
 // app/src/services/changesService.ts
+//
+// Purpose:
+// - Calls the backend /changes endpoint to learn whether cached data is outdated.
+// - Supports optional `since` query param (timestamp of last successful sync).
 
+import { apiClient } from "./apiClient";
+
+/**
+ * What the backend returns from GET /changes
+ * - lastUpdated: when the server data last changed
+ * - version: server version number (monotonic)
+ * - has_changes: whether there are changes since the provided `since` timestamp (if backend supports it)
+ */
 export type ChangesResponse = {
-  lastUpdated: string; // ISO 8601 timestamp
-  version: number;     // monotonic version number
+  lastUpdated: string;
+  version: number;
+  has_changes?: boolean;
 };
 
-// Mock implementation
-// Later: swap to real fetch using apiClient.ts when backend is ready.
-const USE_MOCK = true;
+/**
+ * GET /changes (optionally /changes?since=...)
+ *
+ * @param since ISO timestamp (example: "2026-02-22T18:30:00Z")
+ */
+export async function getChanges(since?: string | null): Promise<ChangesResponse> {
+  // Build URL safely
+  const url =
+    since && since.trim().length > 0
+      ? `/changes?since=${encodeURIComponent(since)}`
+      : "/changes";
 
-// You can bump this number to simulate "server changed"
-const MOCK_CHANGES: ChangesResponse = {
-  lastUpdated: new Date().toISOString(),
-  version: 1,
-};
-
-export async function getChanges(): Promise<ChangesResponse> {
-  if (USE_MOCK) {
-    // Simulate a tiny bit of network delay so UI timing is realistic
-    await new Promise((resolve) => setTimeout(resolve, 200));
-    return MOCK_CHANGES;
+  try {
+    // NOTE:
+    // Depending on how apiClient is written, it might return either:
+    // - the raw response object (like AxiosResponse), OR
+    // - the data directly.
+    // This line handles BOTH patterns safely.
+    const res: any = await apiClient.get<ChangesResponse>(url);
+    return (res?.data ?? res) as ChangesResponse;
+  } catch (error) {
+    console.error(`[changesService] Failed to fetch ${url}:`, error);
+    throw error;
   }
-
-  // Placeholder for real implementation:
-  // const res = await apiClient.get<ChangesResponse>("/changes");
-  // return res.data;
-
-  // If someone accidentally flips USE_MOCK off before backend exists:
-  throw new Error("getChanges(): real /changes fetch not implemented yet");
 }
