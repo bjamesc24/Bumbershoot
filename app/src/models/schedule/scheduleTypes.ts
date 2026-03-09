@@ -1,26 +1,74 @@
-// src/models/scheduleTypes.ts
+/**
+ * scheduleTypes.ts
+ * ----------------
+ * Responsibility:
+ *   Define the unified ScheduleItem type used across the schedule screens.
+ *
+ * Design considerations:
+ *   - ScheduleItem replaces ScheduleEvent and covers all item types:
+ *     events, workshops, vendors, food trucks, artists.
+ *   - itemType distinguishes the source so UI can style/filter accordingly.
+ *   - Vendors/food trucks without set times default to festival open/close hours
+ *     at the data mapping layer (useScheduleData).
+ *   - ScheduleEvent is kept as a type alias for backward compatibility.
+ */
 
-// Controls which grouping mode the schedule is in
-export type ScheduleViewMode = "time" | "stage" | "category";
+export type ScheduleItemType =
+  | "event"
+  | "workshop"
+  | "vendor"
+  | "food_truck"
+  | "artist";
 
-// This is the shape of ONE schedule event
-export interface ScheduleEvent {
+export type ScheduleItem = {
+  /** Stable unique identifier */
   id: string;
 
+  /** Display title */
   title: string;
 
-  startTime: string; // ISO date string (e.g., "2026-09-05T14:00:00")
-  endTime: string;   // ISO date string
+  /** ISO 8601 start time */
+  startTime: string;
 
-  stage: string;     // e.g. "Main Stage"
-  category: string;  // e.g. "Rock"
+  /** ISO 8601 end time */
+  endTime: string;
 
-  tags?: string[];   // Optional
-  description?: string; // Optional
-}
+  /** Stage name or physical location */
+  stage: string;
 
-// Used when grouping events for SectionList
-export interface ScheduleSection {
-  title: string; // Section header label (e.g. "Main Stage" or "Sat 2:00 PM")
-  data: ScheduleEvent[];
-}
+  /** Broad category label e.g. "Music", "Food", "Workshop" */
+  category: string;
+
+  /** Specific item type for filtering */
+  itemType: ScheduleItemType;
+
+  /** Optional long description */
+  description?: string;
+
+  /** Optional search tags */
+  tags?: string[];
+};
+
+/** Backward-compatible alias used by existing components */
+export type ScheduleEvent = ScheduleItem;
+
+export type ScheduleSection = {
+  title: string;
+  data: ScheduleItem[];
+};
+
+export type ScheduleViewMode = "time" | "stage" | "category";
+
+export type ScheduleSortMode = "time" | "category" | "type";
+
+export type ScheduleTypeFilter =
+  | "all"
+  | "event"
+  | "workshop"
+  | "vendor"
+  | "food_truck"
+  | "artist";
+
+/** Festival open/close defaults for vendors and food trucks without set times */
+export const FESTIVAL_OPEN = "T10:00:00";
+export const FESTIVAL_CLOSE = "T22:00:00";
