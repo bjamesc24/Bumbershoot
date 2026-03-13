@@ -1,0 +1,292 @@
+[
+  {
+    "id": 401,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "seattle-smokehouse-bbq",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/seattle-smokehouse-bbq/",
+    "title": { "rendered": "Seattle Smokehouse BBQ" },
+    "content": { "rendered": "<p>Slow-smoked brisket, pulled pork, and all the fixings from one of Seattle's favorite BBQ pits.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Slow-smoked BBQ classics from a Seattle favorite.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3001,
+    "categories": [50],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Food &amp; Drink",
+      "coordinates": { "lat": 47.6200, "lng": -122.3500 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/401" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3001" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=401" }]
+    }
+  },
+  {
+    "id": 402,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "noodle-box",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/noodle-box/",
+    "title": { "rendered": "Noodle Box" },
+    "content": { "rendered": "<p>Pan-Asian noodle dishes made fresh to order — ramen, pad thai, and seasonal specials.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Fresh pan-Asian noodles made to order.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3002,
+    "categories": [50],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Food &amp; Drink",
+      "coordinates": { "lat": 47.6215, "lng": -122.3505 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/402" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3002" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=402" }]
+    }
+  },
+  {
+    "id": 403,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "vegan-street",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/vegan-street/",
+    "title": { "rendered": "Vegan Street" },
+    "content": { "rendered": "<p>100% plant-based street food — loaded bowls, wraps, and house-made sauces with bold flavor.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Bold plant-based street food.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3003,
+    "categories": [50],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Food &amp; Drink",
+      "coordinates": { "lat": 47.6225, "lng": -122.3510 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/403" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3003" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=403" }]
+    }
+  },
+  {
+    "id": 404,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "the-taco-stand",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/the-taco-stand/",
+    "title": { "rendered": "The Taco Stand" },
+    "content": { "rendered": "<p>Street-style tacos with fresh tortillas, carne asada, al pastor, and all the toppings.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Street-style tacos with fresh tortillas and classic fillings.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3004,
+    "categories": [50],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Food &amp; Drink",
+      "coordinates": { "lat": 47.6210, "lng": -122.3520 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/404" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3004" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=404" }]
+    }
+  },
+  {
+    "id": 405,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "lemonade-and-crepes",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/lemonade-and-crepes/",
+    "title": { "rendered": "Lemonade &amp; Crepes" },
+    "content": { "rendered": "<p>Hand-squeezed lemonade and sweet or savory crepes made fresh on the griddle.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Fresh-squeezed lemonade and made-to-order crepes.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3005,
+    "categories": [50],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Food &amp; Drink",
+      "coordinates": { "lat": 47.6220, "lng": -122.3530 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/405" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3005" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=405" }]
+    }
+  },
+  {
+    "id": 406,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "vinyl-revival-records",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/vinyl-revival-records/",
+    "title": { "rendered": "Vinyl Revival Records" },
+    "content": { "rendered": "<p>New and used vinyl spanning every genre — rock, soul, hip-hop, jazz, and more. Crate diggers welcome.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>New and used vinyl across every genre.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3006,
+    "categories": [51],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Merchandise",
+      "coordinates": { "lat": 47.6205, "lng": -122.3525 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/406" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3006" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=406" }]
+    }
+  },
+  {
+    "id": 407,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "festival-threads",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/festival-threads/",
+    "title": { "rendered": "Festival Threads" },
+    "content": { "rendered": "<p>Official Bumbershoot 2026 merch plus independent artist tees, hoodies, and accessories.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Official Bumbershoot merch and independent artist gear.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3007,
+    "categories": [51],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Merchandise",
+      "coordinates": { "lat": 47.6230, "lng": -122.3515 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/407" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3007" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=407" }]
+    }
+  },
+  {
+    "id": 408,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "pacific-nw-pottery",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/pacific-nw-pottery/",
+    "title": { "rendered": "Pacific NW Pottery" },
+    "content": { "rendered": "<p>Handcrafted ceramic mugs, bowls, and sculptural pieces made by Pacific Northwest artists.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Handcrafted ceramics by Pacific Northwest artists.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3008,
+    "categories": [52],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Arts &amp; Crafts",
+      "coordinates": { "lat": 47.6218, "lng": -122.3535 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/408" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3008" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=408" }]
+    }
+  },
+  {
+    "id": 409,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "handmade-and-local",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/handmade-and-local/",
+    "title": { "rendered": "Handmade &amp; Local" },
+    "content": { "rendered": "<p>A curated marketplace of jewelry, textiles, and handmade goods from Seattle-area independent makers.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Jewelry, textiles, and goods from Seattle-area independent makers.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3009,
+    "categories": [52],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Arts &amp; Crafts",
+      "coordinates": { "lat": 47.6210, "lng": -122.3540 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/409" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3009" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=409" }]
+    }
+  },
+  {
+    "id": 410,
+    "date": "2026-07-01T09:00:00",
+    "date_gmt": "2026-07-01T16:00:00",
+    "modified": "2026-07-01T09:00:00",
+    "modified_gmt": "2026-07-01T16:00:00",
+    "slug": "the-print-shop",
+    "status": "publish",
+    "type": "vendor",
+    "link": "https://example.com/vendors/the-print-shop/",
+    "title": { "rendered": "The Print Shop" },
+    "content": { "rendered": "<p>Original screen-printed posters, tote bags, and art prints by Pacific Northwest illustrators.</p>", "protected": false },
+    "excerpt": { "rendered": "<p>Screen-printed art by Pacific Northwest illustrators.</p>", "protected": false },
+    "author": 1,
+    "featured_media": 3010,
+    "categories": [52],
+    "tags": [],
+    "meta": {
+      "vendor_type": "Arts &amp; Crafts",
+      "coordinates": { "lat": 47.6228, "lng": -122.3505 }
+    },
+    "_links": {
+      "self": [{ "href": "https://example.com/wp-json/wp/v2/vendors/410" }],
+      "collection": [{ "href": "https://example.com/wp-json/wp/v2/vendors" }],
+      "author": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/users/1" }],
+      "wp:featuredmedia": [{ "embeddable": true, "href": "https://example.com/wp-json/wp/v2/media/3010" }],
+      "wp:attachment": [{ "href": "https://example.com/wp-json/wp/v2/media?parent=410" }]
+    }
+  }
+]

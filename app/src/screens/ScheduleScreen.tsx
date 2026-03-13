@@ -3,15 +3,15 @@
  * ------------------
  * Festival schedule with three section tabs:
  *   Music    — grid with stages on X axis
- *   Arts & More — grid with categories on X axis
- *   My Plan  — grid with attended item categories on X axis
+ *   Arts & More — grid with districts on X axis
+ *   My Plan  — grid with attended items, columns by stage or district
  *
  * Shared controls:
  *   - Date navigation (only dates with content)
  *   - Grid / List view toggle
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -21,7 +21,7 @@ import {
   StyleSheet,
   SectionList,
 } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 
 import Screen from "../components/Screen";
 import LoadingState from "../components/LoadingState";
@@ -31,8 +31,8 @@ import ScheduleStatusBanner from "../components/ScheduleStatusBanner";
 import { useOfflineStatus } from "../hooks/useOfflineStatus";
 import useScheduleData from "../hooks/useScheduleData";
 import { ScheduleItem } from "../models/schedule/scheduleTypes";
-import { getAttending, AttendingRecord } from "../storage/attendingStore";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { useAttending } from "../context/AttendingContext";
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -42,18 +42,8 @@ const MINUTE_HEIGHT = 1.1;
 const TIME_COL_WIDTH = 52;
 const COL_WIDTH = 130;
 const HEADER_HEIGHT = 44;
-const GRID_START_HOUR = 10;
-const GRID_END_HOUR = 23;
-
-const MUSIC_CATEGORIES = [
-  "live performance", "acoustic", "hip-hop", "indie rock",
-  "jazz & blues", "r&b", "electronic", "folk & roots", "music",
-];
-
-const ARTS_CATEGORIES = [
-  "fashion", "gravity park", "cheer", "aerial", "bumerina",
-  "geodesic domes", "comedy", "workshop", "arts & crafts", "arts",
-];
+const GRID_START_HOUR = 12;
+const GRID_END_HOUR = 22;
 
 type SectionTab = "music" | "arts";
 type ViewMode = "grid" | "list";
@@ -71,9 +61,15 @@ function decodeHtml(str: string): string {
     .replace(/&#039;/g, "'");
 }
 
-function minutesFromStart(isoTime: string): number {
+function minutesFromGridStart(isoTime: string): number {
   const d = new Date(isoTime);
   return (d.getHours() - GRID_START_HOUR) * 60 + d.getMinutes();
+}
+
+function durationMinutes(startIso: string, endIso: string): number {
+  return Math.round(
+    (new Date(endIso).getTime() - new Date(startIso).getTime()) / 60000
+  );
 }
 
 function formatHour(hour: number): string {
@@ -83,20 +79,18 @@ function formatHour(hour: number): string {
 }
 
 function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  return new Date(iso).toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function isMusic(item: ScheduleItem): boolean {
-  const cat = (item.category ?? "").toLowerCase();
-  const type = (item.itemType ?? "").toLowerCase();
-  return type === "event" || type === "artist" ||
-    MUSIC_CATEGORIES.some((m) => cat.includes(m));
+  return item.itemType === "musician";
 }
 
 function isArts(item: ScheduleItem): boolean {
-  const cat = (item.category ?? "").toLowerCase();
-  const type = (item.itemType ?? "").toLowerCase();
-  return type === "workshop" || ARTS_CATEGORIES.some((a) => cat.includes(a));
+  return item.itemType === "artist";
 }
 
 // ---------------------------------------------------------------------------
@@ -122,16 +116,13 @@ function GridView({
 }) {
   const totalMinutes = (GRID_END_HOUR - GRID_START_HOUR) * 60;
   const gridHeight = totalMinutes * MINUTE_HEIGHT;
+
   const hours = Array.from(
     { length: GRID_END_HOUR - GRID_START_HOUR + 1 },
     (_, i) => GRID_START_HOUR + i
   );
 
-  // Sync vertical scroll between gutter and columns
   const gutterRef = React.useRef<ScrollView>(null);
-  const colsRef = React.useRef<ScrollView>(null);
-  const isSyncingGutter = React.useRef(false);
-  const isSyncingCols = React.useRef(false);
 
   const byColumn = useMemo(() => {
     const map: Record<string, ScheduleItem[]> = {};
@@ -148,112 +139,184 @@ function GridView({
   }
 
   return (
-    <View style={{ flex: 1, flexDirection: "row" }}>
-      {/* Fixed left: time gutter + blank header corner */}
-      <View style={{ width: TIME_COL_WIDTH, borderRightWidth: 1, borderRightColor: theme.colors.border }}>
-        {/* Corner spacer matching column header height */}
-        <View style={[styles.timeGutterHeader, { height: HEADER_HEIGHT, borderBottomWidth: 1, borderBottomColor: theme.colors.border }]} />
-        {/* Scrolling time labels — synced with columns scroll */}
-        <ScrollView
-          ref={gutterRef}
-          scrollEnabled={false}
-          bounces={false}
-          showsVerticalScrollIndicator={false}
+    <View style={styles.contentSpacing}>
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        {/* Fixed left: time gutter + blank header corner */}
+        <View
+          style={{
+            width: TIME_COL_WIDTH,
+            borderRightWidth: 1,
+            borderRightColor: theme.colors.border,
+          }}
         >
-          <View style={{ height: gridHeight, position: "relative" }}>
-            {hours.map((hour) => (
-              <View
-                key={hour}
-                style={[styles.timeLabel, { top: (hour - GRID_START_HOUR) * 60 * MINUTE_HEIGHT - 8 }]}
-              >
-                <Text style={[styles.timeLabelText, { color: theme.colors.textMuted }]}>
-                  {formatHour(hour)}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </ScrollView>
-      </View>
-
-      {/* Right: horizontally scrollable columns */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-        style={{ flex: 1 }}
-      >
-        <View>
-          {/* Column headers */}
           <View
             style={[
-              styles.gridHeaderRow,
-              { backgroundColor: theme.colors.surface, borderBottomColor: theme.colors.border },
+              styles.timeGutterHeader,
+              {
+                height: HEADER_HEIGHT,
+                borderBottomWidth: 1,
+                borderBottomColor: theme.colors.border,
+              },
             ]}
-          >
-            {columns.map((col) => (
-              <View
-                key={col}
-                style={[styles.colHeader, { width: COL_WIDTH, borderRightColor: theme.colors.border }]}
-              >
-                <Text style={[styles.colHeaderText, { color: theme.colors.text }]} numberOfLines={2}>
-                  {col}
-                </Text>
-              </View>
-            ))}
-          </View>
-
-          {/* Vertically scrollable columns — synced with gutter */}
+          />
           <ScrollView
-            ref={colsRef}
+            ref={gutterRef}
+            scrollEnabled={false}
             bounces={false}
             showsVerticalScrollIndicator={false}
-            onScroll={(e) => {
-              if (isSyncingCols.current) return;
-              isSyncingGutter.current = true;
-              gutterRef.current?.scrollTo({ y: e.nativeEvent.contentOffset.y, animated: false });
-              setTimeout(() => { isSyncingGutter.current = false; }, 50);
-            }}
-            scrollEventThrottle={16}
           >
-            <View style={{ height: gridHeight, flexDirection: "row" }}>
-              {columns.map((col) => (
+            <View style={{ height: gridHeight, position: "relative" }}>
+              {hours.map((hour) => (
                 <View
-                  key={col}
-                  style={[styles.gridCol, { width: COL_WIDTH, height: gridHeight, borderLeftColor: theme.colors.border }]}
+                  key={hour}
+                  style={[
+                    styles.timeLabel,
+                    {
+                      top:
+                        (hour - GRID_START_HOUR) * 60 * MINUTE_HEIGHT - 8,
+                    },
+                  ]}
                 >
-                  {hours.map((hour) => (
-                    <View
-                      key={hour}
-                      style={[styles.gridLine, { top: (hour - GRID_START_HOUR) * 60 * MINUTE_HEIGHT, borderTopColor: theme.colors.border }]}
-                    />
-                  ))}
-                  {byColumn[col]?.map((item) => {
-                    const top = minutesFromStart(item.startTime) * MINUTE_HEIGHT;
-                    const durationMins =
-                      (new Date(item.endTime).getTime() - new Date(item.startTime).getTime()) / 60000;
-                    const height = Math.max(durationMins * MINUTE_HEIGHT, 32);
-                    return (
-                      <TouchableOpacity
-                        key={item.id}
-                        style={[styles.gridBlock, { top, height, backgroundColor: themeColorHex }]}
-                        onPress={() => onItemPress(item)}
-                        activeOpacity={0.8}
-                      >
-                        <Text style={styles.gridBlockTitle} numberOfLines={2}>
-                          {decodeHtml(item.title)}
-                        </Text>
-                        {height > 44 && (
-                          <Text style={styles.gridBlockTime}>{formatTime(item.startTime)}</Text>
-                        )}
-                      </TouchableOpacity>
-                    );
-                  })}
+                  <Text
+                    style={[
+                      styles.timeLabelText,
+                      { color: theme.colors.textMuted },
+                    ]}
+                  >
+                    {formatHour(hour)}
+                  </Text>
                 </View>
               ))}
             </View>
           </ScrollView>
         </View>
-      </ScrollView>
+
+        {/* Right: horizontally scrollable columns */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          bounces={false}
+          style={{ flex: 1 }}
+        >
+          <View>
+            {/* Column headers */}
+            <View
+              style={[
+                styles.gridHeaderRow,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderBottomColor: theme.colors.border,
+                },
+              ]}
+            >
+              {columns.map((col) => (
+                <View
+                  key={col}
+                  style={[
+                    styles.colHeader,
+                    { width: COL_WIDTH, borderRightColor: theme.colors.border },
+                  ]}
+                >
+                  <Text
+                    style={[styles.colHeaderText, { color: theme.colors.text }]}
+                    numberOfLines={2}
+                  >
+                    {col}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {/* Vertically scrollable columns — synced with gutter */}
+            <ScrollView
+              bounces={false}
+              showsVerticalScrollIndicator={false}
+              onScroll={(e) => {
+                gutterRef.current?.scrollTo({
+                  y: e.nativeEvent.contentOffset.y,
+                  animated: false,
+                });
+              }}
+              scrollEventThrottle={16}
+            >
+              <View style={{ height: gridHeight, flexDirection: "row" }}>
+                {columns.map((col) => (
+                  <View
+                    key={col}
+                    style={[
+                      styles.gridCol,
+                      {
+                        width: COL_WIDTH,
+                        height: gridHeight,
+                        borderLeftColor: theme.colors.border,
+                      },
+                    ]}
+                  >
+                    {hours.map((hour) => (
+                      <View
+                        key={hour}
+                        style={[
+                          styles.gridLine,
+                          {
+                            top:
+                              (hour - GRID_START_HOUR) *
+                              60 *
+                              MINUTE_HEIGHT,
+                            borderTopColor: theme.colors.border,
+                          },
+                        ]}
+                      />
+                    ))}
+
+                    {byColumn[col]?.map((item) => {
+                      const startOffset = minutesFromGridStart(item.startTime);
+                      const endOffset =
+                        minutesFromGridStart(item.startTime) +
+                        durationMinutes(item.startTime, item.endTime);
+
+                      // clamp to visible 12 PM–10 PM window
+                      const visibleStart = Math.max(0, startOffset);
+                      const visibleEnd = Math.min(totalMinutes, endOffset);
+
+                      if (visibleEnd <= 0 || visibleStart >= totalMinutes) {
+                        return null;
+                      }
+
+                      const top = visibleStart * MINUTE_HEIGHT;
+                      const height = Math.max(
+                        (visibleEnd - visibleStart) * MINUTE_HEIGHT,
+                        32
+                      );
+
+                      return (
+                        <TouchableOpacity
+                          key={item.id}
+                          style={[
+                            styles.gridBlock,
+                            { top, height, backgroundColor: themeColorHex },
+                          ]}
+                          onPress={() => onItemPress(item)}
+                          activeOpacity={0.8}
+                        >
+                          <Text style={styles.gridBlockTitle} numberOfLines={2}>
+                            {decodeHtml(item.title)}
+                          </Text>
+                          {height > 44 && (
+                            <Text style={styles.gridBlockTime}>
+                              {formatTime(item.startTime)} –{" "}
+                              {formatTime(item.endTime)}
+                            </Text>
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
+        </ScrollView>
+      </View>
     </View>
   );
 }
@@ -285,7 +348,6 @@ function ListView({
   theme: any;
   themeColorHex: string;
 }) {
-  // Group by time bucket
   const sections = useMemo(() => {
     const map = new Map<string, ScheduleItem[]>();
     const sorted = [...items].sort(
@@ -304,8 +366,7 @@ function ListView({
   }, [items]);
 
   return (
-    <View style={{ flex: 1 }}>
-      {/* Category filter chips */}
+    <View style={[{ flex: 1 }, styles.contentSpacing]}>
       {filterOptions.length > 1 && (
         <ScrollView
           horizontal
@@ -337,64 +398,63 @@ function ListView({
       ) : (
         <SectionList
           style={{ flex: 1 }}
-      sections={sections}
-      keyExtractor={(item) => item.id}
-      refreshing={refreshing}
-      onRefresh={onRefresh}
-      renderSectionHeader={({ section }) => (
-        <View
-          style={[
-            styles.listSectionHeader,
-            {
-              backgroundColor: theme.colors.surface,
-              borderBottomColor: theme.colors.border,
-            },
-          ]}
-        >
-          <Text style={[styles.listSectionTitle, { color: theme.colors.text }]}>
-            {section.title}
-          </Text>
-        </View>
-      )}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={[
-            styles.listRow,
-            {
-              borderBottomColor: theme.colors.border,
-              backgroundColor: theme.colors.surface2,
-            },
-          ]}
-          onPress={() => onItemPress(item)}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.listAccent, { backgroundColor: themeColorHex }]} />
-          <View style={styles.listRowContent}>
-            <Text
-              style={[styles.listRowTitle, { color: theme.colors.text }]}
-              numberOfLines={1}
+          sections={sections}
+          keyExtractor={(item) => item.id}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          renderSectionHeader={({ section }) => (
+            <View
+              style={[
+                styles.listSectionHeader,
+                {
+                  backgroundColor: theme.colors.surface,
+                  borderBottomColor: theme.colors.border,
+                },
+              ]}
             >
-              {decodeHtml(item.title)}
-            </Text>
-            <Text style={[styles.listRowMeta, { color: theme.colors.textMuted }]}>
-              {formatTime(item.startTime)} – {formatTime(item.endTime)}
-              {item.stage ? ` · ${item.stage}` : ""}
-            </Text>
-            {item.category ? (
-              <Text style={[styles.listRowCategory, { color: theme.colors.textMuted }]}>
-                {item.category}
+              <Text style={[styles.listSectionTitle, { color: theme.colors.text }]}>
+                {section.title}
               </Text>
-            ) : null}
-          </View>
-        </TouchableOpacity>
-      )}
+            </View>
+          )}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.listRow,
+                {
+                  borderBottomColor: theme.colors.border,
+                  backgroundColor: theme.colors.surface2,
+                },
+              ]}
+              onPress={() => onItemPress(item)}
+              activeOpacity={0.7}
+            >
+              <View style={[styles.listAccent, { backgroundColor: themeColorHex }]} />
+              <View style={styles.listRowContent}>
+                <Text
+                  style={[styles.listRowTitle, { color: theme.colors.text }]}
+                  numberOfLines={1}
+                >
+                  {decodeHtml(item.title)}
+                </Text>
+                <Text style={[styles.listRowMeta, { color: theme.colors.textMuted }]}>
+                  {formatTime(item.startTime)} – {formatTime(item.endTime)}
+                  {item.stage ? ` · ${item.stage}` : ""}
+                </Text>
+                {item.category ? (
+                  <Text style={[styles.listRowCategory, { color: theme.colors.textMuted }]}>
+                    {item.category}
+                  </Text>
+                ) : null}
+              </View>
+            </TouchableOpacity>
+          )}
           ListFooterComponent={<View style={{ height: 32 }} />}
         />
       )}
     </View>
   );
 }
-
 
 // ---------------------------------------------------------------------------
 // ScheduleScreen
@@ -406,18 +466,14 @@ export default function ScheduleScreen() {
   const { theme, themeColorHex } = useAppSettings();
   const schedule = useScheduleData(!isOffline);
 
+  // Use shared attending context — updates instantly from any screen
+  const { attendingIds } = useAttending();
+
   const [sectionTab, setSectionTab] = useState<SectionTab>("music");
   const [myPlanActive, setMyPlanActive] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [attending, setAttending] = useState<AttendingRecord[]>([]);
-
-  useFocusEffect(
-    useCallback(() => {
-      getAttending().then(setAttending).catch(() => {});
-    }, [])
-  );
 
   // Unique days with content
   const festivalDays = useMemo(() => {
@@ -461,37 +517,47 @@ export default function ScheduleScreen() {
     [musicItems]
   );
 
-  // Arts — categories as columns
+  // Arts — districts as columns
   const artsItems = useMemo(() => dayItems.filter(isArts), [dayItems]);
   const artsCategories = useMemo(
     () => Array.from(new Set(artsItems.map((e) => e.category).filter(Boolean))).sort(),
     [artsItems]
   );
 
-  // My Plan — attending music + arts, all dates, categories as columns
-  const attendingIds = useMemo(
-    () => new Set(attending.map((a) => a.id)),
-    [attending]
+  // My Plan — filter by attendingIds from context, reactive to any screen's changes
+  const allDayItems = useMemo(
+    () => [...musicItems, ...artsItems],
+    [musicItems, artsItems]
   );
 
-  const handleItemPress = (item: ScheduleItem) => {
-    navigation.navigate("EventDetails", { item, type: item.itemType });
-  };
+  const myPlanItems = useMemo(
+    () => allDayItems.filter((e) => attendingIds.has(e.id)),
+    [allDayItems, attendingIds]
+  );
 
-  // Resolve current tab's items/columns
-  // My Plan: all music + arts items you're attending, categories on X axis
-  const allDayItems = [...musicItems, ...artsItems];
-  const myPlanItems = allDayItems.filter((e) => attendingIds.has(e.id));
-  const myPlanCategories = useMemo(
-    () => Array.from(new Set(myPlanItems.map((e) => e.category).filter(Boolean))).sort(),
+  const myPlanColumns = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          myPlanItems
+            .map((e) => (e.itemType === "musician" ? e.stage : e.category))
+            .filter(Boolean)
+        )
+      ).sort(),
     [myPlanItems]
   );
 
+  const handleItemPress = (item: ScheduleItem) => {
+    navigation.navigate("Detail", { item: item.rawItem, type: item.itemType });
+  };
+
   // Reset category filter when tab or plan toggle changes
-  useEffect(() => { setCategoryFilter("all"); }, [sectionTab, myPlanActive]);
+  useEffect(() => {
+    setCategoryFilter("all");
+  }, [sectionTab, myPlanActive]);
 
   const baseItems = sectionTab === "music" ? musicItems : artsItems;
-  // Category filter options — derived from pre-filtered items
+
   const filterOptions = useMemo(() => {
     const source = myPlanActive ? myPlanItems : baseItems;
     const key = (myPlanActive || sectionTab === "arts")
@@ -501,10 +567,8 @@ export default function ScheduleScreen() {
     return ["all", ...vals];
   }, [myPlanActive, myPlanItems, baseItems, sectionTab]);
 
-  // Grid always shows all items unfiltered
   const gridItems = myPlanActive ? myPlanItems : baseItems;
 
-  // List view applies category/stage filter
   const listItems = useMemo(() => {
     const source = myPlanActive ? myPlanItems : baseItems;
     if (categoryFilter === "all") return source;
@@ -515,11 +579,18 @@ export default function ScheduleScreen() {
   }, [myPlanActive, myPlanItems, baseItems, categoryFilter, sectionTab]);
 
   const currentItems = viewMode === "grid" ? gridItems : listItems;
+
   const currentColumns = myPlanActive
-    ? myPlanCategories
+    ? myPlanColumns
     : sectionTab === "music" ? musicStages : artsCategories;
-  const currentGetColumn = (item: ScheduleItem) =>
-    myPlanActive ? item.category : sectionTab === "music" ? item.stage : item.category;
+
+  const currentGetColumn = (item: ScheduleItem) => {
+    if (myPlanActive) {
+      return item.itemType === "musician" ? item.stage : item.category;
+    }
+    return sectionTab === "music" ? item.stage : item.category;
+  };
+
   const currentEmpty =
     myPlanActive
       ? "Nothing in your plan yet. Tap Attend on any event or performance."
@@ -559,43 +630,43 @@ export default function ScheduleScreen() {
       </View>
 
       {/* Section tabs: hidden when My Plan is active */}
-      {!myPlanActive && <View style={[styles.tabRow, { borderBottomColor: theme.colors.border }]}>
-        <View style={styles.tabGroup}>
-          {(
-            [
-              { key: "music", label: "Music" },
-              { key: "arts", label: "Arts & More" },
-            ] as { key: SectionTab; label: string }[]
-          ).map((t) => (
-            <Pressable
-              key={t.key}
-              onPress={() => setSectionTab(t.key)}
-              style={[
-                styles.tab,
-                sectionTab === t.key && {
-                  borderBottomColor: themeColorHex,
-                  borderBottomWidth: 2,
-                },
-              ]}
-            >
-              <Text
+      {!myPlanActive && (
+        <View style={[styles.tabRow, { borderBottomColor: theme.colors.border }]}>
+          <View style={styles.tabGroup}>
+            {(
+              [
+                { key: "music", label: "Music" },
+                { key: "arts", label: "Arts & More" },
+              ] as { key: SectionTab; label: string }[]
+            ).map((t) => (
+              <Pressable
+                key={t.key}
+                onPress={() => setSectionTab(t.key)}
                 style={[
-                  styles.tabText,
-                  { color: sectionTab === t.key ? themeColorHex : theme.colors.textMuted },
+                  styles.tab,
+                  sectionTab === t.key && {
+                    borderBottomColor: themeColorHex,
+                    borderBottomWidth: 2,
+                  },
                 ]}
               >
-                {t.label}
-              </Text>
-            </Pressable>
-          ))}
+                <Text
+                  style={[
+                    styles.tabText,
+                    { color: sectionTab === t.key ? themeColorHex : theme.colors.textMuted },
+                  ]}
+                >
+                  {t.label}
+                </Text>
+              </Pressable>
+            ))}
+          </View>
         </View>
+      )}
 
-      </View>}
-
-      {/* Date nav: [Grid/List] ‹ [date pills] › */}
+      {/* Date nav */}
       {festivalDays.length > 0 && (
         <View style={[styles.dateNav, { borderBottomColor: theme.colors.border }]}>
-          {/* Grid / List toggle */}
           <Pressable
             onPress={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
             style={[
@@ -608,7 +679,6 @@ export default function ScheduleScreen() {
             </Text>
           </Pressable>
 
-          {/* Left arrow */}
           <Pressable
             onPress={() => canGoPrev && setSelectedDate(festivalDays[currentDayIndex - 1])}
             style={[styles.dateArrow, { opacity: canGoPrev ? 1 : 0.3 }]}
@@ -616,7 +686,6 @@ export default function ScheduleScreen() {
             <Text style={[styles.dateArrowText, { color: theme.colors.text }]}>‹</Text>
           </Pressable>
 
-          {/* Date pills */}
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -641,7 +710,6 @@ export default function ScheduleScreen() {
             ))}
           </ScrollView>
 
-          {/* Right arrow */}
           <Pressable
             onPress={() => canGoNext && setSelectedDate(festivalDays[currentDayIndex + 1])}
             style={[styles.dateArrow, { opacity: canGoNext ? 1 : 0.3 }]}
@@ -704,6 +772,10 @@ const styles = StyleSheet.create({
   screenTitle: {
     fontWeight: "800",
   },
+  contentSpacing: {
+    flex: 1,
+    paddingTop: 10,
+  },
   viewToggle: {
     borderWidth: 1,
     borderRadius: 8,
@@ -716,8 +788,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
-
-  // Tabs
   tabRow: {
     flexDirection: "row",
     borderBottomWidth: 1,
@@ -733,8 +803,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
   },
-
-  // Date nav
   dateNav: {
     flexDirection: "row",
     alignItems: "center",
@@ -765,8 +833,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
-
-  // Grid
   gridHeaderRow: {
     flexDirection: "row",
     height: HEADER_HEIGHT,
@@ -829,8 +895,6 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.8)",
     marginTop: 2,
   },
-
-  // List
   listSectionHeader: {
     paddingHorizontal: 16,
     paddingVertical: 8,
@@ -890,14 +954,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-
-  // Tab row
   tabGroup: {
     flexDirection: "row",
     flex: 1,
   },
-
-  // My Plan header button
   myPlanHeaderBtn: {
     borderWidth: 1.5,
     borderRadius: 8,
@@ -909,8 +969,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#fff",
   },
-
-  // View toggle (in date nav row)
   viewToggleInNav: {
     borderWidth: 1,
     borderRadius: 8,

@@ -1,41 +1,38 @@
 /**
  * Announcement.ts
  * ---------------
- * Domain model representing a festival announcement.
- *
- * Priority levels:
- *   - urgent:   Safety alerts, cancellations, or time-sensitive festival-wide information.
- *   - personal: Directly impacts the user because it relates to one of their favorited events.
- *   - general:  Casual festival updates, vendor info, or general interest posts.
- *
- * Design considerations:
- *   - The optional eventId field links an announcement to a specific event.
- *     This is used to promote an announcement to "personal" priority when the
- *     referenced event appears in the user's favorites.
+ * Domain model aligned with Spencer's WP REST API shape.
+ * Priority levels match the API: normal, important, urgent.
+ * "For You" (important) is derived client-side when related_event.id
+ * matches an attending record — not set by the backend.
  */
 
-export type AnnouncementPriority = "urgent" | "personal" | "general";
+export type AnnouncementPriority = "urgent" | "important" | "normal";
+
+export type AnnouncementRelatedEvent = {
+  id: number;
+  title: string;
+  slug: string;
+};
+
+export type AnnouncementRelatedVenue = {
+  id: number;
+  title: string;
+  short_name: string;
+};
 
 export type Announcement = {
-  /** Canonical, stable identifier for the announcement. */
-  id: string;
-
-  /** Short headline displayed at the top of the card. */
+  id: number;
   title: string;
-
-  /** Full announcement message. */
-  message: string;
-
-  /** Controls sort order and visual treatment in the list. */
+  body: string;
+  type: string;
   priority: AnnouncementPriority;
-
-  /** ISO 8601 timestamp string indicating when the announcement was published. */
-  publishedAt: string;
-
-  /**
-   * Optional reference to a specific event.
-   * When present and the event is in the user's favorites,
-   * this announcement should be treated as personal priority.
-   */
-  eventId?: string;
+  is_pinned: boolean;
+  published_at: string;
+  expires_at: string | null;
+  day: string | null;
+  related_event: AnnouncementRelatedEvent | null;
+  related_venue: AnnouncementRelatedVenue | null;
+  external_url: string | null;
+  external_url_label: string | null;
 };
