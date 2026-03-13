@@ -1,8 +1,15 @@
 export type VenueCategory =
   | "stage"
-  | "food"
+  | "district"
+  | "vendor"
   | "restroom"
-  | "entertainment";
+  | "info";
+
+export type VenueSubcategory =
+  | "food"
+  | "merch"
+  | "arts_crafts"
+  | null;
 
 export type Venue = {
   id: string;
@@ -10,4 +17,7 @@ export type Venue = {
   lat: number;
   lng: number;
   category: VenueCategory;
+  subcategory?: VenueSubcategory;
+  description?: string;
+  rawItem?: any;
 };

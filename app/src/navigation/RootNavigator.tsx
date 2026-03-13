@@ -19,12 +19,26 @@ import { apiClient } from "../services/apiClient";
 import { useAppSettings } from "../context/AppSettingsContext";
 
 // ---------------------------------------------------------------------------
+// Shared detail type
+// ---------------------------------------------------------------------------
+
+export type DetailType =
+  | "musician"
+  | "artist"
+  | "vendor"
+  | "music-event"
+  | "art-event"
+  | "stage"
+  | "district"
+  | null;
+
+// ---------------------------------------------------------------------------
 // Explore stack — ExploreScreen + DetailScreen
 // ---------------------------------------------------------------------------
 
 export type ExploreStackParamList = {
   ExploreMain: undefined;
-  Detail: { item: any; type: string };
+  Detail: { item: any; type: DetailType };
 };
 
 const ExploreStack = createNativeStackNavigator<ExploreStackParamList>();
@@ -44,18 +58,19 @@ function ExploreStackNavigator() {
         name="Detail"
         component={DetailScreen}
         options={{ headerShown: true, title: "" }}
+        initialParams={{ item: null, type: null }}
       />
     </ExploreStack.Navigator>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Schedule stack — ScheduleScreen + EventDetailsScreen
+// Schedule stack — ScheduleScreen + DetailScreen
 // ---------------------------------------------------------------------------
 
 export type ScheduleStackParamList = {
   ScheduleList: undefined;
-  EventDetails: { item: any; type: string };
+  Detail: { item: any; type: DetailType };
 };
 
 const ScheduleStack = createNativeStackNavigator<ScheduleStackParamList>();
@@ -68,9 +83,10 @@ function ScheduleStackNavigator() {
     >
       <ScheduleStack.Screen name="ScheduleList" component={ScheduleScreen} />
       <ScheduleStack.Screen
-        name="EventDetails"
+        name="Detail"
         component={DetailScreen}
         options={{ headerShown: true, title: "" }}
+        initialParams={{ item: null, type: null }}
       />
     </ScheduleStack.Navigator>
   );

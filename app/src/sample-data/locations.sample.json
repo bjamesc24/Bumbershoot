@@ -1,0 +1,42 @@
+[
+  {
+    "id": "restroom-north",
+    "name": "Restrooms — North",
+    "lat": 47.6229,
+    "lng": -122.3497,
+    "category": "restroom",
+    "description": "Permanent restroom facility, north end."
+  },
+  {
+    "id": "restroom-south",
+    "name": "Restrooms — South",
+    "lat": 47.6193,
+    "lng": -122.3503,
+    "category": "restroom",
+    "description": "Portable restrooms, south end."
+  },
+  {
+    "id": "restroom-central",
+    "name": "Restrooms — Central",
+    "lat": 47.6209,
+    "lng": -122.3491,
+    "category": "restroom",
+    "description": "Central restroom block near food vendors."
+  },
+  {
+    "id": "info-main",
+    "name": "Info Desk — Main",
+    "lat": 47.6212,
+    "lng": -122.3483,
+    "category": "info",
+    "description": "Main festival information and lost & found."
+  },
+  {
+    "id": "info-north",
+    "name": "Info Desk — North Gate",
+    "lat": 47.6231,
+    "lng": -122.3505,
+    "category": "info",
+    "description": "Information desk at the north entrance."
+  }
+]

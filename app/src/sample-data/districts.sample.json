@@ -1,0 +1,44 @@
+[
+  {
+    "id": "district-fashion",
+    "name": "Fashion",
+    "lat": 47.6213,
+    "lng": -122.3530,
+    "category": "art_district"
+  },
+  {
+    "id": "district-recess",
+    "name": "Recess",
+    "lat": 47.6232,
+    "lng": -122.3500,
+    "category": "art_district"
+  },
+  {
+    "id": "district-animation",
+    "name": "Animation",
+    "lat": 47.6229,
+    "lng": -122.3522,
+    "category": "art_district"
+  },
+  {
+    "id": "district-arts-culture",
+    "name": "Arts & Culture",
+    "lat": 47.6202,
+    "lng": -122.3510,
+    "category": "art_district"
+  },
+  {
+    "id": "district-geodesic-domes",
+    "name": "Geodesic Domes",
+    "lat": 47.6210,
+    "lng": -122.3508,
+    "category": "art_district"
+  },
+  {
+    "id": "district-century-21",
+    "name": "Century 21",
+    "lat": 47.6219,
+    "lng": -122.3519,
+    "category": "art_district"
+  }
+]

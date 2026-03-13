@@ -2,133 +2,81 @@
  * useScheduleData.ts
  * ------------------
  * Responsibility:
- *   Load, cache, and refresh all schedule items (events, workshops,
- *   vendors, food trucks, artists).
+ *   Load, cache, and refresh scheduled festival content using local sample data.
  *
- * Design considerations:
- *   - On mount, loads from AsyncStorage cache first for instant display.
- *   - If cache is empty, seeds from sample data so the schedule is never
- *     blank during development before the API is live.
- *   - Vendors/food trucks without set times default to festival open/close.
- *   - When API is live, replace seedAllItems() with real fetch calls.
- *   - FR-07.3: after refresh, diff old vs new items and notify of reschedules.
+ * Data sources:
+ *   - music.sample.json -> scheduled music
+ *   - art.sample.json   -> scheduled art
+ *
+ * Notes:
+ *   - Keeps loading, refresh, stale, and cache behavior for the Schedule screen
+ *   - Does NOT use events.sample.json or placeholder seeded data anymore
+ *   - Offline mode keeps cached data and marks schedule as stale
  */
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { loadScheduleCache, saveScheduleCache } from "../storage/scheduleStorage";
 import { isStale as isStaleFn } from "../utils/stalePolicy";
-import { ScheduleItem, FESTIVAL_OPEN, FESTIVAL_CLOSE } from "../models/schedule/scheduleTypes";
+import { ScheduleItem } from "../models/schedule/scheduleTypes";
+
+import musicData from "../sample-data/music.sample.json";
+import artData from "../sample-data/art.sample.json";
 
 // ---------------------------------------------------------------------------
-// Festival date helper — attaches open/close time to a date string
+// Helpers
 // ---------------------------------------------------------------------------
 
-function festivalDate(isoDate: string, timeStr: string): string {
-  return isoDate.split("T")[0] + timeStr;
+// Remove HTML tags from WordPress-rendered strings
+function stripHtml(str: string): string {
+  return str.replace(/<[^>]+>/g, "");
 }
 
-// ---------------------------------------------------------------------------
-// Sample data seed
-// ---------------------------------------------------------------------------
-
-function seedAllItems(): ScheduleItem[] {
-  const items: ScheduleItem[] = [];
-
-  // --- Events from Spencer's sample data ---
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const rawEvents = require("../sample-data/events.sample.json") as any[];
-  rawEvents.forEach((item) => {
-    items.push({
-      id: String(item.id),
-      title: item.title?.rendered ?? item.title ?? "Untitled",
-      startTime: item.meta?.event_start_time ?? item.date,
-      endTime: item.meta?.event_end_time ?? item.date,
-      stage: item.meta?.stage ?? "",
-      category: item.meta?.event_category ?? "Event",
-      itemType: "event",
-      description: item.content?.rendered?.replace(/<[^>]+>/g, "") ?? "",
+// Build normalized schedule items from music sample data
+function buildMusicScheduleItems(data: any[]): ScheduleItem[] {
+  return data
+    .filter((item) => item?.meta?.event_start_time && item?.meta?.event_end_time)
+    .map((item) => ({
+      id: `music-${item.id}`,
+      title: stripHtml(item?.title?.rendered ?? "Untitled"),
+      startTime: item.meta.event_start_time,
+      endTime: item.meta.event_end_time,
+      stage: item?.meta?.stage ?? "",
+      category: item?.meta?.event_category ?? item?.meta?.genre ?? "Music",
+      itemType: "musician",
+      description: stripHtml(item?.content?.rendered ?? ""),
       tags: [],
-    });
-  });
+      rawItem: item,
+    })) as ScheduleItem[];
+}
 
-  // --- Placeholder workshops ---
-  const workshops = [
-    { id: "workshop-1", name: "Screen Printing 101", location: "Arts Pavilion", start: "2026-03-14T11:00:00", end: "2026-03-07T12:30:00", category: "Arts & Crafts" },
-    { id: "workshop-2", name: "Comedy Workshop", location: "Comedy Stage", start: "2026-03-14T13:00:00", end: "2026-03-07T14:30:00", category: "Comedy" },
-    { id: "workshop-3", name: "Aerial Silks Demo", location: "Aerial Stage", start: "2026-03-14T15:00:00", end: "2026-03-07T16:00:00", category: "Aerial" },
-    { id: "workshop-4", name: "Fashion Showcase", location: "Fashion Stage", start: "2026-03-14T12:00:00", end: "2026-03-07T13:30:00", category: "Fashion" },
-    { id: "workshop-5", name: "Gravity Park Open Session", location: "Gravity Park", start: "2026-03-15T10:00:00", end: "2026-03-07T18:00:00", category: "Gravity Park" },
-  ];
-  workshops.forEach((w) => {
-    items.push({
-      id: w.id,
-      title: w.name,
-      startTime: w.start,
-      endTime: w.end,
-      stage: w.location,
-      category: w.category,
-      itemType: "workshop",
-    });
-  });
-
-  // --- Placeholder vendors (default to festival hours) ---
-  const vendors = [
-    { id: "vendor-1", name: "Vinyl Revival Records", type: "vendor", category: "Merchandise" },
-    { id: "vendor-2", name: "Pacific NW Crafts", type: "vendor", category: "Arts & Crafts" },
-    { id: "vendor-3", name: "Bumbershoot Merch", type: "vendor", category: "Merchandise" },
-  ];
-  vendors.forEach((v) => {
-    const dateBase = "2026-03-07";
-    items.push({
-      id: v.id,
-      title: v.name,
-      startTime: festivalDate(dateBase, FESTIVAL_OPEN),
-      endTime: festivalDate(dateBase, FESTIVAL_CLOSE),
-      stage: "Vendor Row",
-      category: v.category,
-      itemType: "vendor",
-    });
-  });
-
-  // --- Placeholder food trucks (default to festival hours) ---
-  const foodTrucks = [
-    { id: "food-1", name: "Noodle Box", category: "Food & Drink" },
-    { id: "food-2", name: "Smoke & Barrel BBQ", category: "Food & Drink" },
-    { id: "food-3", name: "The Arepa Lady", category: "Food & Drink" },
-    { id: "food-4", name: "Bubble Tea Bar", category: "Beverages" },
-  ];
-  foodTrucks.forEach((f) => {
-    const dateBase = "2026-03-07";
-    items.push({
-      id: f.id,
-      title: f.name,
-      startTime: festivalDate(dateBase, FESTIVAL_OPEN),
-      endTime: festivalDate(dateBase, FESTIVAL_CLOSE),
-      stage: "Food Court",
-      category: f.category,
-      itemType: "food_truck",
-    });
-  });
-
-  // --- Placeholder artists with set times ---
-  const artists = [
-    { id: "artist-1", name: "The Vera Saints", stage: "Vera Stage", start: "2026-03-07T19:00:00", end: "2026-03-07T20:00:00", genre: "Indie Rock" },
-    { id: "artist-2", name: "DJ Cascade", stage: "Fountain Stage", start: "2026-03-07T20:30:00", end: "2026-03-07T21:30:00", genre: "Electronic" },
-    { id: "artist-3", name: "Blue Mountain Choir", stage: "Mural Stage", start: "2026-03-08T14:00:00", end: "2026-03-08T15:00:00", genre: "Folk" },
-  ];
-  artists.forEach((a) => {
-    items.push({
-      id: a.id,
-      title: a.name,
-      startTime: a.start,
-      endTime: a.end,
-      stage: a.stage,
-      category: a.genre,
+// Build normalized schedule items from art sample data
+function buildArtScheduleItems(data: any[]): ScheduleItem[] {
+  return data
+    .filter((item) => item?.meta?.event_start_time && item?.meta?.event_end_time)
+    .map((item) => ({
+      id: `art-${item.id}`,
+      title: stripHtml(item?.title?.rendered ?? "Untitled"),
+      startTime: item.meta.event_start_time,
+      endTime: item.meta.event_end_time,
+      // Art schedule uses district, but we place it into stage so the
+      // schedule grid/list can reuse a shared column/location field.
+      stage: item?.meta?.district ?? "",
+      category: item?.meta?.district ?? "Art",
       itemType: "artist",
-    });
-  });
+      description: stripHtml(item?.content?.rendered ?? ""),
+      tags: [],
+      rawItem: item,
+    })) as ScheduleItem[];
+}
 
-  return items;
+// Combine all scheduled content from local JSON
+function buildAllScheduleItems(): ScheduleItem[] {
+  const musicItems = buildMusicScheduleItems(musicData as any[]);
+  const artItems = buildArtScheduleItems(artData as any[]);
+
+  return [...musicItems, ...artItems].sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -160,7 +108,7 @@ export default function useScheduleData(isOnline: boolean) {
     refreshError: null,
   });
 
-  // Load from cache on mount; seed sample data if cache is empty
+  // Load cached schedule first; if none exists, seed from local sample data
   useEffect(() => {
     (async () => {
       const cached = await loadScheduleCache();
@@ -175,12 +123,15 @@ export default function useScheduleData(isOnline: boolean) {
           isStale: isStaleFn(cached.lastUpdatedMs),
         }));
       } else {
-        const seeded = seedAllItems();
-        await saveScheduleCache(seeded, Date.now());
+        const seeded = buildAllScheduleItems();
+        const now = Date.now();
+
+        await saveScheduleCache(seeded, now);
+
         setState((s) => ({
           ...s,
           events: seeded,
-          lastUpdatedMs: Date.now(),
+          lastUpdatedMs: now,
           hasCache: true,
           isInitialLoading: false,
           isStale: false,
@@ -189,6 +140,7 @@ export default function useScheduleData(isOnline: boolean) {
     })();
   }, []);
 
+  // Refresh from local sample data
   const refresh = useCallback(async () => {
     if (!isOnline) {
       setState((s) => ({
@@ -199,12 +151,16 @@ export default function useScheduleData(isOnline: boolean) {
       return;
     }
 
-    setState((s) => ({ ...s, isRefreshing: true, refreshError: null }));
+    setState((s) => ({
+      ...s,
+      isRefreshing: true,
+      refreshError: null,
+    }));
 
     try {
-      // TODO: Replace with real API fetch when Aaron's WordPress URL is available
-      const items = seedAllItems();
+      const items = buildAllScheduleItems();
       const now = Date.now();
+
       await saveScheduleCache(items, now);
 
       setState((s) => ({
@@ -226,18 +182,26 @@ export default function useScheduleData(isOnline: boolean) {
     }
   }, [isOnline]);
 
-  // Auto-refresh when online and stale
+  // Auto-refresh when online and cached data is stale
   useEffect(() => {
-    if (isOnline && state.hasCache && state.isStale) refresh();
+    if (isOnline && state.hasCache && state.isStale) {
+      refresh();
+    }
   }, [isOnline, state.hasCache, state.isStale, refresh]);
 
+  // Human-readable last updated label
   const lastUpdatedText = useMemo(() => {
     if (!state.lastUpdatedMs) return "Never";
+
     return new Date(state.lastUpdatedMs).toLocaleTimeString(undefined, {
       hour: "numeric",
       minute: "2-digit",
     });
   }, [state.lastUpdatedMs]);
 
-  return { ...state, refresh, lastUpdatedText };
+  return {
+    ...state,
+    refresh,
+    lastUpdatedText,
+  };
 }

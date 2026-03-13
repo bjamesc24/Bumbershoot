@@ -21,6 +21,7 @@ import { useAppSettings } from "../context/AppSettingsContext";
 
 import Screen from "../components/Screen";
 import ThemedText from "../components/ThemedText";
+import { stripHtml } from "../utils/displayUtils";
 
 type SortMode = "az" | "za" | "recent" | "oldest";
 
@@ -152,7 +153,7 @@ export default function FavoritesScreen() {
             >
               <View style={styles.rowText}>
                 <ThemedText variant="body" weight="700">
-                  {item.title ?? item.id}
+                  {stripHtml(item.title ?? item.id)}
                 </ThemedText>
                 {item.start ? (
                   <ThemedText variant="caption" muted style={{ marginTop: 4 }}>

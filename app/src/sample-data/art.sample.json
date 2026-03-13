@@ -1,0 +1,322 @@
+[
+  {
+    "id": 401,
+    "date": "2026-07-01T09:00:00",
+    "slug": "sculpture-parking-lot-sun",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/sculpture-parking-lot-sun",
+    "title": { "rendered": "Sculpture Parking Lot" },
+    "content": { "rendered": "<p>Experience Research Lab featuring Sylwia Tur, Sue Danielson, Barbara Robertson, Clyde Petersen, Lukas Taylor, Kalina Winska, Margie Livingston, Seattle Design Nerds, Stella Bronson, Rachel Comer.</p>" },
+    "excerpt": { "rendered": "<p>All-day art installation at the Century 21 District.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-31T13:00:00",
+      "event_end_time": "2026-08-31T14:30:00",
+      "district": "Century 21",
+      "event_category": "Installation",
+      "genre": "Visual Art",
+      "image_url": null,
+      "coordinates": { "lat": 47.6219, "lng": -122.3519 }
+    }
+  },
+  {
+    "id": 402,
+    "date": "2026-07-01T09:00:00",
+    "slug": "nasa-presentation-sun",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/nasa-presentation-sun",
+    "title": { "rendered": "NASA Presentation by Michelle Thaller" },
+    "content": { "rendered": "<p>Songs for Space — NASA Presentation by NASA Astronomer Michelle Thaller.</p>" },
+    "excerpt": { "rendered": "<p>Songs for Space NASA presentation.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-31T14:45:00",
+      "event_end_time": "2026-08-31T16:15:00",
+      "district": "Century 21",
+      "event_category": "Talk",
+      "genre": "Science",
+      "image_url": null,
+      "coordinates": { "lat": 47.6219, "lng": -122.3519 }
+    }
+  },
+  {
+    "id": 307,
+    "date": "2026-07-01T09:00:00",
+    "slug": "flesh-produce-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/flesh-produce",
+    "title": { "rendered": "Flesh Produce" },
+    "content": { "rendered": "<p>Fashion showcase at the Fashion District.</p>" },
+    "excerpt": { "rendered": "<p>Fashion District performance.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T13:00:00",
+      "event_end_time": "2026-08-30T14:30:00",
+      "district": "Fashion",
+      "event_category": "Fashion",
+      "genre": "Fashion",
+      "image_url": null,
+      "coordinates": { "lat": 47.6213, "lng": -122.3530 }
+    }
+  },
+  {
+    "id": 308,
+    "date": "2026-07-01T09:00:00",
+    "slug": "tres-leches-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/tres-leches",
+    "title": { "rendered": "Tres Leches" },
+    "content": { "rendered": "<p>Fashion showcase at the Fashion District.</p>" },
+    "excerpt": { "rendered": "<p>Fashion District performance.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T14:45:00",
+      "event_end_time": "2026-08-30T16:15:00",
+      "district": "Fashion",
+      "event_category": "Fashion",
+      "genre": "Fashion",
+      "image_url": null,
+      "coordinates": { "lat": 47.6213, "lng": -122.3530 }
+    }
+  },
+  {
+    "id": 309,
+    "date": "2026-07-01T09:00:00",
+    "slug": "high-fashion-high-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/high-fashion-high",
+    "title": { "rendered": "High Fashion High" },
+    "content": { "rendered": "<p>Fashion showcase featuring creative wearable designs.</p>" },
+    "excerpt": { "rendered": "<p>Fashion showcase event.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T16:30:00",
+      "event_end_time": "2026-08-30T18:00:00",
+      "district": "Fashion",
+      "event_category": "Fashion",
+      "genre": "Fashion",
+      "image_url": null,
+      "coordinates": { "lat": 47.6213, "lng": -122.3530 }
+    }
+  },
+  {
+    "id": 310,
+    "date": "2026-07-01T09:00:00",
+    "slug": "lecia-farmer-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/lecia-farmer",
+    "title": { "rendered": "Le'ecia Farmer" },
+    "content": { "rendered": "<p>Fashion performance at the Fashion District.</p>" },
+    "excerpt": { "rendered": "<p>Fashion District performance.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T18:15:00",
+      "event_end_time": "2026-08-30T19:45:00",
+      "district": "Fashion",
+      "event_category": "Fashion",
+      "genre": "Fashion",
+      "image_url": null,
+      "coordinates": { "lat": 47.6213, "lng": -122.3530 }
+    }
+  },
+  {
+    "id": 316,
+    "date": "2026-07-01T09:00:00",
+    "slug": "roll-around-seatown-sat-1",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/roll-around-seatown-sat-1",
+    "title": { "rendered": "Roll Around Seatown" },
+    "content": { "rendered": "<p>Roller skating performance and showcase.</p>" },
+    "excerpt": { "rendered": "<p>Roll Around Seatown at the Recess District.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T13:00:00",
+      "event_end_time": "2026-08-30T14:30:00",
+      "district": "Recess",
+      "event_category": "Performance",
+      "genre": "Skating",
+      "image_url": null,
+      "coordinates": { "lat": 47.6232, "lng": -122.3500 }
+    }
+  },
+  {
+    "id": 317,
+    "date": "2026-07-01T09:00:00",
+    "slug": "double-dutch-divas-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/double-dutch-divas",
+    "title": { "rendered": "Double Dutch Divas" },
+    "content": { "rendered": "<p>Double dutch jump rope performance.</p>" },
+    "excerpt": { "rendered": "<p>Double Dutch Divas at the Recess District.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T14:45:00",
+      "event_end_time": "2026-08-30T16:15:00",
+      "district": "Recess",
+      "event_category": "Performance",
+      "genre": "Athletics",
+      "image_url": null,
+      "coordinates": { "lat": 47.6232, "lng": -122.3500 }
+    }
+  },
+  {
+    "id": 318,
+    "date": "2026-07-01T09:00:00",
+    "slug": "montana-pool-service-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/montana-pool-service",
+    "title": { "rendered": "Montana Pool Service" },
+    "content": { "rendered": "<p>Skate performance at the Recess District.</p>" },
+    "excerpt": { "rendered": "<p>Montana Pool Service at the Recess District.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T16:30:00",
+      "event_end_time": "2026-08-30T18:00:00",
+      "district": "Recess",
+      "event_category": "Performance",
+      "genre": "Skating",
+      "image_url": null,
+      "coordinates": { "lat": 47.6232, "lng": -122.3500 }
+    }
+  },
+  {
+    "id": 319,
+    "date": "2026-07-01T09:00:00",
+    "slug": "roll-around-seatown-sat-2",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/roll-around-seatown-sat-2",
+    "title": { "rendered": "Roll Around Seatown" },
+    "content": { "rendered": "<p>Roller skating performance and showcase.</p>" },
+    "excerpt": { "rendered": "<p>Roll Around Seatown at the Recess District.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T18:15:00",
+      "event_end_time": "2026-08-30T19:45:00",
+      "district": "Recess",
+      "event_category": "Performance",
+      "genre": "Skating",
+      "image_url": null,
+      "coordinates": { "lat": 47.6232, "lng": -122.3500 }
+    }
+  },
+  {
+    "id": 326,
+    "date": "2026-07-01T09:00:00",
+    "slug": "contemporary-animation-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/contemporary-animation",
+    "title": { "rendered": "Contemporary Animation" },
+    "content": { "rendered": "<p>All-day animation showcase featuring Brent Watanabe, Vincent Schwenk, Maayan Haim, Jessica Dolence, Britta Johnson, Neonsaltwater, Andreas Wannerstedt, James Gerde, The Tiny Chef, Andrea Love, Punk Juice, Lauren Schroeder, Jacob Peter Fennell, The Constant Lovers, Future Arts, David Stout, Bob Campbell, Tivon Rice, Doopiidoo.</p>" },
+    "excerpt": { "rendered": "<p>All-day contemporary animation showcase.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T13:00:00",
+      "event_end_time": "2026-08-30T14:30:00",
+      "district": "Animation",
+      "event_category": "Animation",
+      "genre": "Animation",
+      "image_url": null,
+      "coordinates": { "lat": 47.6229, "lng": -122.3522 }
+    }
+  },
+  {
+    "id": 331,
+    "date": "2026-07-01T09:00:00",
+    "slug": "iykyk-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/iykyk",
+    "title": { "rendered": "IYKYK (If You Know You Know)" },
+    "content": { "rendered": "<p>All-day arts and culture program featuring Luciano Ratto, Peter Ray, Leleita McKill, Gary Campbell, Damascus Purnell, Martin Douglas.</p>" },
+    "excerpt": { "rendered": "<p>All-day arts and culture showcase.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T13:00:00",
+      "event_end_time": "2026-08-30T14:30:00",
+      "district": "Arts & Culture",
+      "event_category": "Arts",
+      "genre": "Arts & Culture",
+      "image_url": null,
+      "coordinates": { "lat": 47.6202, "lng": -122.3510 }
+    }
+  },
+  {
+    "id": 338,
+    "date": "2026-07-01T09:00:00",
+    "slug": "cat-circus-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/cat-circus",
+    "title": { "rendered": "Cat Circus" },
+    "content": { "rendered": "<p>Cat Circus presented by Motley Zoo at the Geodesic Domes.</p>" },
+    "excerpt": { "rendered": "<p>Cat circus performance.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T14:45:00",
+      "event_end_time": "2026-08-30T16:15:00",
+      "district": "Geodesic Domes",
+      "event_category": "Performance",
+      "genre": "Circus",
+      "image_url": null,
+      "coordinates": { "lat": 47.6210, "lng": -122.3508 }
+    }
+  },
+  {
+    "id": 339,
+    "date": "2026-07-01T09:00:00",
+    "slug": "wig-farm-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/wig-farm",
+    "title": { "rendered": "Wig Farm" },
+    "content": { "rendered": "<p>All-day Wig Farm installation at the Geodesic Domes.</p>" },
+    "excerpt": { "rendered": "<p>All-day art installation.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T13:00:00",
+      "event_end_time": "2026-08-30T14:30:00",
+      "district": "Geodesic Domes",
+      "event_category": "Installation",
+      "genre": "Art",
+      "image_url": null,
+      "coordinates": { "lat": 47.6210, "lng": -122.3508 }
+    }
+  },
+  {
+    "id": 340,
+    "date": "2026-07-01T09:00:00",
+    "slug": "pole-pavilion-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/pole-pavilion",
+    "title": { "rendered": "Pole Pavilion" },
+    "content": { "rendered": "<p>Pole Pavilion by Raven Studios at the Geodesic Domes.</p>" },
+    "excerpt": { "rendered": "<p>Pole performance showcase.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T16:30:00",
+      "event_end_time": "2026-08-30T18:00:00",
+      "district": "Geodesic Domes",
+      "event_category": "Performance",
+      "genre": "Pole",
+      "image_url": null,
+      "coordinates": { "lat": 47.6210, "lng": -122.3508 }
+    }
+  },
+  {
+    "id": 341,
+    "date": "2026-07-01T09:00:00",
+    "slug": "comedy-dome-disabled-list-sat",
+    "status": "publish",
+    "type": "art",
+    "link": "https://example.com/art/comedy-dome-disabled-list",
+    "title": { "rendered": "Comedy Dome: The Disabled List" },
+    "content": { "rendered": "<p>The Disabled List with Dan Hurwitz (host), Kayla Brown (host), Crystal Liston, Gretta Gimp, Marcus Moreno.</p>" },
+    "excerpt": { "rendered": "<p>Stand-up comedy show.</p>" },
+    "meta": {
+      "event_start_time": "2026-08-30T18:15:00",
+      "event_end_time": "2026-08-30T19:45:00",
+      "district": "Geodesic Domes",
+      "event_category": "Comedy",
+      "genre": "Comedy",
+      "image_url": null,
+      "coordinates": { "lat": 47.6210, "lng": -122.3508 }
+    }
+  }
+]

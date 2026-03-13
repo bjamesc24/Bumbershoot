@@ -4,24 +4,24 @@
  * Responsibility:
  *   Define the unified ScheduleItem type used across the schedule screens.
  *
+ * Current app model:
+ *   - Music schedule items come from music.sample.json
+ *   - Art schedule items come from art.sample.json
+ *   - Vendors, stages, and districts are handled elsewhere in the app
+ *
  * Design considerations:
- *   - ScheduleItem replaces ScheduleEvent and covers all item types:
- *     events, workshops, vendors, food trucks, artists.
- *   - itemType distinguishes the source so UI can style/filter accordingly.
- *   - Vendors/food trucks without set times default to festival open/close hours
- *     at the data mapping layer (useScheduleData).
- *   - ScheduleEvent is kept as a type alias for backward compatibility.
+ *   - ScheduleItem is now focused on scheduled content only
+ *   - itemType distinguishes whether the scheduled item opens a musician
+ *     or artist detail screen
+ *   - rawItem preserves the original source object for navigation
  */
 
 export type ScheduleItemType =
-  | "event"
-  | "workshop"
-  | "vendor"
-  | "food_truck"
+  | "musician"
   | "artist";
 
 export type ScheduleItem = {
-  /** Stable unique identifier */
+  /** Stable unique identifier used in schedule + My Plan */
   id: string;
 
   /** Display title */
@@ -33,13 +33,17 @@ export type ScheduleItem = {
   /** ISO 8601 end time */
   endTime: string;
 
-  /** Stage name or physical location */
+  /**
+   * Shared display/location field for schedule views.
+   * - Music items use the stage name
+   * - Art items use the district name
+   */
   stage: string;
 
-  /** Broad category label e.g. "Music", "Food", "Workshop" */
+  /** Broad category label such as genre, event category, or art category */
   category: string;
 
-  /** Specific item type for filtering */
+  /** Specific scheduled content type */
   itemType: ScheduleItemType;
 
   /** Optional long description */
@@ -47,6 +51,9 @@ export type ScheduleItem = {
 
   /** Optional search tags */
   tags?: string[];
+
+  /** Original source object from local sample-data */
+  rawItem?: any;
 };
 
 /** Backward-compatible alias used by existing components */
@@ -63,12 +70,5 @@ export type ScheduleSortMode = "time" | "category" | "type";
 
 export type ScheduleTypeFilter =
   | "all"
-  | "event"
-  | "workshop"
-  | "vendor"
-  | "food_truck"
+  | "musician"
   | "artist";
-
-/** Festival open/close defaults for vendors and food trucks without set times */
-export const FESTIVAL_OPEN = "T10:00:00";
-export const FESTIVAL_CLOSE = "T22:00:00";

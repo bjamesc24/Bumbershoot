@@ -1,18 +1,17 @@
 /**
  * DetailScreen.tsx
- * ----------------
- * Responsibility:
- *   Unified detail screen for Events, Artists, Workshops, Vendors, and Venues.
- *   Accepts an item passed via navigation params and renders whatever fields exist.
  *
- *   Actions: Favorite, Attend, Share, External links (Spotify, Apple Music, website).
- *
- * Navigation params:
- *   item  — the full data object (WP event, stub artist, stub vendor, etc.)
- *   type  — "event" | "artist" | "workshop" | "vendor" | "venue"
+ * View types:
+ * - "musician"    → Artist profile: bio, genre, hometown, like, share, scheduled appearances
+ * - "artist"      → Art profile: bio, type, like, share, scheduled appearances
+ * - "vendor"      → Vendor info: type, description, like, share
+ * - "music-event" → Scheduled music event: time, stage, category, like, attend, share, link to artist
+ * - "art-event"   → Scheduled art event: time, district, category, like, attend, share, link to artist
+ * - "stage"       → All music events at this stage, tappable rows → music-event detail
+ * - "district"    → All art events in this district, tappable rows → art-event detail
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import {
   View,
   Text,
@@ -23,62 +22,368 @@ import {
   Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { isFavorited, toggleFavorite } from "../storage/favoritesStore";
-import { isAttending, toggleAttending } from "../storage/attendingStore";
+
+import { useItemActions } from "../hooks/useItemActions";
+import { useAttending } from "../context/AttendingContext";
+import { useAppSettings } from "../context/AppSettingsContext";
+import { stripHtml } from "../utils/displayUtils";
+import type { DetailType } from "../navigation/RootNavigator";
+
+import musicData from "../sample-data/music.sample.json";
+import artData from "../sample-data/art.sample.json";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 type DetailScreenParams = {
   item: any;
-  type: "event" | "artist" | "workshop" | "vendor" | "venue";
+  type: DetailType;
 };
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getNormalizedTitle(item: any): string {
+  const rawTitle =
+    item?.title?.rendered ??
+    (typeof item?.title === "string" ? item.title : null) ??
+    item?.name ??
+    "Untitled";
+  return stripHtml(rawTitle);
+}
+
+function getNormalizedDescription(item: any): string | null {
+  if (item?.content?.rendered) return stripHtml(item.content.rendered);
+  if (item?.description) return item.description;
+  return null;
+}
+
+function getNormalizedExcerpt(item: any): string | null {
+  if (item?.excerpt?.rendered) return stripHtml(item.excerpt.rendered);
+  return null;
+}
+
+function getCategoryValue(item: any, type: DetailType): string | null {
+  if (type === "musician") return item?.meta?.genre ?? item?.meta?.event_category ?? null;
+  if (type === "artist") return item?.meta?.type ?? item?.meta?.event_category ?? item?.meta?.genre ?? null;
+  if (type === "vendor") return item?.meta?.vendor_type ?? item?.meta?.type ?? null;
+  if (type === "music-event") return item?.meta?.event_category ?? item?.meta?.genre ?? null;
+  if (type === "art-event") return item?.meta?.event_category ?? item?.meta?.genre ?? null;
+  return null;
+}
+
+function getCategoryLabel(type: DetailType): string {
+  if (type === "musician") return "Genre";
+  if (type === "artist") return "Type";
+  if (type === "vendor") return "Vendor Type";
+  if (type === "music-event") return "Genre";
+  if (type === "art-event") return "Category";
+  return "Category";
+}
+
+function getBadgeLabel(type: DetailType): string {
+  if (type === "musician") return "MUSICIAN";
+  if (type === "artist") return "ARTIST";
+  if (type === "vendor") return "VENDOR";
+  if (type === "music-event") return "MUSIC";
+  if (type === "art-event") return "ART";
+  if (type === "stage") return "STAGE";
+  if (type === "district") return "DISTRICT";
+  return "";
+}
+
+function getScheduledItems(item: any, type: DetailType): any[] {
+  if (type !== "musician" && type !== "artist") return [];
+  const source = type === "musician" ? (musicData as any[]) : (artData as any[]);
+  const currentSlug = item?.slug ?? null;
+  const currentTitle = getNormalizedTitle(item);
+  return source.filter((entry) => {
+    const entrySlug = entry?.slug ?? null;
+    const entryTitle = getNormalizedTitle(entry);
+    if (currentSlug && entrySlug) return entrySlug === currentSlug;
+    return entryTitle === currentTitle;
+  });
+}
+
+function findArtistForEvent(item: any, type: DetailType): any | null {
+  if (type !== "music-event" && type !== "art-event") return null;
+  const source = type === "music-event" ? (musicData as any[]) : (artData as any[]);
+  const eventSlug = item?.slug ?? null;
+  const eventTitle = getNormalizedTitle(item);
+  return (
+    source.find((entry) => {
+      if (eventSlug && entry?.slug) return entry.slug === eventSlug;
+      return getNormalizedTitle(entry) === eventTitle;
+    }) ?? null
+  );
+}
+
+// All events at a given stage, sorted by start time
+function getStageEvents(stageName: string): any[] {
+  return (musicData as any[])
+    .filter((e) => e?.meta?.stage === stageName && e?.meta?.event_start_time)
+    .sort(
+      (a, b) =>
+        new Date(a.meta.event_start_time).getTime() -
+        new Date(b.meta.event_start_time).getTime()
+    );
+}
+
+// All events in a given district, sorted by start time
+function getDistrictEvents(districtName: string): any[] {
+  return (artData as any[])
+    .filter((e) => e?.meta?.district === districtName && e?.meta?.event_start_time)
+    .sort(
+      (a, b) =>
+        new Date(a.meta.event_start_time).getTime() -
+        new Date(b.meta.event_start_time).getTime()
+    );
+}
+
+// ---------------------------------------------------------------------------
+// ScheduleEntryRow — profile view appearances with attend button
+// ---------------------------------------------------------------------------
+
+function ScheduleEntryRow({
+  entryId,
+  entry,
+  formattedStart,
+  formattedEnd,
+  location,
+  category,
+}: {
+  entryId: string;
+  entry: any;
+  formattedStart: string | null;
+  formattedEnd: string | null;
+  location: string | null;
+  category: string | null;
+}) {
+  const { theme, themeColorHex } = useAppSettings();
+  const { isAttending, toggle } = useAttending();
+  const attending = isAttending(entryId);
+
+  const handleAttend = async () => {
+    await toggle({
+      id: entryId,
+      title: getNormalizedTitle(entry),
+      start: entry?.meta?.event_start_time,
+      end: entry?.meta?.event_end_time,
+      stage: entry?.meta?.stage ?? entry?.meta?.district,
+    });
+  };
+
+  return (
+    <View style={[s.scheduleItem, { borderBottomColor: theme.colors.border }]}>
+      <View style={s.scheduleItemHeader}>
+        <Text
+          style={[s.scheduleTitle, { color: theme.colors.text, fontSize: theme.typography.body }]}
+          numberOfLines={2}
+        >
+          {getNormalizedTitle(entry)}
+        </Text>
+        <TouchableOpacity
+          onPress={handleAttend}
+          style={[
+            s.attendChip,
+            {
+              borderColor: attending ? themeColorHex : theme.colors.border,
+              backgroundColor: attending ? themeColorHex : theme.colors.surface,
+            },
+          ]}
+        >
+          <Text
+            style={[
+              s.attendChipText,
+              { color: attending ? theme.colors.primaryText : theme.colors.textMuted },
+            ]}
+          >
+            {attending ? "Attending" : "Attend"}
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {formattedStart && (
+        <Text style={[s.scheduleMeta, { color: theme.colors.textMuted, fontSize: theme.typography.caption }]}>
+          {formattedStart}{formattedEnd ? ` – ${formattedEnd}` : ""}
+        </Text>
+      )}
+      {location && (
+        <Text style={[s.scheduleMeta, { color: theme.colors.textMuted, fontSize: theme.typography.caption }]}>
+          {location}
+        </Text>
+      )}
+      {category && (
+        <Text style={[s.scheduleMeta, { color: theme.colors.textMuted, fontSize: theme.typography.caption }]}>
+          {category}
+        </Text>
+      )}
+    </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// VenueEventRow — tappable event row used in stage/district views
+// ---------------------------------------------------------------------------
+
+function VenueEventRow({
+  entry,
+  onPress,
+}: {
+  entry: any;
+  onPress: () => void;
+}) {
+  const { theme, themeColorHex } = useAppSettings();
+  const entryId = entry?.type === "art"
+    ? `art-${entry.id}`
+    : `music-${entry.id}`;
+  const { isAttending, toggle } = useAttending();
+  const attending = isAttending(entryId);
+
+  const formattedStart = entry?.meta?.event_start_time
+    ? new Date(entry.meta.event_start_time).toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : null;
+
+  const formattedEnd = entry?.meta?.event_end_time
+    ? new Date(entry.meta.event_end_time).toLocaleTimeString(undefined, {
+        hour: "numeric",
+        minute: "2-digit",
+      })
+    : null;
+
+  const category = entry?.meta?.event_category ?? entry?.meta?.genre ?? null;
+
+  const handleAttend = async () => {
+    await toggle({
+      id: entryId,
+      title: getNormalizedTitle(entry),
+      start: entry?.meta?.event_start_time,
+      end: entry?.meta?.event_end_time,
+      stage: entry?.meta?.stage ?? entry?.meta?.district,
+    });
+  };
+
+  return (
+    <TouchableOpacity
+      style={[s.venueEventRow, { borderBottomColor: theme.colors.border, backgroundColor: theme.colors.surface }]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      {/* Left accent bar */}
+      <View style={[s.venueEventAccent, { backgroundColor: themeColorHex }]} />
+
+      <View style={s.venueEventContent}>
+        <View style={s.venueEventHeader}>
+          <Text
+            style={[s.venueEventTitle, { color: theme.colors.text, fontSize: theme.typography.body }]}
+            numberOfLines={1}
+          >
+            {getNormalizedTitle(entry)}
+          </Text>
+          <TouchableOpacity
+            onPress={handleAttend}
+            style={[
+              s.attendChip,
+              {
+                borderColor: attending ? themeColorHex : theme.colors.border,
+                backgroundColor: attending ? themeColorHex : theme.colors.surface2,
+              },
+            ]}
+          >
+            <Text
+              style={[
+                s.attendChipText,
+                { color: attending ? theme.colors.primaryText : theme.colors.textMuted },
+              ]}
+            >
+              {attending ? "Attending" : "Attend"}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {formattedStart && (
+          <Text style={[s.venueEventMeta, { color: theme.colors.textMuted, fontSize: theme.typography.caption }]}>
+            {formattedStart}{formattedEnd ? ` – ${formattedEnd}` : ""}
+          </Text>
+        )}
+        {category && (
+          <Text style={[s.venueEventMeta, { color: theme.colors.textMuted, fontSize: theme.typography.caption }]}>
+            {category}
+          </Text>
+        )}
+      </View>
+
+      <Text style={[s.venueEventArrow, { color: theme.colors.textMuted }]}>›</Text>
+    </TouchableOpacity>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main screen
+// ---------------------------------------------------------------------------
+
 export default function DetailScreen({ route }: any) {
-  const navigation = useNavigation();
-  const { item, type } = route.params as DetailScreenParams;
+  const navigation = useNavigation<any>();
+  const { theme, themeColorHex } = useAppSettings();
 
-  const id = String(item?.id ?? "");
-  const [favorited, setFavorited] = useState(false);
-  const [attending, setAttending] = useState(false);
+  const params = route?.params as DetailScreenParams | undefined;
+  const item = params?.item;
+  const type = params?.type;
 
-  useEffect(() => {
-    isFavorited(id).then(setFavorited);
-    isAttending(id).then(setAttending);
-  }, [id]);
+  if (!item || !type) {
+    return (
+      <ScrollView contentContainerStyle={[s.scroll, { backgroundColor: theme.colors.background }]}>
+        <View style={s.body}>
+          <Text style={[s.title, { color: theme.colors.text }]}>Missing detail data</Text>
+          <Text style={[s.desc, { color: theme.colors.textMuted }]}>
+            This screen was opened without the required item information.
+          </Text>
+        </View>
+      </ScrollView>
+    );
+  }
 
-  // Normalize title — WP shape uses title.rendered, ScheduleEvent uses title directly
-  const title =
-    item?.title?.rendered ?? (typeof item?.title === "string" ? item.title : null) ?? item?.name ?? "Untitled";
+  const id =
+    type === "musician" ? `music-${item?.id}` :
+    type === "artist" ? `art-${item?.id}` :
+    type === "music-event" ? `music-${item?.id}` :
+    type === "art-event" ? `art-${item?.id}` :
+    String(item?.id ?? "");
 
-  // Normalize description — WP shape uses content.rendered, ScheduleEvent uses description
-  const description =
-    item?.content?.rendered
-      ? item.content.rendered.replace(/<[^>]+>/g, "")
-      : item?.description ?? null;
+  const { favorited, handleFavorite } = useItemActions(id, item);
+  const { isAttending, toggle } = useAttending();
+  const attending = isAttending(id);
 
-  const excerpt =
-    item?.excerpt?.rendered
-      ? item.excerpt.rendered.replace(/<[^>]+>/g, "")
-      : null;
+  const isEventView = type === "music-event" || type === "art-event";
+  const isProfileView = type === "musician" || type === "artist";
+  const isVenueView = type === "stage" || type === "district";
 
-  // Event fields — handle both WP meta shape and ScheduleEvent shape
-  const startTime = item?.meta?.event_start_time ?? item?.startTime ?? item?.start ?? null;
-  const endTime = item?.meta?.event_end_time ?? item?.endTime ?? item?.end ?? null;
-  const stage = item?.meta?.stage ?? item?.stage ?? item?.location ?? null;
-  const category = item?.meta?.event_category ?? item?.category ?? item?.genre ?? item?.type ?? null;
-
-  // Venue-specific fields
-  const address = item?.meta?.address ?? null;
-  const capacity = item?.meta?.capacity ?? null;
-  const stageType = item?.meta?.stage_type ?? null;
-  const amenities: string[] = item?.meta?.amenities ?? [];
-
-  // External links — only show if present
+  const title = getNormalizedTitle(item);
+  const description = getNormalizedDescription(item);
+  const excerpt = getNormalizedExcerpt(item);
+  const categoryValue = getCategoryValue(item, type);
+  const categoryLabel = getCategoryLabel(type);
+  const badgeLabel = getBadgeLabel(type);
+  const hometown = item?.meta?.hometown ?? null;
+  const websiteUrl: string | null = item?.link ?? item?.meta?.website ?? null;
   const spotifyUrl: string | null = item?.meta?.spotify_url ?? item?.spotify_url ?? null;
   const appleMusicUrl: string | null = item?.meta?.apple_music_url ?? item?.apple_music_url ?? null;
-  const websiteUrl: string | null = item?.link ?? item?.meta?.website ?? null;
+  const lat = item?.meta?.coordinates?.lat ?? item?.lat ?? null;
+  const lng = item?.meta?.coordinates?.lng ?? item?.lng ?? null;
 
-  // Format times
-  const formattedStart = startTime
-    ? new Date(startTime).toLocaleString(undefined, {
+  const eventStart = item?.meta?.event_start_time ?? null;
+  const eventEnd = item?.meta?.event_end_time ?? null;
+  const stage = item?.meta?.stage ?? null;
+  const district = item?.meta?.district ?? null;
+  const location = stage ?? district ?? null;
+
+  const formattedEventStart = eventStart
+    ? new Date(eventStart).toLocaleString(undefined, {
         weekday: "short",
         month: "short",
         day: "numeric",
@@ -87,189 +392,355 @@ export default function DetailScreen({ route }: any) {
       })
     : null;
 
-  const formattedEnd = endTime
-    ? new Date(endTime).toLocaleTimeString(undefined, {
+  const formattedEventEnd = eventEnd
+    ? new Date(eventEnd).toLocaleTimeString(undefined, {
         hour: "numeric",
         minute: "2-digit",
       })
     : null;
 
-  // ---------------------------------------------------------------------------
-  // Actions
-  // ---------------------------------------------------------------------------
+  const scheduledItems = useMemo(() => getScheduledItems(item, type), [item, type]);
+  const scheduleLabel =
+    type === "musician" ? "Scheduled Music" :
+    type === "artist" ? "Scheduled Art" : null;
 
-  const handleFavorite = async () => {
-    const { isNowFavorited } = await toggleFavorite({
+  const linkedArtist = useMemo(() => findArtistForEvent(item, type), [item, type]);
+
+  // Stage / district events
+  const venueName = item?.name ?? "";
+  const venueEvents = useMemo(() => {
+    if (type === "stage") return getStageEvents(venueName);
+    if (type === "district") return getDistrictEvents(venueName);
+    return [];
+  }, [type, venueName]);
+
+  const handleAttend = async () => {
+    await toggle({
       id,
       title,
-      start: startTime ?? undefined,
+      start: eventStart,
+      end: eventEnd,
+      stage: location,
     });
-    setFavorited(isNowFavorited);
-  };
-
-  const handleAttending = async () => {
-    const { isNowAttending } = await toggleAttending({
-      id,
-      title,
-      start: startTime ?? undefined,
-      end: endTime ?? undefined,
-      stage: stage ?? undefined,
-    });
-    setAttending(isNowAttending);
   };
 
   const handleShare = async () => {
     try {
       await Share.share({
-        message: websiteUrl
-          ? `${title} — ${websiteUrl}`
-          : title,
+        message: websiteUrl ? `${title} — ${websiteUrl}` : title,
         title,
       });
-    } catch {
-      // Share dismissed
-    }
+    } catch {}
   };
 
   const handleExternalLink = (url: string) => {
     Linking.openURL(url).catch(() => {});
   };
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
+  const handleGoToArtist = () => {
+    if (!linkedArtist) return;
+    navigation.push("Detail", {
+      item: linkedArtist,
+      type: type === "music-event" ? "musician" : "artist",
+    });
+  };
+
+  const handleVenueEventPress = (entry: any) => {
+    navigation.push("Detail", {
+      item: entry,
+      type: type === "stage" ? "music-event" : "art-event",
+    });
+  };
 
   return (
-    <ScrollView contentContainerStyle={s.scroll}>
-
-      {/* Image placeholder */}
-      <View style={s.imagePlaceholder} />
+    <ScrollView contentContainerStyle={[s.scroll, { backgroundColor: theme.colors.background }]}>
+      <View style={[s.imagePlaceholder, { backgroundColor: theme.colors.surface2 }]} />
 
       <View style={s.body}>
+        <Text style={[s.title, { color: theme.colors.text, fontSize: theme.typography.h1 }]}>
+          {title}
+        </Text>
+        <Text style={[s.badge, { color: theme.colors.textMuted }]}>{badgeLabel}</Text>
 
-        {/* Title */}
-        <Text style={s.title}>{title}</Text>
-
-        {/* Type badge */}
-        <Text style={s.badge}>{type.toUpperCase()}</Text>
-
-        {/* Time and location — events */}
-        {formattedStart && (
+        {/* Event view: time block */}
+        {isEventView && formattedEventStart && (
           <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>When</Text>
-            <Text style={s.metaValue}>
-              {formattedStart}{formattedEnd ? ` – ${formattedEnd}` : ""}
+            <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>Time</Text>
+            <Text style={[s.metaValue, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {formattedEventStart}{formattedEventEnd ? ` – ${formattedEventEnd}` : ""}
             </Text>
           </View>
         )}
 
-        {stage && (
+        {/* Event view: stage or district */}
+        {isEventView && location && (
           <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Stage</Text>
-            <Text style={s.metaValue}>{stage}</Text>
+            <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>
+              {stage ? "Stage" : "District"}
+            </Text>
+            <Text style={[s.metaValue, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {location}
+            </Text>
           </View>
         )}
 
-        {category && (
+        {/* Category */}
+        {categoryValue && (
           <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Category</Text>
-            <Text style={s.metaValue}>{category}</Text>
+            <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>{categoryLabel}</Text>
+            <Text style={[s.metaValue, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {stripHtml(String(categoryValue))}
+            </Text>
           </View>
         )}
 
-        {/* Venue-specific fields */}
-        {address && (
+        {/* Profile: hometown */}
+        {isProfileView && hometown && (
           <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Address</Text>
-            <Text style={s.metaValue}>{address}</Text>
+            <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>Hometown</Text>
+            <Text style={[s.metaValue, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {hometown}
+            </Text>
           </View>
         )}
 
-        {capacity && (
+        {/* Vendor: coordinates */}
+        {type === "vendor" && lat != null && lng != null && (
           <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Capacity</Text>
-            <Text style={s.metaValue}>{capacity.toLocaleString()}</Text>
+            <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>Coordinates</Text>
+            <Text style={[s.metaValue, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {lat}, {lng}
+            </Text>
           </View>
         )}
 
-        {stageType && (
+        {/* Venue view: event count */}
+        {isVenueView && (
           <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Stage Type</Text>
-            <Text style={s.metaValue}>{stageType}</Text>
+            <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>
+              {type === "stage" ? "Stage" : "Art District"}
+            </Text>
+            <Text style={[s.metaValue, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {venueEvents.length} event{venueEvents.length !== 1 ? "s" : ""}
+            </Text>
           </View>
         )}
 
-        {amenities.length > 0 && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Amenities</Text>
-            <Text style={s.metaValue}>{amenities.join(", ")}</Text>
-          </View>
-        )}
-
-        {/* Description */}
-        {(excerpt || description) && (
+        {/* About — profile and vendor only */}
+        {!isEventView && !isVenueView && (excerpt || description) && (
           <View style={s.descBlock}>
-            <Text style={s.sectionLabel}>About</Text>
-            <Text style={s.desc}>{excerpt ?? description}</Text>
+            <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>About</Text>
+            <Text style={[s.desc, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+              {excerpt ?? description}
+            </Text>
           </View>
         )}
 
-        {/* Action buttons */}
-        <View style={s.actions}>
-          <TouchableOpacity
-            style={[s.actionBtn, favorited && s.actionBtnActive]}
-            onPress={handleFavorite}
-          >
-            <Text style={[s.actionBtnText, favorited && s.actionBtnTextActive]}>
-              {favorited ? "Saved" : "Save"}
-            </Text>
-          </TouchableOpacity>
+        {/* Actions — not shown for venue views */}
+        {!isVenueView && (
+          <View style={s.actions}>
+            <TouchableOpacity
+              style={[
+                s.actionBtn,
+                {
+                  borderColor: favorited ? themeColorHex : theme.colors.border,
+                  backgroundColor: favorited ? themeColorHex : theme.colors.surface,
+                },
+              ]}
+              onPress={() => handleFavorite(title)}
+            >
+              <Text
+                style={[
+                  s.actionBtnText,
+                  {
+                    color: favorited ? theme.colors.primaryText : theme.colors.text,
+                    fontSize: theme.typography.body,
+                  },
+                ]}
+              >
+                {favorited ? "Liked" : "Like"}
+              </Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[s.actionBtn, attending && s.actionBtnActive]}
-            onPress={handleAttending}
-          >
-            <Text style={[s.actionBtnText, attending && s.actionBtnTextActive]}>
-              {attending ? "Attending" : "Attend"}
-            </Text>
-          </TouchableOpacity>
+            {isEventView && (
+              <TouchableOpacity
+                style={[
+                  s.actionBtn,
+                  {
+                    borderColor: attending ? themeColorHex : theme.colors.border,
+                    backgroundColor: attending ? themeColorHex : theme.colors.surface,
+                  },
+                ]}
+                onPress={handleAttend}
+              >
+                <Text
+                  style={[
+                    s.actionBtnText,
+                    {
+                      color: attending ? theme.colors.primaryText : theme.colors.text,
+                      fontSize: theme.typography.body,
+                    },
+                  ]}
+                >
+                  {attending ? "Attending" : "Attend"}
+                </Text>
+              </TouchableOpacity>
+            )}
 
-          <TouchableOpacity style={s.actionBtn} onPress={handleShare}>
-            <Text style={s.actionBtnText}>Share</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={[
+                s.actionBtn,
+                { borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
+              ]}
+              onPress={handleShare}
+            >
+              <Text style={[s.actionBtnText, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+                Share
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
 
-        {/* External links — only shown if available */}
-        {(spotifyUrl || appleMusicUrl || websiteUrl) && (
+        {/* Event view: link to artist profile */}
+        {isEventView && linkedArtist && (
+          <View style={s.artistLinkBlock}>
+            <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>Artist</Text>
+            <TouchableOpacity
+              style={[
+                s.artistLinkBtn,
+                { borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
+              ]}
+              onPress={handleGoToArtist}
+            >
+              <Text style={[s.artistLinkTitle, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+                {getNormalizedTitle(linkedArtist)}
+              </Text>
+              <Text style={[s.artistLinkArrow, { color: theme.colors.textMuted }]}>→</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Profile: external links */}
+        {isProfileView && (spotifyUrl || appleMusicUrl || websiteUrl) && (
           <View style={s.linksBlock}>
-            <Text style={s.sectionLabel}>Links</Text>
+            <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>Links</Text>
+
             {spotifyUrl && (
               <TouchableOpacity
-                style={s.linkBtn}
+                style={[s.linkBtn, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}
                 onPress={() => handleExternalLink(spotifyUrl)}
               >
-                <Text style={s.linkBtnText}>Spotify</Text>
+                <Text style={[s.linkBtnText, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+                  Spotify
+                </Text>
               </TouchableOpacity>
             )}
+
             {appleMusicUrl && (
               <TouchableOpacity
-                style={s.linkBtn}
+                style={[s.linkBtn, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}
                 onPress={() => handleExternalLink(appleMusicUrl)}
               >
-                <Text style={s.linkBtnText}>Apple Music</Text>
+                <Text style={[s.linkBtnText, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+                  Apple Music
+                </Text>
               </TouchableOpacity>
             )}
+
             {websiteUrl && (
               <TouchableOpacity
-                style={s.linkBtn}
+                style={[s.linkBtn, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}
                 onPress={() => handleExternalLink(websiteUrl)}
               >
-                <Text style={s.linkBtnText}>Website</Text>
+                <Text style={[s.linkBtnText, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+                  Website
+                </Text>
               </TouchableOpacity>
             )}
           </View>
         )}
 
+        {/* Vendor: website */}
+        {type === "vendor" && websiteUrl && (
+          <View style={s.linksBlock}>
+            <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>Links</Text>
+            <TouchableOpacity
+              style={[s.linkBtn, { borderColor: theme.colors.border, backgroundColor: theme.colors.surface }]}
+              onPress={() => handleExternalLink(websiteUrl)}
+            >
+              <Text style={[s.linkBtnText, { color: theme.colors.text, fontSize: theme.typography.body }]}>
+                Website
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* Profile: scheduled appearances */}
+        {scheduleLabel && scheduledItems.length > 0 && (
+          <View style={s.scheduleBlock}>
+            <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>{scheduleLabel}</Text>
+
+            {scheduledItems.map((entry) => {
+              const entryId =
+                type === "musician" ? `music-${entry.id}` : `art-${entry.id}`;
+
+              const formattedStart = entry?.meta?.event_start_time
+                ? new Date(entry.meta.event_start_time).toLocaleString(undefined, {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })
+                : null;
+
+              const formattedEnd = entry?.meta?.event_end_time
+                ? new Date(entry.meta.event_end_time).toLocaleTimeString(undefined, {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })
+                : null;
+
+              const entryLocation = entry?.meta?.stage ?? entry?.meta?.district ?? null;
+              const entryCategory = entry?.meta?.event_category ?? entry?.meta?.genre ?? null;
+
+              return (
+                <ScheduleEntryRow
+                  key={entryId}
+                  entryId={entryId}
+                  entry={entry}
+                  formattedStart={formattedStart}
+                  formattedEnd={formattedEnd}
+                  location={entryLocation}
+                  category={entryCategory}
+                />
+              );
+            })}
+          </View>
+        )}
+
+        {/* Venue view: events list */}
+        {isVenueView && (
+          <View style={s.scheduleBlock}>
+            <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>
+              {type === "stage" ? "Performances" : "Events"}
+            </Text>
+
+            {venueEvents.length === 0 ? (
+              <Text style={[s.desc, { color: theme.colors.textMuted }]}>
+                No events scheduled yet.
+              </Text>
+            ) : (
+              venueEvents.map((entry) => (
+                <VenueEventRow
+                  key={entry.id}
+                  entry={entry}
+                  onPress={() => handleVenueEventPress(entry)}
+                />
+              ))
+            )}
+          </View>
+        )}
       </View>
     </ScrollView>
   );
@@ -286,20 +757,17 @@ const s = StyleSheet.create({
   imagePlaceholder: {
     width: "100%",
     height: 220,
-    backgroundColor: "#D9D9D9",
   },
   body: {
     padding: 16,
   },
   title: {
-    fontSize: 24,
     fontWeight: "800",
     marginBottom: 4,
   },
   badge: {
     fontSize: 11,
     fontWeight: "600",
-    color: "#888",
     letterSpacing: 1,
     marginBottom: 16,
   },
@@ -309,13 +777,12 @@ const s = StyleSheet.create({
   metaLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#888",
     letterSpacing: 0.5,
     textTransform: "uppercase",
     marginBottom: 2,
   },
   metaValue: {
-    fontSize: 15,
+    fontWeight: "400",
   },
   descBlock: {
     marginTop: 16,
@@ -324,15 +791,12 @@ const s = StyleSheet.create({
   sectionLabel: {
     fontSize: 11,
     fontWeight: "700",
-    color: "#888",
     letterSpacing: 0.5,
     textTransform: "uppercase",
     marginBottom: 6,
   },
   desc: {
-    fontSize: 15,
     lineHeight: 22,
-    color: "#333",
   },
   actions: {
     flexDirection: "row",
@@ -346,20 +810,27 @@ const s = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
-  },
-  actionBtnActive: {
-    backgroundColor: "#1A1A1A",
-    borderColor: "#1A1A1A",
   },
   actionBtnText: {
-    fontSize: 14,
     fontWeight: "600",
-    color: "#1A1A1A",
   },
-  actionBtnTextActive: {
-    color: "#FFF",
+  artistLinkBlock: {
+    marginTop: 20,
+  },
+  artistLinkBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  artistLinkTitle: {
+    fontWeight: "700",
+  },
+  artistLinkArrow: {
+    fontSize: 16,
   },
   linksBlock: {
     marginTop: 20,
@@ -370,11 +841,75 @@ const s = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
   },
   linkBtnText: {
-    fontSize: 14,
     fontWeight: "600",
+  },
+  scheduleBlock: {
+    marginTop: 24,
+  },
+  scheduleItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  scheduleItemHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 4,
+  },
+  scheduleTitle: {
+    fontWeight: "700",
+    flex: 1,
+    marginRight: 8,
+  },
+  scheduleMeta: {
+    marginBottom: 2,
+  },
+  attendChip: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+    borderWidth: 1,
+  },
+  attendChipText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  // Venue event rows
+  venueEventRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderRadius: 10,
+    marginBottom: 8,
+    overflow: "hidden",
+  },
+  venueEventAccent: {
+    width: 4,
+    alignSelf: "stretch",
+  },
+  venueEventContent: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  venueEventHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 3,
+  },
+  venueEventTitle: {
+    fontWeight: "700",
+    flex: 1,
+    marginRight: 8,
+  },
+  venueEventMeta: {
+    marginBottom: 2,
+  },
+  venueEventArrow: {
+    fontSize: 20,
+    paddingHorizontal: 12,
   },
 });

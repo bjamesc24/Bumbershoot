@@ -1,38 +1,111 @@
-[
-  {
-    "id": "ann-1",
-    "title": "Stage 3 Delayed — 30 Minutes",
-    "message": "Due to a sound equipment issue, all Stage 3 performances will begin 30 minutes behind schedule. We apologize for the inconvenience.",
-    "priority": "urgent",
-    "publishedAt": "2026-09-02T14:00:00Z"
-  },
-  {
-    "id": "ann-4",
-    "title": "Welcome to Bumbershoot 2026!",
-    "message": "We are so excited to have you here. Check the schedule tab for today's full lineup and don't miss a thing.",
-    "priority": "general",
-    "publishedAt": "2026-09-02T08:00:00Z"
-  },
-  {
-    "id": "ann-2",
-    "title": "Weather Advisory",
-    "message": "Light rain is expected this evening. We recommend bringing a rain jacket or poncho. The festival will continue as scheduled.",
-    "priority": "urgent",
-    "publishedAt": "2026-09-02T12:00:00Z"
-  },
-  {
-    "id": "ann-3",
-    "title": "The Headliner Band — Gate Opens Early",
-    "message": "Gates for Climate Pledge Arena will open 45 minutes early tonight for The Headliner Band. Doors at 6:15pm.",
-    "priority": "personal",
-    "publishedAt": "2026-09-02T10:00:00Z",
-    "eventId": "demo-event-1"
-  },
-  {
-    "id": "ann-5",
-    "title": "New Food Vendors on the South Lawn",
-    "message": "Four new food vendors have set up on the South Lawn near Fisher Pavilion. Come check out locally sourced options from 11am onwards.",
-    "priority": "general",
-    "publishedAt": "2026-09-02T09:00:00Z"
-  }
-]
+{
+  "generated_at": "2026-08-30T08:00:00-07:00",
+  "announcement_count": 7,
+  "announcements": [
+    {
+      "id": 501,
+      "title": "Fountain Stage Delayed — 30 Minutes",
+      "body": "Due to a sound equipment issue, all Fountain Stage performances will begin 30 minutes behind schedule. We apologize for the inconvenience.",
+      "type": "schedule-change",
+      "priority": "urgent",
+      "is_pinned": true,
+      "published_at": "2026-08-30T14:00:00-07:00",
+      "expires_at": "2026-08-30T20:00:00-07:00",
+      "day": "day-1",
+      "related_event": null,
+      "related_venue": { "id": 1, "title": "Fountain Stage", "short_name": "Fountain" },
+      "external_url": null,
+      "external_url_label": null
+    },
+    {
+      "id": 502,
+      "title": "Weather Advisory",
+      "body": "Light rain is expected this evening. We recommend bringing a rain jacket or poncho. The festival will continue as scheduled.",
+      "type": "weather",
+      "priority": "urgent",
+      "is_pinned": true,
+      "published_at": "2026-08-30T12:00:00-07:00",
+      "expires_at": null,
+      "day": "all-days",
+      "related_event": null,
+      "related_venue": null,
+      "external_url": null,
+      "external_url_label": null
+    },
+    {
+      "id": 503,
+      "title": "Say She She — Set Time Change",
+      "body": "Say She She's set at the Fountain Stage has moved to 3:30pm. Updated times are reflected in the schedule.",
+      "type": "schedule-change",
+      "priority": "normal",
+      "is_pinned": false,
+      "published_at": "2026-08-30T10:00:00-07:00",
+      "expires_at": "2026-08-30T16:00:00-07:00",
+      "day": "day-1",
+      "related_event": { "id": 103, "title": "Say She She", "slug": "say-she-she-fountain-sat" },
+      "related_venue": { "id": 1, "title": "Fountain Stage", "short_name": "Fountain" },
+      "external_url": null,
+      "external_url_label": null
+    },
+    {
+      "id": 504,
+      "title": "The Linda Lindas — Early Doors",
+      "body": "Gates for The Linda Lindas at the Fountain Stage will open 30 minutes early. Arrive by 3:30pm to secure your spot.",
+      "type": "service",
+      "priority": "normal",
+      "is_pinned": false,
+      "published_at": "2026-08-31T10:00:00-07:00",
+      "expires_at": "2026-08-31T16:00:00-07:00",
+      "day": "day-2",
+      "related_event": { "id": 203, "title": "The Linda Lindas", "slug": "the-linda-lindas-fountain-sun" },
+      "related_venue": { "id": 1, "title": "Fountain Stage", "short_name": "Fountain" },
+      "external_url": null,
+      "external_url_label": null
+    },
+    {
+      "id": 505,
+      "title": "Cat Circus — Second Show Added",
+      "body": "Due to popular demand, Cat Circus at the Geodesic Domes will perform an additional set at 5:00pm on Saturday.",
+      "type": "schedule-change",
+      "priority": "normal",
+      "is_pinned": false,
+      "published_at": "2026-08-30T09:00:00-07:00",
+      "expires_at": null,
+      "day": "day-1",
+      "related_event": { "id": 338, "title": "Cat Circus", "slug": "cat-circus-sat" },
+      "related_venue": { "id": 5, "title": "Geodesic Domes", "short_name": "Geodesic Domes" },
+      "external_url": null,
+      "external_url_label": null
+    },
+    {
+      "id": 506,
+      "title": "Welcome to Bumbershoot 2026!",
+      "body": "We are so excited to have you here. Check the schedule tab for today's full lineup and don't miss a thing.",
+      "type": "general",
+      "priority": "normal",
+      "is_pinned": false,
+      "published_at": "2026-08-30T08:00:00-07:00",
+      "expires_at": null,
+      "day": "all-days",
+      "related_event": null,
+      "related_venue": null,
+      "external_url": null,
+      "external_url_label": null
+    },
+    {
+      "id": 507,
+      "title": "New Food Vendors on the South Lawn",
+      "body": "Four new food vendors have set up on the South Lawn near Fisher Pavilion. Come check out locally sourced options from 11am onwards.",
+      "type": "service",
+      "priority": "normal",
+      "is_pinned": false,
+      "published_at": "2026-08-30T09:30:00-07:00",
+      "expires_at": null,
+      "day": "all-days",
+      "related_event": null,
+      "related_venue": null,
+      "external_url": null,
+      "external_url_label": null
+    }
+  ]
+}
