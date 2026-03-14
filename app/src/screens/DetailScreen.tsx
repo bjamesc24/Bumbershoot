@@ -20,6 +20,7 @@ import {
   StyleSheet,
   Share,
   Linking,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -31,6 +32,15 @@ import type { DetailType } from "../navigation/RootNavigator";
 
 import musicData from "../sample-data/music.sample.json";
 import artData from "../sample-data/art.sample.json";
+
+import {
+  artImageRegistry,
+  musicImageRegistry,
+  vendorImageRegistry,
+  defaultArtImage,
+  defaultMusicImage,
+  defaultVendorImage,
+} from "../constants/imageRegistry";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -140,6 +150,24 @@ function getDistrictEvents(districtName: string): any[] {
         new Date(a.meta.event_start_time).getTime() -
         new Date(b.meta.event_start_time).getTime()
     );
+}
+
+function getDetailImageSource(item: any, type: DetailType): any | null {
+  if (!item) return null;
+
+  if ((type === "musician" || type === "music-event") && item?.meta?.image_url) {
+    return musicImageRegistry[item.meta.image_url] ?? defaultMusicImage;
+  }
+
+  if ((type === "artist" || type === "art-event") && item?.meta?.image_url) {
+    return artImageRegistry[item.meta.image_url] ?? defaultArtImage;
+  }
+
+  if (type === "vendor" && item?.image_url) {
+    return vendorImageRegistry[item.image_url] ?? defaultVendorImage;
+  }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -274,7 +302,6 @@ function VenueEventRow({
       onPress={onPress}
       activeOpacity={0.7}
     >
-      {/* Left accent bar */}
       <View style={[s.venueEventAccent, { backgroundColor: themeColorHex }]} />
 
       <View style={s.venueEventContent}>
@@ -376,6 +403,8 @@ export default function DetailScreen({ route }: any) {
   const lat = item?.meta?.coordinates?.lat ?? item?.lat ?? null;
   const lng = item?.meta?.coordinates?.lng ?? item?.lng ?? null;
 
+  const imageSource = getDetailImageSource(item, type);
+
   const eventStart = item?.meta?.event_start_time ?? null;
   const eventEnd = item?.meta?.event_end_time ?? null;
   const stage = item?.meta?.stage ?? null;
@@ -406,7 +435,6 @@ export default function DetailScreen({ route }: any) {
 
   const linkedArtist = useMemo(() => findArtistForEvent(item, type), [item, type]);
 
-  // Stage / district events
   const venueName = item?.name ?? "";
   const venueEvents = useMemo(() => {
     if (type === "stage") return getStageEvents(venueName);
@@ -454,7 +482,11 @@ export default function DetailScreen({ route }: any) {
 
   return (
     <ScrollView contentContainerStyle={[s.scroll, { backgroundColor: theme.colors.background }]}>
-      <View style={[s.imagePlaceholder, { backgroundColor: theme.colors.surface2 }]} />
+      {imageSource ? (
+        <Image source={imageSource} style={s.heroImage} resizeMode="cover" />
+      ) : (
+        <View style={[s.imagePlaceholder, { backgroundColor: theme.colors.surface2 }]} />
+      )}
 
       <View style={s.body}>
         <Text style={[s.title, { color: theme.colors.text, fontSize: theme.typography.h1 }]}>
@@ -462,7 +494,6 @@ export default function DetailScreen({ route }: any) {
         </Text>
         <Text style={[s.badge, { color: theme.colors.textMuted }]}>{badgeLabel}</Text>
 
-        {/* Event view: time block */}
         {isEventView && formattedEventStart && (
           <View style={s.metaBlock}>
             <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>Time</Text>
@@ -472,7 +503,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Event view: stage or district */}
         {isEventView && location && (
           <View style={s.metaBlock}>
             <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>
@@ -484,7 +514,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Category */}
         {categoryValue && (
           <View style={s.metaBlock}>
             <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>{categoryLabel}</Text>
@@ -494,7 +523,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Profile: hometown */}
         {isProfileView && hometown && (
           <View style={s.metaBlock}>
             <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>Hometown</Text>
@@ -504,7 +532,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Vendor: coordinates */}
         {type === "vendor" && lat != null && lng != null && (
           <View style={s.metaBlock}>
             <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>Coordinates</Text>
@@ -514,7 +541,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Venue view: event count */}
         {isVenueView && (
           <View style={s.metaBlock}>
             <Text style={[s.metaLabel, { color: theme.colors.textMuted }]}>
@@ -526,7 +552,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* About — profile and vendor only */}
         {!isEventView && !isVenueView && (excerpt || description) && (
           <View style={s.descBlock}>
             <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>About</Text>
@@ -536,7 +561,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Actions — not shown for venue views */}
         {!isVenueView && (
           <View style={s.actions}>
             <TouchableOpacity
@@ -601,7 +625,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Event view: link to artist profile */}
         {isEventView && linkedArtist && (
           <View style={s.artistLinkBlock}>
             <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>Artist</Text>
@@ -620,7 +643,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Profile: external links */}
         {isProfileView && (spotifyUrl || appleMusicUrl || websiteUrl) && (
           <View style={s.linksBlock}>
             <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>Links</Text>
@@ -660,7 +682,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Vendor: website */}
         {type === "vendor" && websiteUrl && (
           <View style={s.linksBlock}>
             <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>Links</Text>
@@ -675,7 +696,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Profile: scheduled appearances */}
         {scheduleLabel && scheduledItems.length > 0 && (
           <View style={s.scheduleBlock}>
             <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>{scheduleLabel}</Text>
@@ -719,7 +739,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Venue view: events list */}
         {isVenueView && (
           <View style={s.scheduleBlock}>
             <Text style={[s.sectionLabel, { color: theme.colors.textMuted }]}>
@@ -753,6 +772,10 @@ export default function DetailScreen({ route }: any) {
 const s = StyleSheet.create({
   scroll: {
     paddingBottom: 48,
+  },
+  heroImage: {
+    width: "100%",
+    height: 220,
   },
   imagePlaceholder: {
     width: "100%",
@@ -876,7 +899,6 @@ const s = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  // Venue event rows
   venueEventRow: {
     flexDirection: "row",
     alignItems: "center",

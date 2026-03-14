@@ -1,7 +1,5 @@
 {
-  "datasets": {
-    "events": { "version": "v1", "changed": false },
-    "artists": { "version": "v1", "changed": false },
-    "venues": { "version": "v1", "changed": false }
-  }
+  "lastUpdated": "2026-08-30T09:30:00Z",
+  "version": 1,
+  "has_changes": false
 }

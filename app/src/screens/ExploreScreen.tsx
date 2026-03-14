@@ -23,6 +23,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -37,6 +38,14 @@ import artData from "../sample-data/art.sample.json";
 import vendorsData from "../sample-data/vendors.sample.json";
 
 import { stripHtml } from "../utils/displayUtils";
+import {
+  artImageRegistry,
+  musicImageRegistry,
+  vendorImageRegistry,
+  defaultArtImage,
+  defaultMusicImage,
+  defaultVendorImage,
+} from "../constants/imageRegistry";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -47,6 +56,27 @@ function getItemId(item: any): string {
   if (rawType === "artist") return `music-${item.id}`;
   if (rawType === "art") return `art-${item.id}`;
   return String(item?.id ?? "");
+}
+
+function getExploreImageSource(item: any): any | null {
+  if (!item) return null;
+
+  // Music items
+  if (item?.type === "artist" && item?.meta?.image_url) {
+    return musicImageRegistry[item.meta.image_url] ?? defaultMusicImage;
+  }
+
+  // Art items
+  if (item?.type === "art" && item?.meta?.image_url) {
+    return artImageRegistry[item.meta.image_url] ?? defaultArtImage;
+  }
+
+  // Vendor items
+  if (item?.type === "vendor" && item?.image_url) {
+    return vendorImageRegistry[item.image_url] ?? defaultVendorImage;
+  }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -81,6 +111,7 @@ function ExploreCard({
   showAttend,
   item,
   disabled,
+  imageSource,
 }: {
   title: string;
   subtitle?: string | null;
@@ -89,6 +120,7 @@ function ExploreCard({
   showAttend?: boolean;
   item?: any;
   disabled?: boolean;
+  imageSource?: any | null;
 }) {
   const { theme, themeColorHex } = useAppSettings();
   const id = item ? getItemId(item) : "";
@@ -109,7 +141,11 @@ function ExploreCard({
       disabled={disabled}
       activeOpacity={disabled ? 1 : 0.8}
     >
-      <View style={[s.imagePlaceholder, { backgroundColor: theme.colors.surface2 }]} />
+      {imageSource ? (
+        <Image source={imageSource} style={s.cardImage} resizeMode="cover" />
+      ) : (
+        <View style={[s.imagePlaceholder, { backgroundColor: theme.colors.surface2 }]} />
+      )}
 
       <Text
         style={[
@@ -295,6 +331,7 @@ export default function ExploreScreen() {
               }
               onPress={() => goToDetail(item, "musician")}
               item={item}
+              imageSource={getExploreImageSource(item)}
             />
           )}
         />
@@ -325,6 +362,7 @@ export default function ExploreScreen() {
                 onPress={() => goToDetail(item, "music-event")}
                 showAttend
                 item={item}
+                imageSource={getExploreImageSource(item)}
               />
             );
           }}
@@ -350,6 +388,7 @@ export default function ExploreScreen() {
               meta={stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "artist")}
               item={item}
+              imageSource={getExploreImageSource(item)}
             />
           )}
         />
@@ -380,6 +419,7 @@ export default function ExploreScreen() {
                 onPress={() => goToDetail(item, "art-event")}
                 showAttend
                 item={item}
+                imageSource={getExploreImageSource(item)}
               />
             );
           }}
@@ -400,6 +440,7 @@ export default function ExploreScreen() {
               meta={stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "vendor")}
               item={item}
+              imageSource={getExploreImageSource(item)}
             />
           )}
         />
@@ -480,6 +521,12 @@ const s = StyleSheet.create({
   },
   cardDisabled: {
     opacity: 0.6,
+  },
+  cardImage: {
+    width: "100%",
+    height: IMAGE_HEIGHT,
+    borderRadius: 8,
+    marginBottom: 10,
   },
   imagePlaceholder: {
     width: "100%",
