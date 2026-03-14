@@ -19,7 +19,7 @@ export default function ScreenTitle({ title }: Props) {
             styles.title,
             {
               color: theme.colors.text,
-              fontSize: theme.typography.h1,
+              fontSize: theme.typography.h1, // <- use scalable size
             },
           ]}
         >
