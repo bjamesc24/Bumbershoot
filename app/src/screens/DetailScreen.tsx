@@ -401,7 +401,7 @@ export default function DetailScreen({ route }: any) {
   const excerpt = getNormalizedExcerpt(item);
   const categoryValue = getCategoryValue(item, type);
   const categoryLabel = getCategoryLabel(type);
-  const badgeLabel = getBadgeLabel(item, type);
+  const badgeLabel = getBadgeLabel(type);
   const hometown = item?.meta?.hometown ?? null;
   const websiteUrl: string | null = item?.link ?? item?.meta?.website ?? null;
   const spotifyUrl: string | null = item?.meta?.spotify_url ?? item?.spotify_url ?? null;
