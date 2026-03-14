@@ -17,7 +17,7 @@ import OfflineBanner from "../components/OfflineBanner";
 import LoadingState from "../components/LoadingState";
 import { apiClient } from "../services/apiClient";
 import { useAppSettings } from "../context/AppSettingsContext";
-
+import { Ionicons } from "@expo/vector-icons";
 // ---------------------------------------------------------------------------
 // Explore stack — ExploreScreen + DetailScreen
 // ---------------------------------------------------------------------------
@@ -95,11 +95,26 @@ function Tabs() {
   return (
     <Tab.Navigator
       id="RootTabNavigator"
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: themeColorHex,
         tabBarLabelStyle: { fontSize: tabTextSize, fontWeight: "600" },
-      }}
+        tabBarIcon: ({ color, size, focused }) => {
+          let iconName: keyof typeof Ionicons.glyphMap = "ellipse-outline";
+
+          if (route.name === "Explore") {
+            iconName = focused ? "compass" : "compass-outline";
+          } else if (route.name === "Schedule") {
+            iconName = focused ? "calendar" : "calendar-outline";
+          } else if (route.name === "Map") {
+            iconName = focused ? "map" : "map-outline";
+          } else if (route.name === "More") {
+            iconName = focused ? "menu" : "menu-outline";
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
     >
       <Tab.Screen
         name="Explore"

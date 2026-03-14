@@ -7,7 +7,7 @@
  * All cards navigate to DetailScreen with full item data.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -26,19 +26,54 @@ import { isAttending, toggleAttending } from "../storage/attendingStore";
 import eventsData from "../sample-data/events.sample.json";
 import venuesData from "../sample-data/venues.sample.json";
 
+import { createCommonStyles } from "../theme/commonStyles";
+import { useAppSettings } from "../context/AppSettingsContext";
 // ---------------------------------------------------------------------------
 // Placeholder data
 // ---------------------------------------------------------------------------
 
 const PLACEHOLDER_ARTISTS = [
-  { id: "artist-1", name: "TBA Artist 1", genre: "Music", description: "Artist lineup coming soon." },
-  { id: "artist-2", name: "TBA Artist 2", genre: "Music", description: "Artist lineup coming soon." },
-  { id: "artist-3", name: "TBA Artist 3", genre: "Music", description: "Artist lineup coming soon." },
+  {
+    id: "artist-1",
+    name: "TBA Artist 1",
+    genre: "Music",
+    description: "Artist lineup coming soon.",
+  },
+  {
+    id: "artist-2",
+    name: "TBA Artist 2",
+    genre: "Music",
+    description: "Artist lineup coming soon.",
+  },
+  {
+    id: "artist-3",
+    name: "TBA Artist 3",
+    genre: "Music",
+    description: "Artist lineup coming soon.",
+  },
 ];
 
 const PLACEHOLDER_WORKSHOPS = [
-  { id: "workshop-1", name: "TBA Workshop 1", description: "Workshop details coming soon.", start: "2026-06-07T20:40:00", end: "2026-06-07T21:40:00", lat: 47.6205, lng: -122.3493, location: "TBA Location" },
-  { id: "workshop-2", name: "TBA Workshop 2", description: "Workshop details coming soon.", start: "2026-06-15T13:00:00", end: "2026-06-15T14:00:00", lat: 47.6205, lng: -122.3493, location: "TBA Location" },
+  {
+    id: "workshop-1",
+    name: "TBA Workshop 1",
+    description: "Workshop details coming soon.",
+    start: "2026-06-07T20:40:00",
+    end: "2026-06-07T21:40:00",
+    lat: 47.6205,
+    lng: -122.3493,
+    location: "TBA Location",
+  },
+  {
+    id: "workshop-2",
+    name: "TBA Workshop 2",
+    description: "Workshop details coming soon.",
+    start: "2026-06-15T13:00:00",
+    end: "2026-06-15T14:00:00",
+    lat: 47.6205,
+    lng: -122.3493,
+    location: "TBA Location",
+  },
 ];
 
 const PLACEHOLDER_VENDORS = [
@@ -51,10 +86,18 @@ const PLACEHOLDER_VENDORS = [
 // Section header
 // ---------------------------------------------------------------------------
 
-function SectionHeader({ title }: { title: string }) {
+function SectionHeader({
+  title,
+  sectionHeaderStyle,
+  sectionTitleStyle,
+}: {
+  title: string;
+  sectionHeaderStyle: any;
+  sectionTitleStyle: any;
+}) {
   return (
-    <View style={s.sectionHeader}>
-      <Text style={s.sectionTitle}>{title}</Text>
+    <View style={sectionHeaderStyle}>
+      <Text style={sectionTitleStyle}>{title}</Text>
     </View>
   );
 }
@@ -78,6 +121,11 @@ function ExploreCard({
   showAttend?: boolean;
   item?: any;
 }) {
+  const navigation = useNavigation<any>();
+  const { theme } = useAppSettings();
+  const common = useMemo(() => createCommonStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme), [theme]);
+
   const id = String(item?.id ?? "");
   const [favorited, setFavorited] = useState(false);
   const [attending, setAttending] = useState(false);
@@ -86,13 +134,13 @@ function ExploreCard({
     if (!item) return;
     isFavorited(id).then(setFavorited);
     isAttending(id).then(setAttending);
-  }, [id]);
+  }, [id, item]);
 
   const handleFavorite = async () => {
     const { isNowFavorited } = await toggleFavorite({
       id,
       title,
-      start: item?.meta?.event_start_time,
+      start: item?.meta?.event_start_time ?? item?.start,
     });
     setFavorited(isNowFavorited);
   };
@@ -101,29 +149,41 @@ function ExploreCard({
     const { isNowAttending } = await toggleAttending({
       id,
       title,
-      start: item?.meta?.event_start_time,
-      end: item?.meta?.event_end_time,
-      stage: item?.meta?.stage,
+      start: item?.meta?.event_start_time ?? item?.start,
+      end: item?.meta?.event_end_time ?? item?.end,
+      stage: item?.meta?.stage ?? item?.location,
     });
     setAttending(isNowAttending);
   };
 
   return (
-    <TouchableOpacity style={s.card} onPress={onPress}>
-      <View style={s.imagePlaceholder} />
-      <Text style={s.cardTitle} numberOfLines={2}>{title}</Text>
-      {subtitle ? <Text style={s.cardMeta}>{subtitle}</Text> : null}
-      {meta ? <Text style={s.cardMeta}>{meta}</Text> : null}
-      {showAttend && item && (
-        <View style={s.cardActions}>
-          <TouchableOpacity onPress={handleFavorite} style={s.actionButton}>
-            <Text style={s.actionText}>{favorited ? "Saved" : "Save"}</Text>
+    <TouchableOpacity
+      style={[common.card, styles.card]}
+      onPress={onPress}
+      activeOpacity={0.85}
+    >
+      <View style={[common.imagePlaceholder, styles.imagePlaceholder]} />
+
+      <Text style={styles.cardTitle} numberOfLines={2}>
+        {title}
+      </Text>
+
+      {subtitle ? <Text style={styles.cardMeta}>{subtitle}</Text> : null}
+      {meta ? <Text style={styles.cardMeta}>{meta}</Text> : null}
+
+      {showAttend && item ? (
+        <View style={common.actionRow}>
+          <TouchableOpacity onPress={handleFavorite} style={common.smallButton}>
+            <Text style={styles.actionText}>{favorited ? "Saved" : "Save"}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleAttending} style={s.actionButton}>
-            <Text style={s.actionText}>{attending ? "Attending" : "Attend"}</Text>
+
+          <TouchableOpacity onPress={handleAttending} style={common.smallButton}>
+            <Text style={styles.actionText}>
+              {attending ? "Attending" : "Attend"}
+            </Text>
           </TouchableOpacity>
         </View>
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 }
@@ -135,9 +195,11 @@ function ExploreCard({
 function HorizontalSection({
   data,
   renderItem,
+  horizontalListStyle,
 }: {
   data: any[];
   renderItem: (item: any) => React.ReactElement;
+  horizontalListStyle: any;
 }) {
   return (
     <FlatList
@@ -146,7 +208,7 @@ function HorizontalSection({
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => String(item.id ?? item.name)}
       renderItem={({ item }): React.ReactElement => renderItem(item)}
-      contentContainerStyle={s.horizontalList}
+      contentContainerStyle={horizontalListStyle}
     />
   );
 }
@@ -157,6 +219,10 @@ function HorizontalSection({
 
 export default function ExploreScreen() {
   const navigation = useNavigation<any>();
+const { theme } = useAppSettings();
+
+  const common = useMemo(() => createCommonStyles(theme), [theme]);
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const goToDetail = (item: any, type: string) => {
     navigation.navigate("Detail", { item, type });
@@ -165,11 +231,16 @@ export default function ExploreScreen() {
   return (
     <Screen>
       <ScreenTitle title="Explore" />
-      <ScrollView contentContainerStyle={s.scroll}>
 
-        <SectionHeader title="Artists" />
+      <ScrollView contentContainerStyle={common.screenContent}>
+        <SectionHeader
+          title="Artists"
+          sectionHeaderStyle={common.sectionHeader}
+          sectionTitleStyle={styles.sectionTitle}
+        />
         <HorizontalSection
           data={PLACEHOLDER_ARTISTS}
+          horizontalListStyle={common.horizontalList}
           renderItem={(item) => (
             <ExploreCard
               title={item.name}
@@ -179,11 +250,16 @@ export default function ExploreScreen() {
           )}
         />
 
-        <View style={s.divider} />
+        <View style={common.divider} />
 
-        <SectionHeader title="Events" />
+        <SectionHeader
+          title="Events"
+          sectionHeaderStyle={common.sectionHeader}
+          sectionTitleStyle={styles.sectionTitle}
+        />
         <HorizontalSection
           data={eventsData as any[]}
+          horizontalListStyle={common.horizontalList}
           renderItem={(item) => {
             const start = item.meta?.event_start_time
               ? new Date(item.meta.event_start_time).toLocaleTimeString(undefined, {
@@ -191,6 +267,7 @@ export default function ExploreScreen() {
                   minute: "2-digit",
                 })
               : null;
+
             return (
               <ExploreCard
                 title={item.title?.rendered}
@@ -204,11 +281,16 @@ export default function ExploreScreen() {
           }}
         />
 
-        <View style={s.divider} />
-        
-        <SectionHeader title="Workshops" />
+        <View style={common.divider} />
+
+        <SectionHeader
+          title="Workshops"
+          sectionHeaderStyle={common.sectionHeader}
+          sectionTitleStyle={styles.sectionTitle}
+        />
         <HorizontalSection
           data={PLACEHOLDER_WORKSHOPS}
+          horizontalListStyle={common.horizontalList}
           renderItem={(item) => {
             const start = item.start
               ? new Date(item.start).toLocaleTimeString(undefined, {
@@ -216,6 +298,7 @@ export default function ExploreScreen() {
                   minute: "2-digit",
                 })
               : null;
+
             return (
               <ExploreCard
                 title={item.name}
@@ -229,11 +312,16 @@ export default function ExploreScreen() {
           }}
         />
 
-        <View style={s.divider} />
+        <View style={common.divider} />
 
-        <SectionHeader title="Vendors" />
+        <SectionHeader
+          title="Vendors"
+          sectionHeaderStyle={common.sectionHeader}
+          sectionTitleStyle={styles.sectionTitle}
+        />
         <HorizontalSection
           data={PLACEHOLDER_VENDORS}
+          horizontalListStyle={common.horizontalList}
           renderItem={(item) => (
             <ExploreCard
               title={item.name}
@@ -243,11 +331,16 @@ export default function ExploreScreen() {
           )}
         />
 
-        <View style={s.divider} />
+        <View style={common.divider} />
 
-        <SectionHeader title="Venues" />
+        <SectionHeader
+          title="Venues"
+          sectionHeaderStyle={common.sectionHeader}
+          sectionTitleStyle={styles.sectionTitle}
+        />
         <HorizontalSection
           data={venuesData as any[]}
+          horizontalListStyle={common.horizontalList}
           renderItem={(item) => (
             <ExploreCard
               title={item.name}
@@ -256,79 +349,74 @@ export default function ExploreScreen() {
             />
           )}
         />
-
       </ScrollView>
     </Screen>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Styles
+// Local themed styles
 // ---------------------------------------------------------------------------
 
 const CARD_WIDTH = 220;
 const IMAGE_HEIGHT = 140;
 
-const s = StyleSheet.create({
-  scroll: {
-    paddingBottom: 32,
-  },
-  sectionHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#E5E5E5",
-    marginHorizontal: 16,
-    marginTop: 16,
-  },
-  horizontalList: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  card: {
-    width: CARD_WIDTH,
-    backgroundColor: "#F5F5F5",
-    borderRadius: 12,
-    padding: 12,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: IMAGE_HEIGHT,
-    backgroundColor: "#D9D9D9",
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  cardTitle: {
-    fontSize: 15,
-    fontWeight: "700",
-    marginBottom: 4,
-  },
-  cardMeta: {
-    fontSize: 12,
-    color: "#777",
-    marginBottom: 2,
-  },
-  cardActions: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 8,
-  },
-  actionButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
-  },
-  actionText: {
-    fontSize: 12,
-  },
-});
+function getFontSize(token: any, fallback: number) {
+  if (typeof token === "number") return token;
+  if (token && typeof token.fontSize === "number") return token.fontSize;
+  return fallback;
+}
+
+function getLineHeight(token: any, fallback: number) {
+  if (token && typeof token.lineHeight === "number") return token.lineHeight;
+  return fallback;
+}
+
+function getFontWeight(token: any, fallback: any) {
+  if (token && token.fontWeight) return token.fontWeight;
+  return fallback;
+}
+
+function createStyles(theme: any) {
+  return StyleSheet.create({
+    sectionTitle: {
+      fontSize: getFontSize(theme?.typography?.h2, 22),
+      lineHeight: getLineHeight(theme?.typography?.h2, 28),
+      fontWeight: getFontWeight(theme?.typography?.h2, "700"),
+      color: theme.colors.text,
+    },
+
+    card: {
+      width: CARD_WIDTH,
+      minHeight: 250,
+    },
+
+    imagePlaceholder: {
+      height: IMAGE_HEIGHT,
+    },
+
+    cardTitle: {
+      color: theme.colors.text,
+      marginBottom: 6,
+      fontSize: getFontSize(theme?.typography?.bodyStrong, 16),
+      lineHeight: getLineHeight(theme?.typography?.bodyStrong, 22),
+      fontWeight: getFontWeight(theme?.typography?.bodyStrong, "600"),
+      minHeight: 44,
+    },
+
+    cardMeta: {
+      color: theme.colors.textMuted,
+      marginBottom: 4,
+      fontSize: getFontSize(theme?.typography?.caption, 13),
+      lineHeight: getLineHeight(theme?.typography?.caption, 18),
+      fontWeight: getFontWeight(theme?.typography?.caption, "400"),
+    },
+
+    actionText: {
+      color: theme.colors.text,
+      fontSize: getFontSize(theme?.typography?.caption, 13),
+      lineHeight: getLineHeight(theme?.typography?.caption, 18),
+      fontWeight: "500",
+    },
+  });
+}

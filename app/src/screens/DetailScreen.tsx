@@ -1,18 +1,10 @@
 /**
  * DetailScreen.tsx
  * ----------------
- * Responsibility:
- *   Unified detail screen for Events, Artists, Workshops, Vendors, and Venues.
- *   Accepts an item passed via navigation params and renders whatever fields exist.
- *
- *   Actions: Favorite, Attend, Share, External links (Spotify, Apple Music, website).
- *
- * Navigation params:
- *   item  — the full data object (WP event, stub artist, stub vendor, etc.)
- *   type  — "event" | "artist" | "workshop" | "vendor" | "venue"
+ * Unified detail screen for Events, Artists, Workshops, Vendors, and Venues.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -22,18 +14,29 @@ import {
   Share,
   Linking,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import { isFavorited, toggleFavorite } from "../storage/favoritesStore";
 import { isAttending, toggleAttending } from "../storage/attendingStore";
+import { useAppSettings } from "../context/AppSettingsContext";
+import { createCommonStyles } from "../theme/commonStyles";
 
 type DetailScreenParams = {
   item: any;
   type: "event" | "artist" | "workshop" | "vendor" | "venue";
 };
 
+function scaleValue(base: number, textScale: number) {
+  return Math.round(base * textScale);
+}
+
 export default function DetailScreen({ route }: any) {
-  const navigation = useNavigation();
   const { item, type } = route.params as DetailScreenParams;
+  const { theme, themeColorHex, textScale } = useAppSettings();
+
+  const common = useMemo(() => createCommonStyles(theme), [theme]);
+  const styles = useMemo(
+    () => createStyles(theme, themeColorHex, textScale),
+    [theme, themeColorHex, textScale]
+  );
 
   const id = String(item?.id ?? "");
   const [favorited, setFavorited] = useState(false);
@@ -44,11 +47,12 @@ export default function DetailScreen({ route }: any) {
     isAttending(id).then(setAttending);
   }, [id]);
 
-  // Normalize title — WP shape uses title.rendered, ScheduleEvent uses title directly
   const title =
-    item?.title?.rendered ?? (typeof item?.title === "string" ? item.title : null) ?? item?.name ?? "Untitled";
+    item?.title?.rendered ??
+    (typeof item?.title === "string" ? item.title : null) ??
+    item?.name ??
+    "Untitled";
 
-  // Normalize description — WP shape uses content.rendered, ScheduleEvent uses description
   const description =
     item?.content?.rendered
       ? item.content.rendered.replace(/<[^>]+>/g, "")
@@ -59,24 +63,22 @@ export default function DetailScreen({ route }: any) {
       ? item.excerpt.rendered.replace(/<[^>]+>/g, "")
       : null;
 
-  // Event fields — handle both WP meta shape and ScheduleEvent shape
   const startTime = item?.meta?.event_start_time ?? item?.startTime ?? item?.start ?? null;
   const endTime = item?.meta?.event_end_time ?? item?.endTime ?? item?.end ?? null;
   const stage = item?.meta?.stage ?? item?.stage ?? item?.location ?? null;
-  const category = item?.meta?.event_category ?? item?.category ?? item?.genre ?? item?.type ?? null;
+  const category =
+    item?.meta?.event_category ?? item?.category ?? item?.genre ?? item?.type ?? null;
 
-  // Venue-specific fields
   const address = item?.meta?.address ?? null;
   const capacity = item?.meta?.capacity ?? null;
   const stageType = item?.meta?.stage_type ?? null;
   const amenities: string[] = item?.meta?.amenities ?? [];
 
-  // External links — only show if present
   const spotifyUrl: string | null = item?.meta?.spotify_url ?? item?.spotify_url ?? null;
-  const appleMusicUrl: string | null = item?.meta?.apple_music_url ?? item?.apple_music_url ?? null;
+  const appleMusicUrl: string | null =
+    item?.meta?.apple_music_url ?? item?.apple_music_url ?? null;
   const websiteUrl: string | null = item?.link ?? item?.meta?.website ?? null;
 
-  // Format times
   const formattedStart = startTime
     ? new Date(startTime).toLocaleString(undefined, {
         weekday: "short",
@@ -93,10 +95,6 @@ export default function DetailScreen({ route }: any) {
         minute: "2-digit",
       })
     : null;
-
-  // ---------------------------------------------------------------------------
-  // Actions
-  // ---------------------------------------------------------------------------
 
   const handleFavorite = async () => {
     const { isNowFavorited } = await toggleFavorite({
@@ -121,13 +119,11 @@ export default function DetailScreen({ route }: any) {
   const handleShare = async () => {
     try {
       await Share.share({
-        message: websiteUrl
-          ? `${title} — ${websiteUrl}`
-          : title,
+        message: websiteUrl ? `${title} — ${websiteUrl}` : title,
         title,
       });
     } catch {
-      // Share dismissed
+      // dismissed
     }
   };
 
@@ -135,246 +131,286 @@ export default function DetailScreen({ route }: any) {
     Linking.openURL(url).catch(() => {});
   };
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
-
   return (
-    <ScrollView contentContainerStyle={s.scroll}>
+    <ScrollView
+      style={styles.page}
+      contentContainerStyle={common.screenContent}
+    >
+      <View style={styles.imagePlaceholder} />
 
-      {/* Image placeholder */}
-      <View style={s.imagePlaceholder} />
+      <View style={common.pageBody}>
+        <Text style={styles.title}>{title}</Text>
 
-      <View style={s.body}>
+        <Text style={styles.badge}>{type.toUpperCase()}</Text>
 
-        {/* Title */}
-        <Text style={s.title}>{title}</Text>
-
-        {/* Type badge */}
-        <Text style={s.badge}>{type.toUpperCase()}</Text>
-
-        {/* Time and location — events */}
         {formattedStart && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>When</Text>
-            <Text style={s.metaValue}>
-              {formattedStart}{formattedEnd ? ` – ${formattedEnd}` : ""}
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>When</Text>
+            <Text style={styles.metaValue}>
+              {formattedStart}
+              {formattedEnd ? ` – ${formattedEnd}` : ""}
             </Text>
           </View>
         )}
 
         {stage && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Stage</Text>
-            <Text style={s.metaValue}>{stage}</Text>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Stage</Text>
+            <Text style={styles.metaValue}>{stage}</Text>
           </View>
         )}
 
         {category && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Category</Text>
-            <Text style={s.metaValue}>{category}</Text>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Category</Text>
+            <Text style={styles.metaValue}>{category}</Text>
           </View>
         )}
 
-        {/* Venue-specific fields */}
         {address && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Address</Text>
-            <Text style={s.metaValue}>{address}</Text>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Address</Text>
+            <Text style={styles.metaValue}>{address}</Text>
           </View>
         )}
 
         {capacity && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Capacity</Text>
-            <Text style={s.metaValue}>{capacity.toLocaleString()}</Text>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Capacity</Text>
+            <Text style={styles.metaValue}>{capacity.toLocaleString()}</Text>
           </View>
         )}
 
         {stageType && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Stage Type</Text>
-            <Text style={s.metaValue}>{stageType}</Text>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Stage Type</Text>
+            <Text style={styles.metaValue}>{stageType}</Text>
           </View>
         )}
 
         {amenities.length > 0 && (
-          <View style={s.metaBlock}>
-            <Text style={s.metaLabel}>Amenities</Text>
-            <Text style={s.metaValue}>{amenities.join(", ")}</Text>
+          <View style={styles.metaBlock}>
+            <Text style={styles.metaLabel}>Amenities</Text>
+            <Text style={styles.metaValue}>{amenities.join(", ")}</Text>
           </View>
         )}
 
-        {/* Description */}
         {(excerpt || description) && (
-          <View style={s.descBlock}>
-            <Text style={s.sectionLabel}>About</Text>
-            <Text style={s.desc}>{excerpt ?? description}</Text>
+          <View style={styles.descBlock}>
+            <Text style={styles.sectionLabel}>About</Text>
+            <Text style={styles.desc}>{excerpt ?? description}</Text>
           </View>
         )}
 
-        {/* Action buttons */}
-        <View style={s.actions}>
+        <View style={styles.actions}>
           <TouchableOpacity
-            style={[s.actionBtn, favorited && s.actionBtnActive]}
+            style={[
+              styles.actionBtn,
+              favorited && styles.actionBtnActive,
+            ]}
             onPress={handleFavorite}
           >
-            <Text style={[s.actionBtnText, favorited && s.actionBtnTextActive]}>
+            <Text
+              style={[
+                styles.actionBtnText,
+                favorited && styles.actionBtnTextActive,
+              ]}
+            >
               {favorited ? "Saved" : "Save"}
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[s.actionBtn, attending && s.actionBtnActive]}
+            style={[
+              styles.actionBtn,
+              attending && styles.actionBtnActive,
+            ]}
             onPress={handleAttending}
           >
-            <Text style={[s.actionBtnText, attending && s.actionBtnTextActive]}>
+            <Text
+              style={[
+                styles.actionBtnText,
+                attending && styles.actionBtnTextActive,
+              ]}
+            >
               {attending ? "Attending" : "Attend"}
             </Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={s.actionBtn} onPress={handleShare}>
-            <Text style={s.actionBtnText}>Share</Text>
+          <TouchableOpacity style={styles.actionBtn} onPress={handleShare}>
+            <Text style={styles.actionBtnText}>Share</Text>
           </TouchableOpacity>
         </View>
 
-        {/* External links — only shown if available */}
         {(spotifyUrl || appleMusicUrl || websiteUrl) && (
-          <View style={s.linksBlock}>
-            <Text style={s.sectionLabel}>Links</Text>
+          <View style={styles.linksBlock}>
+            <Text style={styles.sectionLabel}>Links</Text>
+
             {spotifyUrl && (
               <TouchableOpacity
-                style={s.linkBtn}
+                style={styles.linkBtn}
                 onPress={() => handleExternalLink(spotifyUrl)}
               >
-                <Text style={s.linkBtnText}>Spotify</Text>
+                <Text style={styles.linkBtnText}>Spotify</Text>
               </TouchableOpacity>
             )}
+
             {appleMusicUrl && (
               <TouchableOpacity
-                style={s.linkBtn}
+                style={styles.linkBtn}
                 onPress={() => handleExternalLink(appleMusicUrl)}
               >
-                <Text style={s.linkBtnText}>Apple Music</Text>
+                <Text style={styles.linkBtnText}>Apple Music</Text>
               </TouchableOpacity>
             )}
+
             {websiteUrl && (
               <TouchableOpacity
-                style={s.linkBtn}
+                style={styles.linkBtn}
                 onPress={() => handleExternalLink(websiteUrl)}
               >
-                <Text style={s.linkBtnText}>Website</Text>
+                <Text style={styles.linkBtnText}>Website</Text>
               </TouchableOpacity>
             )}
           </View>
         )}
-
       </View>
     </ScrollView>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Styles
-// ---------------------------------------------------------------------------
+function createStyles(theme: any, themeColorHex: string, textScale: number) {
+  const titleSize = scaleValue(24, textScale);
+  const badgeSize = scaleValue(11, textScale);
+  const metaLabelSize = scaleValue(11, textScale);
+  const metaValueSize = scaleValue(15, textScale);
+  const descSize = scaleValue(15, textScale);
+  const buttonTextSize = scaleValue(14, textScale);
 
-const s = StyleSheet.create({
-  scroll: {
-    paddingBottom: 48,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: 220,
-    backgroundColor: "#D9D9D9",
-  },
-  body: {
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "800",
-    marginBottom: 4,
-  },
-  badge: {
-    fontSize: 11,
-    fontWeight: "600",
-    color: "#888",
-    letterSpacing: 1,
-    marginBottom: 16,
-  },
-  metaBlock: {
-    marginBottom: 10,
-  },
-  metaLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#888",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    marginBottom: 2,
-  },
-  metaValue: {
-    fontSize: 15,
-  },
-  descBlock: {
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  sectionLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#888",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    marginBottom: 6,
-  },
-  desc: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: "#333",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 24,
-    marginBottom: 8,
-    flexWrap: "wrap",
-  },
-  actionBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
-  },
-  actionBtnActive: {
-    backgroundColor: "#1A1A1A",
-    borderColor: "#1A1A1A",
-  },
-  actionBtnText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#1A1A1A",
-  },
-  actionBtnTextActive: {
-    color: "#FFF",
-  },
-  linksBlock: {
-    marginTop: 20,
-    gap: 10,
-  },
-  linkBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#CCC",
-    backgroundColor: "#FFF",
-  },
-  linkBtnText: {
-    fontSize: 14,
-    fontWeight: "600",
-  },
-});
+  return StyleSheet.create({
+    page: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+
+    imagePlaceholder: {
+  width: "100%",
+  height: 220,
+  backgroundColor: "#D9D9D9",
+},
+
+    title: {
+      fontSize: titleSize,
+      fontWeight: "800",
+      lineHeight: Math.round(titleSize * 1.2),
+      color: theme.colors.text,
+      marginBottom: 4,
+    },
+
+    badge: {
+      fontSize: badgeSize,
+      fontWeight: "600",
+      lineHeight: Math.round(badgeSize * 1.2),
+      color: themeColorHex,
+      letterSpacing: 1,
+      marginBottom: 16,
+    },
+
+    metaBlock: {
+      marginBottom: 10,
+    },
+
+    metaLabel: {
+      fontSize: metaLabelSize,
+      fontWeight: "700",
+      lineHeight: Math.round(metaLabelSize * 1.2),
+      color: theme.colors.textMuted,
+      letterSpacing: 0.5,
+      textTransform: "uppercase",
+      marginBottom: 2,
+    },
+
+    metaValue: {
+      fontSize: metaValueSize,
+      fontWeight: "400",
+      lineHeight: Math.round(metaValueSize * 1.35),
+      color: theme.colors.text,
+    },
+
+    descBlock: {
+      marginTop: 16,
+      marginBottom: 8,
+    },
+
+    sectionLabel: {
+      fontSize: metaLabelSize,
+      fontWeight: "700",
+      lineHeight: Math.round(metaLabelSize * 1.2),
+      color: theme.colors.textMuted,
+      letterSpacing: 0.5,
+      textTransform: "uppercase",
+      marginBottom: 6,
+    },
+
+    desc: {
+      fontSize: descSize,
+      fontWeight: "400",
+      lineHeight: Math.round(descSize * 1.45),
+      color: theme.colors.text,
+    },
+
+    actions: {
+      flexDirection: "row",
+      gap: 10,
+      marginTop: 24,
+      marginBottom: 8,
+      flexWrap: "wrap",
+    },
+
+    actionBtn: {
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+    },
+
+    actionBtnActive: {
+      backgroundColor: themeColorHex,
+      borderColor: themeColorHex,
+    },
+
+    actionBtnText: {
+      fontSize: buttonTextSize,
+      fontWeight: "600",
+      lineHeight: Math.round(buttonTextSize * 1.2),
+      color: theme.colors.text,
+    },
+
+    actionBtnTextActive: {
+      color: "#FFFFFF",
+    },
+
+    linksBlock: {
+      marginTop: 20,
+      gap: 10,
+    },
+
+    linkBtn: {
+      paddingVertical: 10,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
+      backgroundColor: theme.colors.surface,
+    },
+
+    linkBtnText: {
+      fontSize: buttonTextSize,
+      fontWeight: "600",
+      lineHeight: Math.round(buttonTextSize * 1.2),
+      color: theme.colors.text,
+    },
+  });
+}
