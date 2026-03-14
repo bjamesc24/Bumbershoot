@@ -55,16 +55,10 @@ function getItemId(item: any): string {
 
 function SectionHeader({ title }: { title: string }) {
   const { theme } = useAppSettings();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   return (
-    <View style={s.sectionHeader}>
-      <Text
-        style={[
-          s.sectionTitle,
-          { color: theme.colors.text, fontSize: theme.typography.h3 },
-        ]}
-      >
-        {title}
-      </Text>
+    <View style={styles.sectionHeader}>
+      <Text style={styles.sectionTitle}>{title}</Text>
     </View>
   );
 }
@@ -91,64 +85,33 @@ function ExploreCard({
   disabled?: boolean;
 }) {
   const { theme, themeColorHex } = useAppSettings();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   const id = item ? getItemId(item) : "";
   const { favorited, attending, handleFavorite, handleAttending } =
     useItemActions(id, item);
 
   return (
     <TouchableOpacity
-      style={[
-        s.card,
-        {
-          backgroundColor: theme.colors.surface,
-          borderColor: theme.colors.border,
-        },
-        disabled && s.cardDisabled,
-      ]}
+      style={[styles.card, disabled && styles.cardDisabled]}
       onPress={onPress}
       disabled={disabled}
-      activeOpacity={disabled ? 1 : 0.8}
+      activeOpacity={disabled ? 1 : 0.85}
     >
-      <View style={[s.imagePlaceholder, { backgroundColor: theme.colors.surface2 }]} />
+      <View style={styles.imagePlaceholder} />
 
-      <Text
-        style={[
-          s.cardTitle,
-          { color: theme.colors.text, fontSize: theme.typography.body },
-        ]}
-        numberOfLines={2}
-      >
+      <Text style={styles.cardTitle} numberOfLines={2}>
         {title}
       </Text>
 
-      {subtitle ? (
-        <Text
-          style={[
-            s.cardMeta,
-            { color: theme.colors.textMuted, fontSize: theme.typography.caption },
-          ]}
-        >
-          {subtitle}
-        </Text>
-      ) : null}
+      {subtitle ? <Text style={styles.cardMeta}>{subtitle}</Text> : null}
+      {meta ? <Text style={styles.cardMeta}>{meta}</Text> : null}
 
-      {meta ? (
-        <Text
-          style={[
-            s.cardMeta,
-            { color: theme.colors.textMuted, fontSize: theme.typography.caption },
-          ]}
-        >
-          {meta}
-        </Text>
-      ) : null}
-
-      {showAttend && item && (
-        <View style={s.cardActions}>
+      {showAttend && item ? (
+        <View style={styles.cardActions}>
           <TouchableOpacity
             onPress={() => handleFavorite(title)}
             style={[
-              s.actionButton,
+              styles.actionButton,
               {
                 borderColor: favorited ? themeColorHex : theme.colors.border,
                 backgroundColor: favorited ? themeColorHex : theme.colors.surface2,
@@ -157,7 +120,7 @@ function ExploreCard({
           >
             <Text
               style={[
-                s.actionText,
+                styles.actionText,
                 {
                   color: favorited
                     ? theme.colors.primaryText
@@ -172,7 +135,7 @@ function ExploreCard({
           <TouchableOpacity
             onPress={() => handleAttending(title)}
             style={[
-              s.actionButton,
+              styles.actionButton,
               {
                 borderColor: attending ? themeColorHex : theme.colors.border,
                 backgroundColor: attending ? themeColorHex : theme.colors.surface2,
@@ -181,7 +144,7 @@ function ExploreCard({
           >
             <Text
               style={[
-                s.actionText,
+                styles.actionText,
                 {
                   color: attending
                     ? theme.colors.primaryText
@@ -193,7 +156,7 @@ function ExploreCard({
             </Text>
           </TouchableOpacity>
         </View>
-      )}
+      ) : null}
     </TouchableOpacity>
   );
 }
@@ -209,14 +172,16 @@ function HorizontalSection({
   data: any[];
   renderItem: (item: any) => React.ReactElement;
 }) {
+  const { theme } = useAppSettings();
+  const styles = useMemo(() => createStyles(theme), [theme]);
   return (
     <FlatList
       data={data}
       horizontal
       showsHorizontalScrollIndicator={false}
       keyExtractor={(item) => String(item.id ?? item.name)}
-      renderItem={({ item }) => renderItem(item)}
-      contentContainerStyle={s.horizontalList}
+      renderItem={({ item }): React.ReactElement => renderItem(item)}
+      contentContainerStyle={styles.horizontalList}
     />
   );
 }
@@ -228,6 +193,7 @@ function HorizontalSection({
 export default function ExploreScreen() {
   const navigation = useNavigation<any>();
   const { theme } = useAppSettings();
+  const styles = useMemo(() => createStyles(theme), [theme]);
 
   const goToDetail = (item: any, type: DetailType) => {
     navigation.navigate("Detail", { item, type });
@@ -269,58 +235,40 @@ export default function ExploreScreen() {
     <Screen>
       <ScreenTitle title="Explore" />
 
-      <ScrollView
-        contentContainerStyle={[
-          s.scroll,
-          { backgroundColor: theme.colors.background },
-        ]}
-      >
-        {/* ----------------------------------------------------------------- */}
-        {/* Musicians */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
-        <SectionHeader title="Musicians" />
+      <ScrollView contentContainerStyle={styles.scroll}>
 
+        {/* Musicians */}
+        <View style={styles.divider} />
+        <SectionHeader title="Musicians" />
         <HorizontalSection
           data={musicData as any[]}
           renderItem={(item) => (
             <ExploreCard
               title={stripHtml(item.title?.rendered ?? "")}
-              subtitle={
-                item.meta?.genre ?? item.meta?.event_category ?? "Musician"
-              }
-              meta={
-                item.meta?.hometown ??
-                stripHtml(item.excerpt?.rendered ?? "")
-              }
+              subtitle={item.meta?.genre ?? item.meta?.event_category ?? "Musician"}
+              meta={item.meta?.hometown ?? stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "musician")}
               item={item}
             />
           )}
         />
 
-        {/* ----------------------------------------------------------------- */}
         {/* Music Line-Up */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
+        <View style={styles.divider} />
         <SectionHeader title="Music Line-Up" />
-
         <HorizontalSection
           data={musicData as any[]}
           renderItem={(item) => {
             const start = item.meta?.event_start_time
-              ? new Date(item.meta.event_start_time).toLocaleTimeString(
-                  undefined,
-                  { hour: "numeric", minute: "2-digit" }
-                )
+              ? new Date(item.meta.event_start_time).toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })
               : null;
-
             return (
               <ExploreCard
                 title={stripHtml(item.title?.rendered ?? "")}
-                subtitle={
-                  start ? `${start} · ${item.meta?.stage}` : item.meta?.stage
-                }
+                subtitle={start ? `${start} · ${item.meta?.stage}` : item.meta?.stage}
                 meta={item.meta?.event_category ?? item.meta?.genre}
                 onPress={() => goToDetail(item, "music-event")}
                 showAttend
@@ -330,22 +278,16 @@ export default function ExploreScreen() {
           }}
         />
 
-        {/* ----------------------------------------------------------------- */}
         {/* Artists */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
+        <View style={styles.divider} />
         <SectionHeader title="Artists" />
-
         <HorizontalSection
           data={artData as any[]}
           renderItem={(item) => (
             <ExploreCard
               title={stripHtml(item.title?.rendered ?? "")}
               subtitle={
-                item.meta?.type ??
-                item.meta?.event_category ??
-                item.meta?.genre ??
-                "Artist"
+                item.meta?.type ?? item.meta?.event_category ?? item.meta?.genre ?? "Artist"
               }
               meta={stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "artist")}
@@ -354,24 +296,19 @@ export default function ExploreScreen() {
           )}
         />
 
-        {/* ----------------------------------------------------------------- */}
-        {/* Scheduled Art */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
+        {/* Art */}
+        <View style={styles.divider} />
         <SectionHeader title="Art" />
-
         <HorizontalSection
           data={artData as any[]}
           renderItem={(item) => {
             const start = item.meta?.event_start_time
-              ? new Date(item.meta.event_start_time).toLocaleTimeString(
-                  undefined,
-                  { hour: "numeric", minute: "2-digit" }
-                )
+              ? new Date(item.meta.event_start_time).toLocaleTimeString(undefined, {
+                  hour: "numeric",
+                  minute: "2-digit",
+                })
               : null;
-
             const district = item.meta?.district ?? "TBA";
-
             return (
               <ExploreCard
                 title={stripHtml(item.title?.rendered ?? "")}
@@ -385,12 +322,9 @@ export default function ExploreScreen() {
           }}
         />
 
-        {/* ----------------------------------------------------------------- */}
         {/* Vendors */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
+        <View style={styles.divider} />
         <SectionHeader title="Vendors" />
-
         <HorizontalSection
           data={vendorsData as any[]}
           renderItem={(item) => (
@@ -404,12 +338,9 @@ export default function ExploreScreen() {
           )}
         />
 
-        {/* ----------------------------------------------------------------- */}
-        {/* Stages — derived from music data */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
+        {/* Stages */}
+        <View style={styles.divider} />
         <SectionHeader title="Stages" />
-
         <HorizontalSection
           data={stages}
           renderItem={(item) => (
@@ -421,12 +352,9 @@ export default function ExploreScreen() {
           )}
         />
 
-        {/* ----------------------------------------------------------------- */}
-        {/* Districts — derived from art data */}
-        {/* ----------------------------------------------------------------- */}
-        <View style={[s.divider, { backgroundColor: theme.colors.border }]} />
+        {/* Districts */}
+        <View style={styles.divider} />
         <SectionHeader title="Districts" />
-
         <HorizontalSection
           data={districts}
           renderItem={(item) => (
@@ -445,68 +373,105 @@ export default function ExploreScreen() {
 }
 
 // ---------------------------------------------------------------------------
-// Styles
+// Styles — Sasha's token-aware approach
 // ---------------------------------------------------------------------------
 
 const CARD_WIDTH = 220;
 const IMAGE_HEIGHT = 140;
 
-const s = StyleSheet.create({
-  scroll: {
-    paddingBottom: 32,
-  },
-  sectionHeader: {
-    paddingHorizontal: 16,
-    paddingTop: 20,
-    paddingBottom: 8,
-  },
-  sectionTitle: {
-    fontWeight: "700",
-  },
-  divider: {
-    height: 1,
-    marginHorizontal: 16,
-    marginTop: 16,
-  },
-  horizontalList: {
-    paddingHorizontal: 16,
-    gap: 12,
-  },
-  card: {
-    width: CARD_WIDTH,
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: 12,
-  },
-  cardDisabled: {
-    opacity: 0.6,
-  },
-  imagePlaceholder: {
-    width: "100%",
-    height: IMAGE_HEIGHT,
-    borderRadius: 8,
-    marginBottom: 10,
-  },
-  cardTitle: {
-    fontWeight: "700",
-    marginBottom: 4,
-  },
-  cardMeta: {
-    marginBottom: 2,
-  },
-  cardActions: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 8,
-  },
-  actionButton: {
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 6,
-    borderWidth: 1,
-  },
-  actionText: {
-    fontSize: 12,
-    fontWeight: "600",
-  },
-});
+function getFontSize(token: any, fallback: number) {
+  if (typeof token === "number") return token;
+  if (token && typeof token.fontSize === "number") return token.fontSize;
+  return fallback;
+}
+
+function getLineHeight(token: any, fallback: number) {
+  if (token && typeof token.lineHeight === "number") return token.lineHeight;
+  return fallback;
+}
+
+function getFontWeight(token: any, fallback: any) {
+  if (token && token.fontWeight) return token.fontWeight;
+  return fallback;
+}
+
+function createStyles(theme: any) {
+  return StyleSheet.create({
+    scroll: {
+      paddingBottom: 32,
+      backgroundColor: theme.colors.background,
+    },
+    sectionHeader: {
+      paddingHorizontal: 16,
+      paddingTop: 20,
+      paddingBottom: 8,
+    },
+    sectionTitle: {
+      fontSize: getFontSize(theme?.typography?.h2, 22),
+      lineHeight: getLineHeight(theme?.typography?.h2, 28),
+      fontWeight: getFontWeight(theme?.typography?.h2, "700"),
+      color: theme.colors.text,
+    },
+    divider: {
+      height: 1,
+      marginHorizontal: 16,
+      marginTop: 16,
+      backgroundColor: theme.colors.border,
+    },
+    horizontalList: {
+      paddingHorizontal: 16,
+      gap: 12,
+    },
+    card: {
+      width: CARD_WIDTH,
+      minHeight: 250,
+      borderRadius: 12,
+      borderWidth: 1,
+      padding: 12,
+      backgroundColor: theme.colors.surface,
+      borderColor: theme.colors.border,
+    },
+    cardDisabled: {
+      opacity: 0.6,
+    },
+    imagePlaceholder: {
+      width: "100%",
+      height: IMAGE_HEIGHT,
+      borderRadius: 8,
+      marginBottom: 10,
+      backgroundColor: theme.colors.surface2,
+    },
+    cardTitle: {
+      color: theme.colors.text,
+      marginBottom: 6,
+      fontSize: getFontSize(theme?.typography?.bodyStrong, 16),
+      lineHeight: getLineHeight(theme?.typography?.bodyStrong, 22),
+      fontWeight: getFontWeight(theme?.typography?.bodyStrong, "600"),
+      minHeight: 44,
+    },
+    cardMeta: {
+      color: theme.colors.textMuted,
+      marginBottom: 4,
+      fontSize: getFontSize(theme?.typography?.caption, 13),
+      lineHeight: getLineHeight(theme?.typography?.caption, 18),
+      fontWeight: getFontWeight(theme?.typography?.caption, "400"),
+    },
+    cardActions: {
+      flexDirection: "row",
+      gap: 8,
+      marginTop: 8,
+    },
+    actionButton: {
+      paddingVertical: 4,
+      paddingHorizontal: 10,
+      borderRadius: 6,
+      borderWidth: 1,
+    },
+    actionText: {
+      color: theme.colors.text,
+      fontSize: getFontSize(theme?.typography?.caption, 13),
+      lineHeight: getLineHeight(theme?.typography?.caption, 18),
+      fontWeight: "500",
+    },
+  });
+}
