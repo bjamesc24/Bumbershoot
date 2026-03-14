@@ -2,6 +2,7 @@
   {
     "id": 401,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "sculpture-parking-lot-sun",
     "status": "publish",
     "type": "art",
@@ -15,13 +16,14 @@
       "district": "Century 21",
       "event_category": "Installation",
       "genre": "Visual Art",
-      "image_url": null,
+      "image_url": "sculpture-parking-lot-sun",
       "coordinates": { "lat": 47.6219, "lng": -122.3519 }
     }
   },
   {
     "id": 402,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "nasa-presentation-sun",
     "status": "publish",
     "type": "art",
@@ -35,13 +37,14 @@
       "district": "Century 21",
       "event_category": "Talk",
       "genre": "Science",
-      "image_url": null,
+      "image_url": "nasa-presentation-sun",
       "coordinates": { "lat": 47.6219, "lng": -122.3519 }
     }
   },
   {
     "id": 307,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "flesh-produce-sat",
     "status": "publish",
     "type": "art",
@@ -55,13 +58,14 @@
       "district": "Fashion",
       "event_category": "Fashion",
       "genre": "Fashion",
-      "image_url": null,
+      "image_url": "flesh-produce-sat",
       "coordinates": { "lat": 47.6213, "lng": -122.3530 }
     }
   },
   {
     "id": 308,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "tres-leches-sat",
     "status": "publish",
     "type": "art",
@@ -75,13 +79,14 @@
       "district": "Fashion",
       "event_category": "Fashion",
       "genre": "Fashion",
-      "image_url": null,
+      "image_url": "tres-leches-sat",
       "coordinates": { "lat": 47.6213, "lng": -122.3530 }
     }
   },
   {
     "id": 309,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "high-fashion-high-sat",
     "status": "publish",
     "type": "art",
@@ -95,13 +100,14 @@
       "district": "Fashion",
       "event_category": "Fashion",
       "genre": "Fashion",
-      "image_url": null,
+      "image_url": "high-fashion-high-sat",
       "coordinates": { "lat": 47.6213, "lng": -122.3530 }
     }
   },
   {
     "id": 310,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "lecia-farmer-sat",
     "status": "publish",
     "type": "art",
@@ -115,13 +121,14 @@
       "district": "Fashion",
       "event_category": "Fashion",
       "genre": "Fashion",
-      "image_url": null,
+      "image_url": "lecia-farmer-sat",
       "coordinates": { "lat": 47.6213, "lng": -122.3530 }
     }
   },
   {
     "id": 316,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "roll-around-seatown-sat-1",
     "status": "publish",
     "type": "art",
@@ -135,13 +142,14 @@
       "district": "Recess",
       "event_category": "Performance",
       "genre": "Skating",
-      "image_url": null,
+      "image_url": "roll-around-seatown-sat-1",
       "coordinates": { "lat": 47.6232, "lng": -122.3500 }
     }
   },
   {
     "id": 317,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "double-dutch-divas-sat",
     "status": "publish",
     "type": "art",
@@ -155,13 +163,14 @@
       "district": "Recess",
       "event_category": "Performance",
       "genre": "Athletics",
-      "image_url": null,
+      "image_url": "double-dutch-divas-sat",
       "coordinates": { "lat": 47.6232, "lng": -122.3500 }
     }
   },
   {
     "id": 318,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "montana-pool-service-sat",
     "status": "publish",
     "type": "art",
@@ -175,13 +184,14 @@
       "district": "Recess",
       "event_category": "Performance",
       "genre": "Skating",
-      "image_url": null,
+      "image_url": "montana-pool-service-sat",
       "coordinates": { "lat": 47.6232, "lng": -122.3500 }
     }
   },
   {
     "id": 319,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "roll-around-seatown-sat-2",
     "status": "publish",
     "type": "art",
@@ -195,13 +205,14 @@
       "district": "Recess",
       "event_category": "Performance",
       "genre": "Skating",
-      "image_url": null,
+      "image_url": "roll-around-seatown-sat-2",
       "coordinates": { "lat": 47.6232, "lng": -122.3500 }
     }
   },
   {
     "id": 326,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "contemporary-animation-sat",
     "status": "publish",
     "type": "art",
@@ -215,13 +226,14 @@
       "district": "Animation",
       "event_category": "Animation",
       "genre": "Animation",
-      "image_url": null,
+      "image_url": "contemporary-animation-sat",
       "coordinates": { "lat": 47.6229, "lng": -122.3522 }
     }
   },
   {
     "id": 331,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "iykyk-sat",
     "status": "publish",
     "type": "art",
@@ -235,13 +247,14 @@
       "district": "Arts & Culture",
       "event_category": "Arts",
       "genre": "Arts & Culture",
-      "image_url": null,
+      "image_url": "iykyk-sat",
       "coordinates": { "lat": 47.6202, "lng": -122.3510 }
     }
   },
   {
     "id": 338,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "cat-circus-sat",
     "status": "publish",
     "type": "art",
@@ -255,13 +268,14 @@
       "district": "Geodesic Domes",
       "event_category": "Performance",
       "genre": "Circus",
-      "image_url": null,
+      "image_url": "cat-circus-sat",
       "coordinates": { "lat": 47.6210, "lng": -122.3508 }
     }
   },
   {
     "id": 339,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "wig-farm-sat",
     "status": "publish",
     "type": "art",
@@ -275,13 +289,14 @@
       "district": "Geodesic Domes",
       "event_category": "Installation",
       "genre": "Art",
-      "image_url": null,
+      "image_url": "wig-farm-sat",
       "coordinates": { "lat": 47.6210, "lng": -122.3508 }
     }
   },
   {
     "id": 340,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "pole-pavilion-sat",
     "status": "publish",
     "type": "art",
@@ -295,13 +310,14 @@
       "district": "Geodesic Domes",
       "event_category": "Performance",
       "genre": "Pole",
-      "image_url": null,
+      "image_url": "pole-pavilion-sat",
       "coordinates": { "lat": 47.6210, "lng": -122.3508 }
     }
   },
   {
     "id": 341,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "comedy-dome-disabled-list-sat",
     "status": "publish",
     "type": "art",
@@ -315,7 +331,7 @@
       "district": "Geodesic Domes",
       "event_category": "Comedy",
       "genre": "Comedy",
-      "image_url": null,
+      "image_url": "comedy-dome-disabled-list-sat",
       "coordinates": { "lat": 47.6210, "lng": -122.3508 }
     }
   }

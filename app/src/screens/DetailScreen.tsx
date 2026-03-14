@@ -22,6 +22,7 @@ import {
   StyleSheet,
   Share,
   Linking,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -33,6 +34,15 @@ import type { DetailType } from "../navigation/RootNavigator";
 
 import musicData from "../sample-data/music.sample.json";
 import artData from "../sample-data/art.sample.json";
+
+import {
+  artImageRegistry,
+  musicImageRegistry,
+  vendorImageRegistry,
+  defaultArtImage,
+  defaultMusicImage,
+  defaultVendorImage,
+} from "../constants/imageRegistry";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -144,6 +154,24 @@ function getDistrictEvents(districtName: string): any[] {
         new Date(a.meta.event_start_time).getTime() -
         new Date(b.meta.event_start_time).getTime()
     );
+}
+
+function getDetailImageSource(item: any, type: DetailType): any | null {
+  if (!item) return null;
+
+  if ((type === "musician" || type === "music-event") && item?.meta?.image_url) {
+    return musicImageRegistry[item.meta.image_url] ?? defaultMusicImage;
+  }
+
+  if ((type === "artist" || type === "art-event") && item?.meta?.image_url) {
+    return artImageRegistry[item.meta.image_url] ?? defaultArtImage;
+  }
+
+  if (type === "vendor" && item?.image_url) {
+    return vendorImageRegistry[item.image_url] ?? defaultVendorImage;
+  }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -381,6 +409,8 @@ export default function DetailScreen({ route }: any) {
   const lat = item?.meta?.coordinates?.lat ?? item?.lat ?? null;
   const lng = item?.meta?.coordinates?.lng ?? item?.lng ?? null;
 
+  const imageSource = getDetailImageSource(item, type);
+
   const eventStart = item?.meta?.event_start_time ?? null;
   const eventEnd = item?.meta?.event_end_time ?? null;
   const stage = item?.meta?.stage ?? null;
@@ -457,13 +487,16 @@ export default function DetailScreen({ route }: any) {
       style={{ backgroundColor: theme.colors.background }}
       contentContainerStyle={styles.scroll}
     >
-      <View style={styles.imagePlaceholder} />
+      {imageSource ? (
+        <Image source={imageSource} style={styles.heroImage} resizeMode="cover" />
+      ) : (
+        <View style={styles.imagePlaceholder} />
+      )}
 
       <View style={styles.body}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.badge}>{badgeLabel}</Text>
 
-        {/* Event view: time */}
         {isEventView && formattedEventStart && (
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>Time</Text>
@@ -473,7 +506,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Event view: stage or district */}
         {isEventView && location && (
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>{stage ? "Stage" : "District"}</Text>
@@ -481,7 +513,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Category */}
         {categoryValue && (
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>{categoryLabel}</Text>
@@ -489,7 +520,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Profile: hometown */}
         {isProfileView && hometown && (
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>Hometown</Text>
@@ -497,7 +527,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Vendor: coordinates */}
         {type === "vendor" && lat != null && lng != null && (
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>Coordinates</Text>
@@ -505,7 +534,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Venue view: event count */}
         {isVenueView && (
           <View style={styles.metaBlock}>
             <Text style={styles.metaLabel}>
@@ -517,7 +545,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* About */}
         {!isEventView && !isVenueView && (excerpt || description) && (
           <View style={styles.descBlock}>
             <Text style={styles.sectionLabel}>About</Text>
@@ -525,7 +552,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Actions */}
         {!isVenueView && (
           <View style={styles.actions}>
             <TouchableOpacity
@@ -554,7 +580,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Event view: link to artist profile */}
         {isEventView && linkedArtist && (
           <View style={styles.artistLinkBlock}>
             <Text style={styles.sectionLabel}>Artist</Text>
@@ -567,7 +592,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Profile: external links */}
         {isProfileView && (spotifyUrl || appleMusicUrl || websiteUrl) && (
           <View style={styles.linksBlock}>
             <Text style={styles.sectionLabel}>Links</Text>
@@ -589,7 +613,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Vendor: website */}
         {type === "vendor" && websiteUrl && (
           <View style={styles.linksBlock}>
             <Text style={styles.sectionLabel}>Links</Text>
@@ -599,7 +622,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Profile: scheduled appearances */}
         {scheduleLabel && scheduledItems.length > 0 && (
           <View style={styles.scheduleBlock}>
             <Text style={styles.sectionLabel}>{scheduleLabel}</Text>
@@ -636,7 +658,6 @@ export default function DetailScreen({ route }: any) {
           </View>
         )}
 
-        {/* Venue view: events list */}
         {isVenueView && (
           <View style={styles.scheduleBlock}>
             <Text style={styles.sectionLabel}>
@@ -661,7 +682,7 @@ export default function DetailScreen({ route }: any) {
 }
 
 // ---------------------------------------------------------------------------
-// Styles — Sasha's scaled approach
+// Styles — Sasha's scaled approach + Brian's heroImage
 // ---------------------------------------------------------------------------
 
 function createStyles(theme: any, themeColorHex: string, textScale: number) {
@@ -676,6 +697,10 @@ function createStyles(theme: any, themeColorHex: string, textScale: number) {
   return StyleSheet.create({
     scroll: {
       paddingBottom: 48,
+    },
+    heroImage: {
+      width: "100%",
+      height: 220,
     },
     imagePlaceholder: {
       width: "100%",

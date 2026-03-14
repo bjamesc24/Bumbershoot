@@ -13,7 +13,7 @@
     "content": { "rendered": "<p>Slow-smoked brisket, pulled pork, and all the fixings from one of Seattle's favorite BBQ pits.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Slow-smoked BBQ classics from a Seattle favorite.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3001,
+    "image_url": "seattle-smokehouse-bbq",
     "categories": [50],
     "tags": [],
     "meta": {
@@ -42,7 +42,7 @@
     "content": { "rendered": "<p>Pan-Asian noodle dishes made fresh to order — ramen, pad thai, and seasonal specials.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Fresh pan-Asian noodles made to order.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3002,
+    "image_url": "noodle-box",
     "categories": [50],
     "tags": [],
     "meta": {
@@ -71,7 +71,7 @@
     "content": { "rendered": "<p>100% plant-based street food — loaded bowls, wraps, and house-made sauces with bold flavor.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Bold plant-based street food.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3003,
+    "image_url": "vegan-street",
     "categories": [50],
     "tags": [],
     "meta": {
@@ -100,7 +100,7 @@
     "content": { "rendered": "<p>Street-style tacos with fresh tortillas, carne asada, al pastor, and all the toppings.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Street-style tacos with fresh tortillas and classic fillings.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3004,
+    "image_url": "the-taco-stand",
     "categories": [50],
     "tags": [],
     "meta": {
@@ -129,7 +129,7 @@
     "content": { "rendered": "<p>Hand-squeezed lemonade and sweet or savory crepes made fresh on the griddle.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Fresh-squeezed lemonade and made-to-order crepes.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3005,
+    "image_url": "lemonade-and-crepes",
     "categories": [50],
     "tags": [],
     "meta": {
@@ -158,7 +158,7 @@
     "content": { "rendered": "<p>New and used vinyl spanning every genre — rock, soul, hip-hop, jazz, and more. Crate diggers welcome.</p>", "protected": false },
     "excerpt": { "rendered": "<p>New and used vinyl across every genre.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3006,
+    "image_url": "vinyl-revival-records",
     "categories": [51],
     "tags": [],
     "meta": {
@@ -187,7 +187,7 @@
     "content": { "rendered": "<p>Official Bumbershoot 2026 merch plus independent artist tees, hoodies, and accessories.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Official Bumbershoot merch and independent artist gear.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3007,
+    "image_url": "festival-threads",
     "categories": [51],
     "tags": [],
     "meta": {
@@ -216,7 +216,7 @@
     "content": { "rendered": "<p>Handcrafted ceramic mugs, bowls, and sculptural pieces made by Pacific Northwest artists.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Handcrafted ceramics by Pacific Northwest artists.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3008,
+    "image_url": "pacific-nw-pottery",
     "categories": [52],
     "tags": [],
     "meta": {
@@ -245,7 +245,7 @@
     "content": { "rendered": "<p>A curated marketplace of jewelry, textiles, and handmade goods from Seattle-area independent makers.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Jewelry, textiles, and goods from Seattle-area independent makers.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3009,
+    "image_url": "handmade-and-local",
     "categories": [52],
     "tags": [],
     "meta": {
@@ -274,7 +274,7 @@
     "content": { "rendered": "<p>Original screen-printed posters, tote bags, and art prints by Pacific Northwest illustrators.</p>", "protected": false },
     "excerpt": { "rendered": "<p>Screen-printed art by Pacific Northwest illustrators.</p>", "protected": false },
     "author": 1,
-    "featured_media": 3010,
+    "image_url": "the-print-shop",
     "categories": [52],
     "tags": [],
     "meta": {

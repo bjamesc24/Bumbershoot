@@ -2,6 +2,7 @@
   {
     "id": 101,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "madison-mcferrin-fountain-sat",
     "status": "publish",
     "type": "artist",
@@ -16,13 +17,14 @@
       "event_category": "R&B",
       "genre": "R&B",
       "hometown": "Brooklyn, NY",
-      "image_url": null,
+      "image_url": "madison-mcferrin-fountain-sat",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 102,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "great-grandpa-fountain-sat",
     "status": "publish",
     "type": "artist",
@@ -37,13 +39,14 @@
       "event_category": "Indie Rock",
       "genre": "Indie Rock",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "great-grandpa-fountain-sat",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 103,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "say-she-she-fountain-sat",
     "status": "publish",
     "type": "artist",
@@ -58,13 +61,14 @@
       "event_category": "Soul",
       "genre": "Soul",
       "hometown": "New York, NY",
-      "image_url": null,
+      "image_url": "say-she-she-fountain-sat",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 104,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "indigo-de-souza-fountain-sat",
     "status": "publish",
     "type": "artist",
@@ -79,13 +83,14 @@
       "event_category": "Indie Rock",
       "genre": "Indie Rock",
       "hometown": "Asheville, NC",
-      "image_url": null,
+      "image_url": "indigo-de-souza-fountain-sat",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 105,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "jrcg-mural-sat",
     "status": "publish",
     "type": "artist",
@@ -100,13 +105,14 @@
       "event_category": "Experimental",
       "genre": "Experimental",
       "hometown": "Mexico City, MX",
-      "image_url": null,
+      "image_url": "jrcg-mural-sat",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 106,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "kyle-dion-mural-sat",
     "status": "publish",
     "type": "artist",
@@ -121,13 +127,14 @@
       "event_category": "R&B",
       "genre": "R&B",
       "hometown": "Orlando, FL",
-      "image_url": null,
+      "image_url": "kyle-dion-mural-sat",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 107,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "hey-nothing-mural-sat",
     "status": "publish",
     "type": "artist",
@@ -142,13 +149,14 @@
       "event_category": "Indie Pop",
       "genre": "Indie Pop",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "hey-nothing-mural-sat",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 108,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "scowl-mural-sat",
     "status": "publish",
     "type": "artist",
@@ -163,13 +171,14 @@
       "event_category": "Punk",
       "genre": "Punk",
       "hometown": "Santa Cruz, CA",
-      "image_url": null,
+      "image_url": "scowl-mural-sat",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 109,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "fleetwood-snack-vera-sat",
     "status": "publish",
     "type": "artist",
@@ -184,13 +193,14 @@
       "event_category": "Classic Rock",
       "genre": "Classic Rock",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "fleetwood-snack-vera-sat",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 110,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "foot-ox-vera-sat",
     "status": "publish",
     "type": "artist",
@@ -205,13 +215,14 @@
       "event_category": "Folk",
       "genre": "Folk",
       "hometown": "Olympia, WA",
-      "image_url": null,
+      "image_url": "foot-ox-vera-sat",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 111,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "two-minute-hate-vera-sat",
     "status": "publish",
     "type": "artist",
@@ -226,13 +237,14 @@
       "event_category": "Punk",
       "genre": "Punk",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "two-minute-hate-vera-sat",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 112,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "liv-victorino-vera-sat",
     "status": "publish",
     "type": "artist",
@@ -247,13 +259,14 @@
       "event_category": "Indie Pop",
       "genre": "Indie Pop",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "liv-victorino-vera-sat",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 201,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "the-army-the-navy-fountain-sun",
     "status": "publish",
     "type": "artist",
@@ -268,13 +281,14 @@
       "event_category": "Indie Rock",
       "genre": "Indie Rock",
       "hometown": "Philadelphia, PA",
-      "image_url": null,
+      "image_url": "the-army-the-navy-fountain-sun",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 202,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "bebe-stockwell-fountain-sun",
     "status": "publish",
     "type": "artist",
@@ -289,13 +303,14 @@
       "event_category": "Folk",
       "genre": "Folk",
       "hometown": "Nashville, TN",
-      "image_url": null,
+      "image_url": "bebe-stockwell-fountain-sun",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 203,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "the-linda-lindas-fountain-sun",
     "status": "publish",
     "type": "artist",
@@ -310,13 +325,14 @@
       "event_category": "Punk",
       "genre": "Punk",
       "hometown": "Los Angeles, CA",
-      "image_url": null,
+      "image_url": "the-linda-lindas-fountain-sun",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 204,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "tennis-fountain-sun",
     "status": "publish",
     "type": "artist",
@@ -331,13 +347,14 @@
       "event_category": "Indie Pop",
       "genre": "Indie Pop",
       "hometown": "Denver, CO",
-      "image_url": null,
+      "image_url": "tennis-fountain-sun",
       "coordinates": { "lat": 47.6207, "lng": -122.3516 }
     }
   },
   {
     "id": 205,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "vika-and-the-velvets-mural-sun",
     "status": "publish",
     "type": "artist",
@@ -352,13 +369,14 @@
       "event_category": "Soul",
       "genre": "Soul",
       "hometown": "Melbourne, AU",
-      "image_url": null,
+      "image_url": "vika-and-the-velvets-mural-sun",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 206,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "fat-dog-mural-sun",
     "status": "publish",
     "type": "artist",
@@ -373,13 +391,14 @@
       "event_category": "Post-Punk",
       "genre": "Post-Punk",
       "hometown": "London, UK",
-      "image_url": null,
+      "image_url": "fat-dog-mural-sun",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 207,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "spellling-mural-sun",
     "status": "publish",
     "type": "artist",
@@ -394,13 +413,14 @@
       "event_category": "Avant-Pop",
       "genre": "Avant-Pop",
       "hometown": "Oakland, CA",
-      "image_url": null,
+      "image_url": "spellling-mural-sun",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 208,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "frankie-and-the-witch-fingers-mural-sun",
     "status": "publish",
     "type": "artist",
@@ -415,13 +435,14 @@
       "event_category": "Psychedelic Rock",
       "genre": "Psychedelic Rock",
       "hometown": "Los Angeles, CA",
-      "image_url": null,
+      "image_url": "frankie-and-the-witch-fingers-mural-sun",
       "coordinates": { "lat": 47.6196, "lng": -122.3515 }
     }
   },
   {
     "id": 209,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "school-of-rock-seattle-vera-sun",
     "status": "publish",
     "type": "artist",
@@ -436,13 +457,14 @@
       "event_category": "Rock",
       "genre": "Rock",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "school-of-rock-seattle-vera-sun",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 210,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "enumclaw-vera-sun",
     "status": "publish",
     "type": "artist",
@@ -457,13 +479,14 @@
       "event_category": "Indie Rock",
       "genre": "Indie Rock",
       "hometown": "Enumclaw, WA",
-      "image_url": null,
+      "image_url": "enumclaw-vera-sun",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 211,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "la-furia-vera-sun",
     "status": "publish",
     "type": "artist",
@@ -478,13 +501,14 @@
       "event_category": "Latin Rock",
       "genre": "Latin Rock",
       "hometown": "Seattle, WA",
-      "image_url": null,
+      "image_url": "la-furia-vera-sun",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   },
   {
     "id": 212,
     "date": "2026-07-01T09:00:00",
+    "updated_at": "2026-08-30T09:30:00",
     "slug": "the-comet-is-coming-vera-sun",
     "status": "publish",
     "type": "artist",
@@ -499,7 +523,7 @@
       "event_category": "Jazz",
       "genre": "Jazz",
       "hometown": "London, UK",
-      "image_url": null,
+      "image_url": "the-comet-is-coming-vera-sun",
       "coordinates": { "lat": 47.6222, "lng": -122.3524 }
     }
   }
