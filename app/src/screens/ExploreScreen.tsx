@@ -23,6 +23,7 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -37,6 +38,14 @@ import artData from "../sample-data/art.sample.json";
 import vendorsData from "../sample-data/vendors.sample.json";
 
 import { stripHtml } from "../utils/displayUtils";
+import {
+  artImageRegistry,
+  musicImageRegistry,
+  vendorImageRegistry,
+  defaultArtImage,
+  defaultMusicImage,
+  defaultVendorImage,
+} from "../constants/imageRegistry";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -47,6 +56,24 @@ function getItemId(item: any): string {
   if (rawType === "artist") return `music-${item.id}`;
   if (rawType === "art") return `art-${item.id}`;
   return String(item?.id ?? "");
+}
+
+function getExploreImageSource(item: any): any | null {
+  if (!item) return null;
+
+  if (item?.type === "artist" && item?.meta?.image_url) {
+    return musicImageRegistry[item.meta.image_url] ?? defaultMusicImage;
+  }
+
+  if (item?.type === "art" && item?.meta?.image_url) {
+    return artImageRegistry[item.meta.image_url] ?? defaultArtImage;
+  }
+
+  if (item?.type === "vendor" && item?.image_url) {
+    return vendorImageRegistry[item.image_url] ?? defaultVendorImage;
+  }
+
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,6 +102,7 @@ function ExploreCard({
   showAttend,
   item,
   disabled,
+  imageSource,
 }: {
   title: string;
   subtitle?: string | null;
@@ -83,6 +111,7 @@ function ExploreCard({
   showAttend?: boolean;
   item?: any;
   disabled?: boolean;
+  imageSource?: any | null;
 }) {
   const { theme, themeColorHex } = useAppSettings();
   const styles = useMemo(() => createStyles(theme), [theme]);
@@ -97,7 +126,11 @@ function ExploreCard({
       disabled={disabled}
       activeOpacity={disabled ? 1 : 0.85}
     >
-      <View style={styles.imagePlaceholder} />
+      {imageSource ? (
+        <Image source={imageSource} style={styles.cardImage} resizeMode="cover" />
+      ) : (
+        <View style={styles.imagePlaceholder} />
+      )}
 
       <Text style={styles.cardTitle} numberOfLines={2}>
         {title}
@@ -199,7 +232,6 @@ export default function ExploreScreen() {
     navigation.navigate("Detail", { item, type });
   };
 
-  // Derive stages from music data — stays in sync automatically
   const stages = useMemo(
     () =>
       Array.from(
@@ -215,7 +247,6 @@ export default function ExploreScreen() {
     []
   );
 
-  // Derive districts from art data — stays in sync automatically
   const districts = useMemo(
     () =>
       Array.from(
@@ -249,6 +280,7 @@ export default function ExploreScreen() {
               meta={item.meta?.hometown ?? stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "musician")}
               item={item}
+              imageSource={getExploreImageSource(item)}
             />
           )}
         />
@@ -273,6 +305,7 @@ export default function ExploreScreen() {
                 onPress={() => goToDetail(item, "music-event")}
                 showAttend
                 item={item}
+                imageSource={getExploreImageSource(item)}
               />
             );
           }}
@@ -292,6 +325,7 @@ export default function ExploreScreen() {
               meta={stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "artist")}
               item={item}
+              imageSource={getExploreImageSource(item)}
             />
           )}
         />
@@ -317,6 +351,7 @@ export default function ExploreScreen() {
                 onPress={() => goToDetail(item, "art-event")}
                 showAttend
                 item={item}
+                imageSource={getExploreImageSource(item)}
               />
             );
           }}
@@ -334,6 +369,7 @@ export default function ExploreScreen() {
               meta={stripHtml(item.excerpt?.rendered ?? "")}
               onPress={() => goToDetail(item, "vendor")}
               item={item}
+              imageSource={getExploreImageSource(item)}
             />
           )}
         />
@@ -373,7 +409,7 @@ export default function ExploreScreen() {
 }
 
 // ---------------------------------------------------------------------------
-// Styles — Sasha's token-aware approach
+// Styles — Sasha's token-aware approach + Brian's cardImage
 // ---------------------------------------------------------------------------
 
 const CARD_WIDTH = 220;
@@ -433,6 +469,12 @@ function createStyles(theme: any) {
     },
     cardDisabled: {
       opacity: 0.6,
+    },
+    cardImage: {
+      width: "100%",
+      height: IMAGE_HEIGHT,
+      borderRadius: 8,
+      marginBottom: 10,
     },
     imagePlaceholder: {
       width: "100%",

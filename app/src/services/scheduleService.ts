@@ -1,52 +1,96 @@
-// app/src/services/scheduleService.ts
-
-/**
- * scheduleService.ts
- * ------------------
- * Responsibility:
- *   Provide schedule/event data to the UI.
- *
- * Current state:
- *   Uses local/mock schedule data so the app functions offline and during early development.
- *
- * Future state:
- *   When Spencer's backend schedule endpoint is fully confirmed, switch
- *   getSchedule() to call getScheduleFromApi().
- */
-
 import { apiClient } from "./apiClient";
 
-// IMPORTANT:
-// I don't know your exact schedule type names yet because this file was empty.
-// If you already have a type like Event/ScheduleItem defined elsewhere,
-// replace "any" with the correct type.
-import { fakeSchedule } from "./fakeSchedule"; // If your fakeSchedule exports differently, tell me and I’ll adjust.
+export type ScheduleResponse = {
+  id: string;
+  title: string;
+  startTime: string;
+  endTime: string;
+  stage: string;
+  category: string;
+  tags: string[];
+  description: string;
+  sourceType: "music" | "art";
+  rawItem?: any;
+}[];
 
-// Replace `any` with your real type once confirmed (ex: Event[] or ScheduleItem[]).
-export type ScheduleResponse = any;
-
-/**
- * Fetches schedule data from the WordPress REST API.
- * Expected endpoint (based on the wp/endpoints docs pattern):
- *   GET /wp-json/bumbershoot/v1/schedule
- *
- * Since apiClient BASE_URL already includes "/wp-json", we call:
- *   /bumbershoot/v1/schedule
- */
-async function getScheduleFromApi(): Promise<ScheduleResponse> {
-  return apiClient.get<ScheduleResponse>("/bumbershoot/v1/schedule");
+function stripHtml(html?: string | null): string {
+  if (!html) return "";
+  return html.replace(/<[^>]+>/g, "").trim();
 }
 
-/**
- * Returns schedule data for the app.
- *
- * For now: return bundled/mock data so the app works without backend.
- * Later: replace with the live API call once fully confirmed.
- */
-export async function getSchedule(): Promise<ScheduleResponse> {
-  // TODO: switch to live API once endpoint is confirmed working:
-  // return getScheduleFromApi();
+function loadSampleMusic(): any[] {
+  const data = require("../sample-data/music.sample.json");
+  return Array.isArray(data) ? data : [];
+}
 
-  // Offline/dev fallback:
-  return fakeSchedule as ScheduleResponse;
+function loadSampleArt(): any[] {
+  const data = require("../sample-data/art.sample.json");
+  return Array.isArray(data) ? data : [];
+}
+
+function mapMusicItem(item: any) {
+  return {
+    id: `music-${item.id}`,
+    title: item?.title?.rendered ?? "Untitled Music Event",
+    startTime: item?.meta?.event_start_time ?? "",
+    endTime: item?.meta?.event_end_time ?? "",
+    stage: item?.meta?.stage ?? "Unknown Stage",
+    category: item?.meta?.event_category ?? item?.meta?.genre ?? "Music",
+    tags: [item?.meta?.event_category, item?.meta?.genre].filter(Boolean),
+    description:
+      stripHtml(item?.excerpt?.rendered) ||
+      stripHtml(item?.content?.rendered) ||
+      "",
+    sourceType: "music" as const,
+    rawItem: item,
+  };
+}
+
+function mapArtItem(item: any) {
+  return {
+    id: `art-${item.id}`,
+    title: item?.title?.rendered ?? "Untitled Art Event",
+    startTime: item?.meta?.event_start_time ?? "",
+    endTime: item?.meta?.event_end_time ?? "",
+    stage: item?.meta?.district ?? "Unknown District",
+    category: item?.meta?.event_category ?? item?.meta?.genre ?? "Art",
+    tags: [item?.meta?.event_category, item?.meta?.genre].filter(Boolean),
+    description:
+      stripHtml(item?.excerpt?.rendered) ||
+      stripHtml(item?.content?.rendered) ||
+      "",
+    sourceType: "art" as const,
+    rawItem: item,
+  };
+}
+
+function loadSampleSchedule(): ScheduleResponse {
+  const music = loadSampleMusic().map(mapMusicItem);
+  const art = loadSampleArt().map(mapArtItem);
+
+  return [...music, ...art].sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
+}
+
+async function getScheduleFromApi(): Promise<ScheduleResponse> {
+  const [music, art] = await Promise.all([
+    apiClient.get<any[]>("/bumbershoot/v1/music"),
+    apiClient.get<any[]>("/bumbershoot/v1/art"),
+  ]);
+
+  const mappedMusic = (Array.isArray(music) ? music : []).map(mapMusicItem);
+  const mappedArt = (Array.isArray(art) ? art : []).map(mapArtItem);
+
+  return [...mappedMusic, ...mappedArt].sort(
+    (a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+  );
+}
+
+export async function getSchedule(): Promise<ScheduleResponse> {
+  if (apiClient.useSampleData) {
+    return loadSampleSchedule();
+  }
+
+  return getScheduleFromApi();
 }

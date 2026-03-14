@@ -15,7 +15,8 @@
       "related_event": null,
       "related_venue": { "id": 1, "title": "Fountain Stage", "short_name": "Fountain" },
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     },
     {
       "id": 502,
@@ -30,7 +31,8 @@
       "related_event": null,
       "related_venue": null,
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     },
     {
       "id": 503,
@@ -45,7 +47,8 @@
       "related_event": { "id": 103, "title": "Say She She", "slug": "say-she-she-fountain-sat" },
       "related_venue": { "id": 1, "title": "Fountain Stage", "short_name": "Fountain" },
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     },
     {
       "id": 504,
@@ -60,7 +63,8 @@
       "related_event": { "id": 203, "title": "The Linda Lindas", "slug": "the-linda-lindas-fountain-sun" },
       "related_venue": { "id": 1, "title": "Fountain Stage", "short_name": "Fountain" },
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     },
     {
       "id": 505,
@@ -75,7 +79,8 @@
       "related_event": { "id": 338, "title": "Cat Circus", "slug": "cat-circus-sat" },
       "related_venue": { "id": 5, "title": "Geodesic Domes", "short_name": "Geodesic Domes" },
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     },
     {
       "id": 506,
@@ -90,7 +95,8 @@
       "related_event": null,
       "related_venue": null,
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     },
     {
       "id": 507,
@@ -105,7 +111,8 @@
       "related_event": null,
       "related_venue": null,
       "external_url": null,
-      "external_url_label": null
+      "external_url_label": null,
+      "updated_at": "2026-08-30T14:05:00-07:00"
     }
   ]
 }

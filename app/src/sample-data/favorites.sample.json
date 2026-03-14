@@ -1,0 +1,69 @@
+[
+{
+"id":"ann_001",
+"title":"Welcome to Bumbershoot 2026!",
+"message":"We are excited to welcome everyone back to Seattle Center. Check the schedule tab to see today's lineup and plan your day.",
+"priority":"general",
+"type":"festival",
+"publishedAt":"2026-09-02T08:00:00Z"
+},
+{
+"id":"ann_002",
+"title":"Stage 3 Delayed — 30 Minutes",
+"message":"Due to a sound equipment issue, performances at the Vera Project Stage will begin 30 minutes later than scheduled.",
+"priority":"urgent",
+"type":"schedule-change",
+"publishedAt":"2026-09-02T14:00:00Z"
+},
+{
+"id":"ann_003",
+"title":"Weather Advisory",
+"message":"Light rain is expected later this evening. Please bring a rain jacket or poncho. Performances will continue as scheduled.",
+"priority":"urgent",
+"type":"weather",
+"publishedAt":"2026-09-02T12:00:00Z"
+},
+{
+"id":"ann_004",
+"title":"Food Vendors Now Open",
+"message":"The South Lawn Food Court is now open with over 10 local vendors serving food and drinks.",
+"priority":"general",
+"type":"vendor",
+"publishedAt":"2026-09-02T10:30:00Z"
+},
+{
+"id":"ann_005",
+"title":"Headliner Show — Early Entry",
+"message":"Climate Pledge Arena doors will open 45 minutes early tonight for the headliner performance.",
+"priority":"personal",
+"type":"event",
+"eventId":"event_030",
+"publishedAt":"2026-09-02T16:00:00Z"
+},
+{
+"id":"ann_006",
+"title":"Art Workshop Starting Soon",
+"message":"The Street Art Workshop at Artists at Play Plaza will begin in 15 minutes. Supplies are limited.",
+"priority":"general",
+"type":"activity",
+"eventId":"event_026",
+"publishedAt":"2026-09-03T09:45:00Z"
+},
+{
+"id":"ann_007",
+"title":"Water Refill Stations Available",
+"message":"Free water refill stations are available throughout the park. Please stay hydrated during the festival.",
+"priority":"general",
+"type":"festival",
+"publishedAt":"2026-09-02T11:00:00Z"
+},
+{
+"id":"ann_008",
+"title":"Closing Ceremony Tonight",
+"message":"Join us tonight at Climate Pledge Arena for the closing performance of Bumbershoot 2026.",
+"priority":"general",
+"type":"event",
+"eventId":"event_030",
+"publishedAt":"2026-09-03T18:00:00Z"
+}
+]
