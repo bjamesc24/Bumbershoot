@@ -23,6 +23,7 @@ import {
   Share,
   Linking,
   Image,
+  Pressable,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
@@ -115,6 +116,7 @@ function getScheduledItems(item: any, type: DetailType): any[] {
   const source = type === "musician" ? (musicData as any[]) : (artData as any[]);
   const currentSlug = item?.slug ?? null;
   const currentTitle = getNormalizedTitle(item);
+
   return source.filter((entry) => {
     const entrySlug = entry?.slug ?? null;
     const entryTitle = getNormalizedTitle(entry);
@@ -128,6 +130,7 @@ function findArtistForEvent(item: any, type: DetailType): any | null {
   const source = type === "music-event" ? (musicData as any[]) : (artData as any[]);
   const eventSlug = item?.slug ?? null;
   const eventTitle = getNormalizedTitle(item);
+
   return (
     source.find((entry) => {
       if (eventSlug && entry?.slug) return entry.slug === eventSlug;
@@ -240,7 +243,8 @@ function ScheduleEntryRow({
 
       {formattedStart && (
         <Text style={styles.scheduleMeta}>
-          {formattedStart}{formattedEnd ? ` – ${formattedEnd}` : ""}
+          {formattedStart}
+          {formattedEnd ? ` – ${formattedEnd}` : ""}
         </Text>
       )}
       {location && <Text style={styles.scheduleMeta}>{location}</Text>}
@@ -337,7 +341,8 @@ function VenueEventRow({
 
         {formattedStart && (
           <Text style={styles.venueEventMeta}>
-            {formattedStart}{formattedEnd ? ` – ${formattedEnd}` : ""}
+            {formattedStart}
+            {formattedEnd ? ` – ${formattedEnd}` : ""}
           </Text>
         )}
         {category && <Text style={styles.venueEventMeta}>{category}</Text>}
@@ -367,26 +372,58 @@ export default function DetailScreen({ route }: any) {
 
   if (!item || !type) {
     return (
-      <ScrollView
-        style={{ backgroundColor: theme.colors.background }}
-        contentContainerStyle={styles.scroll}
-      >
-        <View style={styles.body}>
-          <Text style={styles.title}>Missing detail data</Text>
-          <Text style={styles.desc}>
-            This screen was opened without the required item information.
+      <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+        <View style={styles.headerRow}>
+          <Pressable
+            onPress={() => {
+  if (navigation.canGoBack()) {
+    navigation.goBack();
+  } else {
+    navigation.navigate("ScheduleList");
+  }
+}}
+            style={[
+              styles.backButton,
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.surface,
+              },
+            ]}
+          >
+            <Text style={[styles.backButtonText, { color: theme.colors.text }]}>
+              Back
+            </Text>
+          </Pressable>
+
+          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+            Detail
           </Text>
+
+          <View style={styles.headerSpacer} />
         </View>
-      </ScrollView>
+
+        <ScrollView contentContainerStyle={styles.scroll}>
+          <View style={styles.body}>
+            <Text style={styles.title}>Missing detail data</Text>
+            <Text style={styles.desc}>
+              This screen was opened without the required item information.
+            </Text>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 
   const id =
-    type === "musician" ? `music-${item?.id}` :
-    type === "artist" ? `art-${item?.id}` :
-    type === "music-event" ? `music-${item?.id}` :
-    type === "art-event" ? `art-${item?.id}` :
-    String(item?.id ?? "");
+    type === "musician"
+      ? `music-${item?.id}`
+      : type === "artist"
+        ? `art-${item?.id}`
+        : type === "music-event"
+          ? `music-${item?.id}`
+          : type === "art-event"
+            ? `art-${item?.id}`
+            : String(item?.id ?? "");
 
   const { favorited, handleFavorite } = useItemActions(id, item);
   const { isAttending, toggle } = useAttending();
@@ -436,8 +473,7 @@ export default function DetailScreen({ route }: any) {
 
   const scheduledItems = useMemo(() => getScheduledItems(item, type), [item, type]);
   const scheduleLabel =
-    type === "musician" ? "Scheduled Music" :
-    type === "artist" ? "Scheduled Art" : null;
+    type === "musician" ? "Scheduled Music" : type === "artist" ? "Scheduled Art" : null;
 
   const linkedArtist = useMemo(() => findArtistForEvent(item, type), [item, type]);
 
@@ -483,206 +519,247 @@ export default function DetailScreen({ route }: any) {
   };
 
   return (
-    <ScrollView
-      style={{ backgroundColor: theme.colors.background }}
-      contentContainerStyle={styles.scroll}
-    >
-      {imageSource ? (
-        <Image source={imageSource} style={styles.heroImage} resizeMode="cover" />
-      ) : (
-        <View style={styles.imagePlaceholder} />
-      )}
+    <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
+      <View style={styles.headerRow}>
+        <Pressable
+          onPress={() => navigation.goBack()}
+          style={[
+            styles.backButton,
+            {
+              borderColor: theme.colors.border,
+              backgroundColor: theme.colors.surface,
+            },
+          ]}
+        >
+          <Text style={[styles.backButtonText, { color: theme.colors.text }]}>
+            Back
+          </Text>
+        </Pressable>
 
-      <View style={styles.body}>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.badge}>{badgeLabel}</Text>
+        <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+          Detail
+        </Text>
 
-        {isEventView && formattedEventStart && (
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>Time</Text>
-            <Text style={styles.metaValue}>
-              {formattedEventStart}{formattedEventEnd ? ` – ${formattedEventEnd}` : ""}
-            </Text>
-          </View>
+        <View style={styles.headerSpacer} />
+      </View>
+
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {imageSource ? (
+          <Image source={imageSource} style={styles.heroImage} resizeMode="cover" />
+        ) : (
+          <View style={styles.imagePlaceholder} />
         )}
 
-        {isEventView && location && (
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>{stage ? "Stage" : "District"}</Text>
-            <Text style={styles.metaValue}>{location}</Text>
-          </View>
-        )}
+        <View style={styles.body}>
+          <Text style={styles.title}>{title}</Text>
+          <Text style={styles.badge}>{badgeLabel}</Text>
 
-        {categoryValue && (
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>{categoryLabel}</Text>
-            <Text style={styles.metaValue}>{stripHtml(String(categoryValue))}</Text>
-          </View>
-        )}
-
-        {isProfileView && hometown && (
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>Hometown</Text>
-            <Text style={styles.metaValue}>{hometown}</Text>
-          </View>
-        )}
-
-        {type === "vendor" && lat != null && lng != null && (
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>Coordinates</Text>
-            <Text style={styles.metaValue}>{lat}, {lng}</Text>
-          </View>
-        )}
-
-        {isVenueView && (
-          <View style={styles.metaBlock}>
-            <Text style={styles.metaLabel}>
-              {type === "stage" ? "Stage" : "Art District"}
-            </Text>
-            <Text style={styles.metaValue}>
-              {venueEvents.length} event{venueEvents.length !== 1 ? "s" : ""}
-            </Text>
-          </View>
-        )}
-
-        {!isEventView && !isVenueView && (excerpt || description) && (
-          <View style={styles.descBlock}>
-            <Text style={styles.sectionLabel}>About</Text>
-            <Text style={styles.desc}>{excerpt ?? description}</Text>
-          </View>
-        )}
-
-        {!isVenueView && (
-          <View style={styles.actions}>
-            <TouchableOpacity
-              style={[styles.actionBtn, favorited && styles.actionBtnActive]}
-              onPress={() => handleFavorite(title)}
-            >
-              <Text style={[styles.actionBtnText, favorited && styles.actionBtnTextActive]}>
-                {favorited ? "Liked" : "Like"}
+          {isEventView && formattedEventStart && (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>Time</Text>
+              <Text style={styles.metaValue}>
+                {formattedEventStart}
+                {formattedEventEnd ? ` – ${formattedEventEnd}` : ""}
               </Text>
-            </TouchableOpacity>
+            </View>
+          )}
 
-            {isEventView && (
+          {isEventView && location && (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>{stage ? "Stage" : "District"}</Text>
+              <Text style={styles.metaValue}>{location}</Text>
+            </View>
+          )}
+
+          {categoryValue && (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>{categoryLabel}</Text>
+              <Text style={styles.metaValue}>{stripHtml(String(categoryValue))}</Text>
+            </View>
+          )}
+
+          {isProfileView && hometown && (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>Hometown</Text>
+              <Text style={styles.metaValue}>{hometown}</Text>
+            </View>
+          )}
+
+          {type === "vendor" && lat != null && lng != null && (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>Coordinates</Text>
+              <Text style={styles.metaValue}>
+                {lat}, {lng}
+              </Text>
+            </View>
+          )}
+
+          {isVenueView && (
+            <View style={styles.metaBlock}>
+              <Text style={styles.metaLabel}>
+                {type === "stage" ? "Stage" : "Art District"}
+              </Text>
+              <Text style={styles.metaValue}>
+                {venueEvents.length} event{venueEvents.length !== 1 ? "s" : ""}
+              </Text>
+            </View>
+          )}
+
+          {!isEventView && !isVenueView && (excerpt || description) && (
+            <View style={styles.descBlock}>
+              <Text style={styles.sectionLabel}>About</Text>
+              <Text style={styles.desc}>{excerpt ?? description}</Text>
+            </View>
+          )}
+
+          {!isVenueView && (
+            <View style={styles.actions}>
               <TouchableOpacity
-                style={[styles.actionBtn, attending && styles.actionBtnActive]}
-                onPress={handleAttend}
+                style={[styles.actionBtn, favorited && styles.actionBtnActive]}
+                onPress={() => handleFavorite(title)}
               >
-                <Text style={[styles.actionBtnText, attending && styles.actionBtnTextActive]}>
-                  {attending ? "Attending" : "Attend"}
+                <Text style={[styles.actionBtnText, favorited && styles.actionBtnTextActive]}>
+                  {favorited ? "Liked" : "Like"}
                 </Text>
               </TouchableOpacity>
-            )}
 
-            <TouchableOpacity style={styles.actionBtn} onPress={handleShare}>
-              <Text style={styles.actionBtnText}>Share</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+              {isEventView && (
+                <TouchableOpacity
+                  style={[styles.actionBtn, attending && styles.actionBtnActive]}
+                  onPress={handleAttend}
+                >
+                  <Text style={[styles.actionBtnText, attending && styles.actionBtnTextActive]}>
+                    {attending ? "Attending" : "Attend"}
+                  </Text>
+                </TouchableOpacity>
+              )}
 
-        {isEventView && linkedArtist && (
-          <View style={styles.artistLinkBlock}>
-            <Text style={styles.sectionLabel}>Artist</Text>
-            <TouchableOpacity style={styles.artistLinkBtn} onPress={handleGoToArtist}>
-              <Text style={styles.artistLinkTitle}>
-                {getNormalizedTitle(linkedArtist)}
-              </Text>
-              <Text style={[styles.artistLinkArrow, { color: theme.colors.textMuted }]}>→</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {isProfileView && (spotifyUrl || appleMusicUrl || websiteUrl) && (
-          <View style={styles.linksBlock}>
-            <Text style={styles.sectionLabel}>Links</Text>
-            {spotifyUrl && (
-              <TouchableOpacity style={styles.linkBtn} onPress={() => handleExternalLink(spotifyUrl)}>
-                <Text style={styles.linkBtnText}>Spotify</Text>
+              <TouchableOpacity style={styles.actionBtn} onPress={handleShare}>
+                <Text style={styles.actionBtnText}>Share</Text>
               </TouchableOpacity>
-            )}
-            {appleMusicUrl && (
-              <TouchableOpacity style={styles.linkBtn} onPress={() => handleExternalLink(appleMusicUrl)}>
-                <Text style={styles.linkBtnText}>Apple Music</Text>
+            </View>
+          )}
+
+          {isEventView && linkedArtist && (
+            <View style={styles.artistLinkBlock}>
+              <Text style={styles.sectionLabel}>Artist</Text>
+              <TouchableOpacity style={styles.artistLinkBtn} onPress={handleGoToArtist}>
+                <Text style={styles.artistLinkTitle}>{getNormalizedTitle(linkedArtist)}</Text>
+                <Text style={[styles.artistLinkArrow, { color: theme.colors.textMuted }]}>→</Text>
               </TouchableOpacity>
-            )}
-            {websiteUrl && (
-              <TouchableOpacity style={styles.linkBtn} onPress={() => handleExternalLink(websiteUrl)}>
+            </View>
+          )}
+
+          {isProfileView && (spotifyUrl || appleMusicUrl || websiteUrl) && (
+            <View style={styles.linksBlock}>
+              <Text style={styles.sectionLabel}>Links</Text>
+
+              {spotifyUrl && (
+                <TouchableOpacity
+                  style={styles.linkBtn}
+                  onPress={() => handleExternalLink(spotifyUrl)}
+                >
+                  <Text style={styles.linkBtnText}>Spotify</Text>
+                </TouchableOpacity>
+              )}
+
+              {appleMusicUrl && (
+                <TouchableOpacity
+                  style={styles.linkBtn}
+                  onPress={() => handleExternalLink(appleMusicUrl)}
+                >
+                  <Text style={styles.linkBtnText}>Apple Music</Text>
+                </TouchableOpacity>
+              )}
+
+              {websiteUrl && (
+                <TouchableOpacity
+                  style={styles.linkBtn}
+                  onPress={() => handleExternalLink(websiteUrl)}
+                >
+                  <Text style={styles.linkBtnText}>Website</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
+
+          {type === "vendor" && websiteUrl && (
+            <View style={styles.linksBlock}>
+              <Text style={styles.sectionLabel}>Links</Text>
+              <TouchableOpacity
+                style={styles.linkBtn}
+                onPress={() => handleExternalLink(websiteUrl)}
+              >
                 <Text style={styles.linkBtnText}>Website</Text>
               </TouchableOpacity>
-            )}
-          </View>
-        )}
+            </View>
+          )}
 
-        {type === "vendor" && websiteUrl && (
-          <View style={styles.linksBlock}>
-            <Text style={styles.sectionLabel}>Links</Text>
-            <TouchableOpacity style={styles.linkBtn} onPress={() => handleExternalLink(websiteUrl)}>
-              <Text style={styles.linkBtnText}>Website</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+          {scheduleLabel && scheduledItems.length > 0 && (
+            <View style={styles.scheduleBlock}>
+              <Text style={styles.sectionLabel}>{scheduleLabel}</Text>
+              {scheduledItems.map((entry) => {
+                const entryId = type === "musician" ? `music-${entry.id}` : `art-${entry.id}`;
 
-        {scheduleLabel && scheduledItems.length > 0 && (
-          <View style={styles.scheduleBlock}>
-            <Text style={styles.sectionLabel}>{scheduleLabel}</Text>
-            {scheduledItems.map((entry) => {
-              const entryId =
-                type === "musician" ? `music-${entry.id}` : `art-${entry.id}`;
-              const fStart = entry?.meta?.event_start_time
-                ? new Date(entry.meta.event_start_time).toLocaleString(undefined, {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })
-                : null;
-              const fEnd = entry?.meta?.event_end_time
-                ? new Date(entry.meta.event_end_time).toLocaleTimeString(undefined, {
-                    hour: "numeric",
-                    minute: "2-digit",
-                  })
-                : null;
-              return (
-                <ScheduleEntryRow
-                  key={entryId}
-                  entryId={entryId}
-                  entry={entry}
-                  formattedStart={fStart}
-                  formattedEnd={fEnd}
-                  location={entry?.meta?.stage ?? entry?.meta?.district ?? null}
-                  category={entry?.meta?.event_category ?? entry?.meta?.genre ?? null}
-                />
-              );
-            })}
-          </View>
-        )}
+                const fStart = entry?.meta?.event_start_time
+                  ? new Date(entry.meta.event_start_time).toLocaleString(undefined, {
+                      weekday: "short",
+                      month: "short",
+                      day: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                  : null;
 
-        {isVenueView && (
-          <View style={styles.scheduleBlock}>
-            <Text style={styles.sectionLabel}>
-              {type === "stage" ? "Performances" : "Events"}
-            </Text>
-            {venueEvents.length === 0 ? (
-              <Text style={styles.desc}>No events scheduled yet.</Text>
-            ) : (
-              venueEvents.map((entry) => (
-                <VenueEventRow
-                  key={entry.id}
-                  entry={entry}
-                  onPress={() => handleVenueEventPress(entry)}
-                />
-              ))
-            )}
-          </View>
-        )}
-      </View>
-    </ScrollView>
+                const fEnd = entry?.meta?.event_end_time
+                  ? new Date(entry.meta.event_end_time).toLocaleTimeString(undefined, {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })
+                  : null;
+
+                return (
+                  <ScheduleEntryRow
+                    key={entryId}
+                    entryId={entryId}
+                    entry={entry}
+                    formattedStart={fStart}
+                    formattedEnd={fEnd}
+                    location={entry?.meta?.stage ?? entry?.meta?.district ?? null}
+                    category={entry?.meta?.event_category ?? entry?.meta?.genre ?? null}
+                  />
+                );
+              })}
+            </View>
+          )}
+
+          {isVenueView && (
+            <View style={styles.scheduleBlock}>
+              <Text style={styles.sectionLabel}>
+                {type === "stage" ? "Performances" : "Events"}
+              </Text>
+
+              {venueEvents.length === 0 ? (
+                <Text style={styles.desc}>No events scheduled yet.</Text>
+              ) : (
+                venueEvents.map((entry) => (
+                  <VenueEventRow
+                    key={entry.id}
+                    entry={entry}
+                    onPress={() => handleVenueEventPress(entry)}
+                  />
+                ))
+              )}
+            </View>
+          )}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Styles — Sasha's scaled approach + Brian's heroImage
+// Styles
 // ---------------------------------------------------------------------------
 
 function createStyles(theme: any, themeColorHex: string, textScale: number) {
@@ -695,6 +772,33 @@ function createStyles(theme: any, themeColorHex: string, textScale: number) {
   const captionSize = scaleValue(13, textScale);
 
   return StyleSheet.create({
+    headerRow: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingTop: 70,
+      paddingBottom: 8,
+    },
+    backButton: {
+      borderWidth: 1,
+      borderRadius: 8,
+      paddingHorizontal: 14,
+      paddingVertical: 8,
+      minWidth: 64,
+      alignItems: "center",
+    },
+    backButtonText: {
+      fontSize: scaleValue(13, textScale),
+      fontWeight: "700",
+    },
+    headerTitle: {
+      fontSize: scaleValue(18, textScale),
+      fontWeight: "800",
+    },
+    headerSpacer: {
+      width: 64,
+    },
     scroll: {
       paddingBottom: 48,
     },
@@ -764,7 +868,6 @@ function createStyles(theme: any, themeColorHex: string, textScale: number) {
     },
     actions: {
       flexDirection: "row",
-      gap: 10,
       marginTop: 24,
       marginBottom: 8,
       flexWrap: "wrap",
@@ -776,6 +879,8 @@ function createStyles(theme: any, themeColorHex: string, textScale: number) {
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.surface,
+      marginRight: 10,
+      marginBottom: 10,
     },
     actionBtnActive: {
       backgroundColor: themeColorHex,
@@ -815,7 +920,6 @@ function createStyles(theme: any, themeColorHex: string, textScale: number) {
     },
     linksBlock: {
       marginTop: 20,
-      gap: 10,
     },
     linkBtn: {
       paddingVertical: 10,
@@ -824,6 +928,7 @@ function createStyles(theme: any, themeColorHex: string, textScale: number) {
       borderWidth: 1,
       borderColor: theme.colors.border,
       backgroundColor: theme.colors.surface,
+      marginBottom: 10,
     },
     linkBtnText: {
       fontSize: buttonTextSize,

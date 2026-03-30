@@ -141,7 +141,6 @@ function GridView({
   return (
     <View style={styles.contentSpacing}>
       <View style={{ flex: 1, flexDirection: "row" }}>
-        {/* Fixed left: time gutter + blank header corner */}
         <View
           style={{
             width: TIME_COL_WIDTH,
@@ -172,8 +171,7 @@ function GridView({
                   style={[
                     styles.timeLabel,
                     {
-                      top:
-                        (hour - GRID_START_HOUR) * 60 * MINUTE_HEIGHT - 8,
+                      top: (hour - GRID_START_HOUR) * 60 * MINUTE_HEIGHT - 8,
                     },
                   ]}
                 >
@@ -191,7 +189,6 @@ function GridView({
           </ScrollView>
         </View>
 
-        {/* Right: horizontally scrollable columns */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -199,7 +196,6 @@ function GridView({
           style={{ flex: 1 }}
         >
           <View>
-            {/* Column headers */}
             <View
               style={[
                 styles.gridHeaderRow,
@@ -227,7 +223,6 @@ function GridView({
               ))}
             </View>
 
-            {/* Vertically scrollable columns — synced with gutter */}
             <ScrollView
               bounces={false}
               showsVerticalScrollIndicator={false}
@@ -259,9 +254,7 @@ function GridView({
                           styles.gridLine,
                           {
                             top:
-                              (hour - GRID_START_HOUR) *
-                              60 *
-                              MINUTE_HEIGHT,
+                              (hour - GRID_START_HOUR) * 60 * MINUTE_HEIGHT,
                             borderTopColor: theme.colors.border,
                           },
                         ]}
@@ -274,7 +267,6 @@ function GridView({
                         minutesFromGridStart(item.startTime) +
                         durationMinutes(item.startTime, item.endTime);
 
-                      // clamp to visible 12 PM–10 PM window
                       const visibleStart = Math.max(0, startOffset);
                       const visibleEnd = Math.min(totalMinutes, endOffset);
 
@@ -381,18 +373,29 @@ function ListView({
               style={[
                 styles.filterChip,
                 {
-                  borderColor: categoryFilter === opt ? themeColorHex : theme.colors.border,
-                  backgroundColor: categoryFilter === opt ? themeColorHex : theme.colors.surface,
+                  borderColor:
+                    categoryFilter === opt ? themeColorHex : theme.colors.border,
+                  backgroundColor:
+                    categoryFilter === opt ? themeColorHex : theme.colors.surface,
                 },
               ]}
             >
-              <Text style={[styles.filterChipText, { color: categoryFilter === opt ? "#fff" : theme.colors.textMuted }]}>
+              <Text
+                style={[
+                  styles.filterChipText,
+                  {
+                    color:
+                      categoryFilter === opt ? "#fff" : theme.colors.textMuted,
+                  },
+                ]}
+              >
                 {opt === "all" ? "All" : opt}
               </Text>
             </Pressable>
           ))}
         </ScrollView>
       )}
+
       {items.length === 0 ? (
         <EmptyState message={emptyMessage} />
       ) : (
@@ -412,7 +415,9 @@ function ListView({
                 },
               ]}
             >
-              <Text style={[styles.listSectionTitle, { color: theme.colors.text }]}>
+              <Text
+                style={[styles.listSectionTitle, { color: theme.colors.text }]}
+              >
                 {section.title}
               </Text>
             </View>
@@ -429,7 +434,9 @@ function ListView({
               onPress={() => onItemPress(item)}
               activeOpacity={0.7}
             >
-              <View style={[styles.listAccent, { backgroundColor: themeColorHex }]} />
+              <View
+                style={[styles.listAccent, { backgroundColor: themeColorHex }]}
+              />
               <View style={styles.listRowContent}>
                 <Text
                   style={[styles.listRowTitle, { color: theme.colors.text }]}
@@ -437,12 +444,19 @@ function ListView({
                 >
                   {decodeHtml(item.title)}
                 </Text>
-                <Text style={[styles.listRowMeta, { color: theme.colors.textMuted }]}>
+                <Text
+                  style={[styles.listRowMeta, { color: theme.colors.textMuted }]}
+                >
                   {formatTime(item.startTime)} – {formatTime(item.endTime)}
                   {item.stage ? ` · ${item.stage}` : ""}
                 </Text>
                 {item.category ? (
-                  <Text style={[styles.listRowCategory, { color: theme.colors.textMuted }]}>
+                  <Text
+                    style={[
+                      styles.listRowCategory,
+                      { color: theme.colors.textMuted },
+                    ]}
+                  >
                     {item.category}
                   </Text>
                 ) : null}
@@ -465,8 +479,6 @@ export default function ScheduleScreen() {
   const isOffline = useOfflineStatus();
   const { theme, themeColorHex } = useAppSettings();
   const schedule = useScheduleData(!isOffline);
-
-  // Use shared attending context — updates instantly from any screen
   const { attendingIds } = useAttending();
 
   const [sectionTab, setSectionTab] = useState<SectionTab>("music");
@@ -475,7 +487,6 @@ export default function ScheduleScreen() {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
-  // Unique days with content
   const festivalDays = useMemo(() => {
     const days = new Set(
       schedule.events.map((e) => new Date(e.startTime).toDateString())
@@ -502,7 +513,6 @@ export default function ScheduleScreen() {
       day: "numeric",
     });
 
-  // Events for selected date
   const dayItems = useMemo(() => {
     if (!selectedDate) return [];
     return schedule.events.filter(
@@ -510,21 +520,18 @@ export default function ScheduleScreen() {
     );
   }, [schedule.events, selectedDate]);
 
-  // Music — stages as columns
   const musicItems = useMemo(() => dayItems.filter(isMusic), [dayItems]);
   const musicStages = useMemo(
     () => Array.from(new Set(musicItems.map((e) => e.stage).filter(Boolean))).sort(),
     [musicItems]
   );
 
-  // Arts — districts as columns
   const artsItems = useMemo(() => dayItems.filter(isArts), [dayItems]);
   const artsCategories = useMemo(
     () => Array.from(new Set(artsItems.map((e) => e.category).filter(Boolean))).sort(),
     [artsItems]
   );
 
-  // My Plan — filter by attendingIds from context, reactive to any screen's changes
   const allDayItems = useMemo(
     () => [...musicItems, ...artsItems],
     [musicItems, artsItems]
@@ -548,10 +555,13 @@ export default function ScheduleScreen() {
   );
 
   const handleItemPress = (item: ScheduleItem) => {
-    navigation.navigate("Detail", { item: item.rawItem, type: item.itemType });
+    navigation.push("Detail", {
+      item: item.rawItem,
+      type: item.itemType,
+      from: "schedule",
+    });
   };
 
-  // Reset category filter when tab or plan toggle changes
   useEffect(() => {
     setCategoryFilter("all");
   }, [sectionTab, myPlanActive]);
@@ -560,9 +570,10 @@ export default function ScheduleScreen() {
 
   const filterOptions = useMemo(() => {
     const source = myPlanActive ? myPlanItems : baseItems;
-    const key = (myPlanActive || sectionTab === "arts")
-      ? (e: ScheduleItem) => e.category
-      : (e: ScheduleItem) => e.stage;
+    const key =
+      myPlanActive || sectionTab === "arts"
+        ? (e: ScheduleItem) => e.category
+        : (e: ScheduleItem) => e.stage;
     const vals = Array.from(new Set(source.map(key).filter(Boolean))).sort();
     return ["all", ...vals];
   }, [myPlanActive, myPlanItems, baseItems, sectionTab]);
@@ -582,7 +593,9 @@ export default function ScheduleScreen() {
 
   const currentColumns = myPlanActive
     ? myPlanColumns
-    : sectionTab === "music" ? musicStages : artsCategories;
+    : sectionTab === "music"
+      ? musicStages
+      : artsCategories;
 
   const currentGetColumn = (item: ScheduleItem) => {
     if (myPlanActive) {
@@ -591,10 +604,9 @@ export default function ScheduleScreen() {
     return sectionTab === "music" ? item.stage : item.category;
   };
 
-  const currentEmpty =
-    myPlanActive
-      ? "Nothing in your plan yet. Tap Attend on any event or performance."
-      : sectionTab === "music"
+  const currentEmpty = myPlanActive
+    ? "Nothing in your plan yet. Tap Attend on any event or performance."
+    : sectionTab === "music"
       ? "No music scheduled for this day."
       : "No arts events scheduled for this day.";
 
@@ -608,11 +620,35 @@ export default function ScheduleScreen() {
 
   return (
     <Screen>
-      {/* Header */}
+      {/* Header title row */}
       <View style={styles.headerRow}>
-        <Text style={[styles.screenTitle, { color: theme.colors.text, fontSize: theme.typography.h1 }]}>
+        <Text
+          style={[
+            styles.screenTitle,
+            { color: theme.colors.text, fontSize: theme.typography.h1 },
+          ]}
+        >
           Schedule
         </Text>
+      </View>
+
+      {/* Header buttons row */}
+      <View style={styles.headerButtonsRow}>
+        <Pressable
+          onPress={() => navigation.navigate("ScheduleSearch")}
+          style={[
+            styles.searchHeaderBtn,
+            {
+              borderColor: themeColorHex,
+              backgroundColor: "transparent",
+            },
+          ]}
+        >
+          <Text style={[styles.searchHeaderBtnText, { color: themeColorHex }]}>
+            Search
+          </Text>
+        </Pressable>
+
         <Pressable
           onPress={() => setMyPlanActive((v) => !v)}
           style={[
@@ -623,13 +659,17 @@ export default function ScheduleScreen() {
             },
           ]}
         >
-          <Text style={[styles.myPlanHeaderBtnText, { color: myPlanActive ? "#fff" : themeColorHex }]}>
+          <Text
+            style={[
+              styles.myPlanHeaderBtnText,
+              { color: myPlanActive ? "#fff" : themeColorHex },
+            ]}
+          >
             My Plan
           </Text>
         </Pressable>
       </View>
 
-      {/* Section tabs: hidden when My Plan is active */}
       {!myPlanActive && (
         <View style={[styles.tabRow, { borderBottomColor: theme.colors.border }]}>
           <View style={styles.tabGroup}>
@@ -653,7 +693,12 @@ export default function ScheduleScreen() {
                 <Text
                   style={[
                     styles.tabText,
-                    { color: sectionTab === t.key ? themeColorHex : theme.colors.textMuted },
+                    {
+                      color:
+                        sectionTab === t.key
+                          ? themeColorHex
+                          : theme.colors.textMuted,
+                    },
                   ]}
                 >
                   {t.label}
@@ -664,14 +709,16 @@ export default function ScheduleScreen() {
         </View>
       )}
 
-      {/* Date nav */}
       {festivalDays.length > 0 && (
         <View style={[styles.dateNav, { borderBottomColor: theme.colors.border }]}>
           <Pressable
             onPress={() => setViewMode(viewMode === "grid" ? "list" : "grid")}
             style={[
               styles.viewToggle,
-              { borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
+              {
+                borderColor: theme.colors.border,
+                backgroundColor: theme.colors.surface,
+              },
             ]}
           >
             <Text style={[styles.viewToggleText, { color: theme.colors.text }]}>
@@ -680,10 +727,14 @@ export default function ScheduleScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => canGoPrev && setSelectedDate(festivalDays[currentDayIndex - 1])}
+            onPress={() =>
+              canGoPrev && setSelectedDate(festivalDays[currentDayIndex - 1])
+            }
             style={[styles.dateArrow, { opacity: canGoPrev ? 1 : 0.3 }]}
           >
-            <Text style={[styles.dateArrowText, { color: theme.colors.text }]}>‹</Text>
+            <Text style={[styles.dateArrowText, { color: theme.colors.text }]}>
+              ‹
+            </Text>
           </Pressable>
 
           <ScrollView
@@ -698,12 +749,21 @@ export default function ScheduleScreen() {
                 style={[
                   styles.datePill,
                   {
-                    borderColor: selectedDate === day ? themeColorHex : theme.colors.border,
-                    backgroundColor: selectedDate === day ? themeColorHex : theme.colors.surface,
+                    borderColor:
+                      selectedDate === day ? themeColorHex : theme.colors.border,
+                    backgroundColor:
+                      selectedDate === day ? themeColorHex : theme.colors.surface,
                   },
                 ]}
               >
-                <Text style={[styles.datePillText, { color: selectedDate === day ? "#fff" : theme.colors.text }]}>
+                <Text
+                  style={[
+                    styles.datePillText,
+                    {
+                      color: selectedDate === day ? "#fff" : theme.colors.text,
+                    },
+                  ]}
+                >
                   {formatDayLabel(day)}
                 </Text>
               </Pressable>
@@ -711,10 +771,14 @@ export default function ScheduleScreen() {
           </ScrollView>
 
           <Pressable
-            onPress={() => canGoNext && setSelectedDate(festivalDays[currentDayIndex + 1])}
+            onPress={() =>
+              canGoNext && setSelectedDate(festivalDays[currentDayIndex + 1])
+            }
             style={[styles.dateArrow, { opacity: canGoNext ? 1 : 0.3 }]}
           >
-            <Text style={[styles.dateArrowText, { color: theme.colors.text }]}>›</Text>
+            <Text style={[styles.dateArrowText, { color: theme.colors.text }]}>
+              ›
+            </Text>
           </Pressable>
         </View>
       )}
@@ -727,7 +791,6 @@ export default function ScheduleScreen() {
         onRefresh={schedule.refresh}
       />
 
-      {/* Content */}
       {viewMode === "grid" ? (
         <GridView
           items={currentItems}
@@ -762,15 +825,46 @@ export default function ScheduleScreen() {
 
 const styles = StyleSheet.create({
   headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     paddingHorizontal: 16,
     paddingTop: 70,
     paddingBottom: 8,
   },
   screenTitle: {
     fontWeight: "800",
+    flexShrink: 1,
+  },
+  headerButtonsRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+  },
+  headerButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  searchHeaderBtn: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  searchHeaderBtnText: {
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  myPlanHeaderBtn: {
+    borderWidth: 1.5,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 7,
+    marginBottom: 8,
+  },
+  myPlanHeaderBtnText: {
+    fontSize: 13,
+    fontWeight: "700",
   },
   contentSpacing: {
     flex: 1,
@@ -957,17 +1051,6 @@ const styles = StyleSheet.create({
   tabGroup: {
     flexDirection: "row",
     flex: 1,
-  },
-  myPlanHeaderBtn: {
-    borderWidth: 1.5,
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 7,
-  },
-  myPlanHeaderBtnText: {
-    fontSize: 13,
-    fontWeight: "700",
-    color: "#fff",
   },
   viewToggleInNav: {
     borderWidth: 1,
