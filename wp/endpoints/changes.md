@@ -57,27 +57,23 @@ Content-Type: application/json; charset=UTF-8
   "checked_at": "2025-08-30T17:50:00-07:00",
   "since": "2025-08-30T14:00:00-07:00",
   "has_changes": true,
-  "changes": {
+  "datasets": {
     "events": {
+      "changed": true,
       "updated": [101, 109],
-      "cancelled": [115],
-      "count": 3
+      "cancelled": [115]
     },
     "announcements": {
-      "new": [501, 502],
-      "count": 2
+      "changed": true
     },
     "venues": {
-      "updated": [],
-      "count": 0
+      "changed": false
     },
     "artists": {
-      "updated": [],
-      "count": 0
+      "changed": false
     },
     "vendors": {
-      "updated": [],
-      "count": 0
+      "changed": false
     }
   }
 }
@@ -90,12 +86,12 @@ Content-Type: application/json; charset=UTF-8
   "checked_at": "2025-08-30T17:50:00-07:00",
   "since": "2025-08-30T14:00:00-07:00",
   "has_changes": false,
-  "changes": {
-    "events": { "updated": [], "cancelled": [], "count": 0 },
-    "announcements": { "new": [], "count": 0 },
-    "venues": { "updated": [], "count": 0 },
-    "artists": { "updated": [], "count": 0 },
-    "vendors": { "updated": [], "count": 0 }
+  "datasets": {
+    "events":        { "changed": false },
+    "announcements": { "changed": false },
+    "venues":        { "changed": false },
+    "artists":       { "changed": false },
+    "vendors":       { "changed": false }
   }
 }
 ```
@@ -109,12 +105,13 @@ Content-Type: application/json; charset=UTF-8
 | `checked_at` | ISO 8601 string | When this response was generated |
 | `since` | ISO 8601 string | The timestamp the query was made from — echoed back for confirmation |
 | `has_changes` | boolean | Top-level flag — app reads this first to decide whether to re-fetch |
-| `changes.events.updated` | integer[] | IDs of events that changed (time, venue, status, etc.) |
-| `changes.events.cancelled` | integer[] | IDs of events whose status changed to `cancelled` |
-| `changes.announcements.new` | integer[] | IDs of newly published announcements |
-| `changes.venues.updated` | integer[] | IDs of changed venue records |
-| `changes.artists.updated` | integer[] | IDs of changed artist records |
-| `changes.vendors.updated` | integer[] | IDs of changed vendor records |
+| `datasets.events.changed` | boolean | True if any event changed since `since` |
+| `datasets.events.updated` | integer[] | IDs of events that changed (time, venue, status, etc.) |
+| `datasets.events.cancelled` | integer[] | IDs of events whose status changed to `cancelled` |
+| `datasets.announcements.changed` | boolean | True if any announcement was published since `since` |
+| `datasets.venues.changed` | boolean | True if any venue record changed since `since` |
+| `datasets.artists.changed` | boolean | True if any artist record changed since `since` |
+| `datasets.vendors.changed` | boolean | True if any vendor record changed since `since` |
 
 ---
 
@@ -129,12 +126,12 @@ Every 30 minutes:
 │   └─ Do nothing. Show "Schedule up to date."
 │
 └─ if has_changes == true:
-    ├─ if events.count > 0:
+    ├─ if datasets.events.changed == true:
     │   └─ GET /schedule (full refresh of event data)
     │       └─ Update local cache
     │       └─ Diff against favorited events → surface change notifications
     │
-    ├─ if announcements.count > 0:
+    ├─ if datasets.announcements.changed == true:
     │   └─ GET /announcements (full refresh)
     │       └─ Update local cache
     │       └─ Badge the announcements tab

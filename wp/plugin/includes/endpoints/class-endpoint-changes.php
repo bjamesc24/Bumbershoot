@@ -64,46 +64,46 @@ class Bumbershoot_Endpoint_Changes {
 
 		// ── Gather changes per type ───────────────────────────────────────────
 
-		$changes = [];
-
+		$datasets = [];
+ 
 		if ( in_array( 'events', $check_types, true ) ) {
-			$changes['events'] = $this->get_event_changes( $since_mysql );
+			$datasets['events'] = $this->get_event_changes( $since_mysql );
 		}
-
+ 
 		if ( in_array( 'announcements', $check_types, true ) ) {
-			$changes['announcements'] = $this->get_post_changes( 'bumbershoot_announcement', $since_mysql, 'new' );
+			$datasets['announcements'] = $this->get_post_changes( 'bumbershoot_announcement', $since_mysql );
 		}
-
+ 
 		if ( in_array( 'venues', $check_types, true ) ) {
-			$changes['venues'] = $this->get_post_changes( 'bumbershoot_venue', $since_mysql, 'updated' );
+			$datasets['venues'] = $this->get_post_changes( 'bumbershoot_venue', $since_mysql );
 		}
-
+ 
 		if ( in_array( 'artists', $check_types, true ) ) {
-			$changes['artists'] = $this->get_post_changes( 'bumbershoot_artist', $since_mysql, 'updated' );
+			$datasets['artists'] = $this->get_post_changes( 'bumbershoot_artist', $since_mysql );
 		}
-
+ 
 		if ( in_array( 'vendors', $check_types, true ) ) {
-			$changes['vendors'] = $this->get_post_changes( 'bumbershoot_vendor', $since_mysql, 'updated' );
+			$datasets['vendors'] = $this->get_post_changes( 'bumbershoot_vendor', $since_mysql );
 		}
-
-		// has_changes is true if any type has a non-zero count.
+ 
+		// has_changes is true if any dataset has changed: true.
 		$has_changes = false;
-		foreach ( $changes as $change_set ) {
-			if ( ( $change_set['count'] ?? 0 ) > 0 ) {
+		foreach ( $datasets as $dataset ) {
+			if ( $dataset['changed'] ?? false ) {
 				$has_changes = true;
 				break;
 			}
 		}
-
+ 
 		$data = [
 			'checked_at'  => current_time( 'c' ),
 			'since'       => Bumbershoot_ACF_Compat::format_datetime( $since_mysql ),
 			'has_changes' => $has_changes,
-			'changes'     => $changes,
+			'datasets'    => $datasets,
 		];
-
+ 
 		$response = new WP_REST_Response( $data, 200 );
-
+ 
 		return Bumbershoot_Cache_Headers::apply(
 			$response,
 			$request,
@@ -111,7 +111,6 @@ class Bumbershoot_Endpoint_Changes {
 			// No Last-Modified on the changes endpoint — it's always fresh.
 		);
 	}
-
 	// ── Private helpers ───────────────────────────────────────────────────────
 
 	/**

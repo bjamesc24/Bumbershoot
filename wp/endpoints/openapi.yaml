@@ -1088,27 +1088,25 @@ components:
     # ── CHANGES ────────────────────────────────
     ChangeSet:
       type: object
+      required: [changed]
       properties:
+        changed:
+          type: boolean
+          description: True if this dataset has any records that changed since `since`
         updated:
           type: array
           items:
             type: integer
+          description: IDs of updated records (events only)
         cancelled:
           type: array
           items:
             type: integer
-          description: Only present on the events change set
-        new:
-          type: array
-          items:
-            type: integer
-          description: Only present on the announcements change set
-        count:
-          type: integer
+          description: IDs of cancelled records (events only)
 
     ChangesResponse:
       type: object
-      required: [checked_at, since, has_changes, changes]
+      required: [checked_at, since, has_changes, datasets]
       properties:
         checked_at:
           type: string
@@ -1118,7 +1116,7 @@ components:
           format: date-time
         has_changes:
           type: boolean
-        changes:
+        datasets:
           type: object
           properties:
             events:
