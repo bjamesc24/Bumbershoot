@@ -12,7 +12,7 @@ import AnnouncementsScreen from "../screens/AnnouncementsScreen";
 import MoreScreen from "../screens/MoreScreen";
 import FavoritesScreen from "../screens/FavoritesScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-
+import ScheduleSearchScreen from "../screens/ScheduleSearchScreen";
 import OfflineBanner from "../components/OfflineBanner";
 import LoadingState from "../components/LoadingState";
 import { apiClient } from "../services/apiClient";
@@ -35,6 +35,7 @@ export type DetailType =
 // ---------------------------------------------------------------------------
 // Explore stack — ExploreScreen + DetailScreen
 // ---------------------------------------------------------------------------
+
 
 export type ExploreStackParamList = {
   ExploreMain: undefined;
@@ -70,6 +71,7 @@ function ExploreStackNavigator() {
 
 export type ScheduleStackParamList = {
   ScheduleList: undefined;
+  ScheduleSearch: undefined;
   Detail: { item: any; type: DetailType };
 };
 
@@ -82,12 +84,12 @@ function ScheduleStackNavigator() {
       screenOptions={{ headerShown: false }}
     >
       <ScheduleStack.Screen name="ScheduleList" component={ScheduleScreen} />
-      <ScheduleStack.Screen
-        name="Detail"
-        component={DetailScreen}
-        options={{ headerShown: true, title: "" }}
-        initialParams={{ item: null, type: null }}
-      />
+      <ScheduleStack.Screen name="ScheduleSearch" component={ScheduleSearchScreen} />
+     <ScheduleStack.Screen
+  name="Detail"
+  component={DetailScreen}
+  options={{ headerShown: false }}
+/>
     </ScheduleStack.Navigator>
   );
 }
